@@ -61,3 +61,8 @@ footer li{margin:.35rem 0}
 .why{margin:.2rem 0 .4rem;font-weight:bold;color:#212121}
 .fail{background:#fff0ee;padding:.6rem .8rem;box-shadow:0 0 0 3px #000,inset 0 0 0 3px var(--red);margin:.6rem 0}
 .fail .second{margin:.6rem 0 0}
+.joplin{background:#fff;padding:1rem 1.1rem;margin:2rem 12px;box-shadow:0 0 0 4px #000}
+.joplin h2{margin-top:0}
+.jbtn{display:flex;flex-direction:column;justify-content:center;min-height:56px;text-decoration:none;text-align:left}
+.jbtn b{font-size:1.1rem}
+.jbtn span{font-size:1rem;color:var(--ink)}
