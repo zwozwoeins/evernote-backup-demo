@@ -7,7 +7,8 @@ const JOPLIN_URL = '../joplin-vorschau/';
 
 const ERR = {
   blocked: { text: 'Der Browser lässt die Notizen nicht direkt von Syncline holen.',
-    help: ['In Syncline auf „Ordner zeigen“ klicken.', 'Hier „Dateien wählen“ drücken, im Ordner „Evernote-Export“ alle Dateien markieren (⌘ + A) und „Öffnen“ klicken.'] },
+    help: ['Fragt der Browser, ob die Seite auf Geräte im lokalen Netzwerk zugreifen darf? In Syncline nochmal „Im Notiz-Converter ansehen“ klicken und im Browser „Zulassen“ wählen.',
+      'Oder: In Syncline auf „Ordner zeigen“ klicken.', 'Hier „Dateien wählen“ drücken, im Ordner „Evernote-Export“ alle Dateien markieren (⌘ + A) und „Öffnen“ klicken.'] },
   expired: { text: 'Der Link von Syncline ist abgelaufen oder wurde schon benutzt.',
     help: ['In Syncline nochmal „Im Notiz-Converter ansehen“ klicken.', 'Oder: In Syncline „Ordner zeigen“ und hier die Dateien wählen.'] },
   empty: { text: 'In den Dateien wurden keine Notizen gefunden.',
@@ -118,6 +119,7 @@ async function fetchAll(p, session, list) {
 
 async function loadFromSyncline(p) {
   showRun('Notizen werden von Syncline geholt …');
+  setBar(0, 'Fragt der Browser nach dem lokalen Netzwerk: bitte „Zulassen“ wählen.');
   let r;
   try { r = await pair(p); } catch (e) { return showError(ERR.blocked); }
   if (!r.ok) return showError(ERR.expired);
