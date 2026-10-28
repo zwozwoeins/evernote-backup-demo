@@ -40,7 +40,7 @@ const NAMES = ['Büro', 'Rezepte', 'Garten', 'Reisen', 'Steuer', 'Auto', 'Gesund
 const DEMO_TOTAL = 1000;
 const DEMO_BROKEN = 734;
 const DEMO_BUSY = { code: 'BUSY', text: 'Es läuft gerade ein Export.', action: 'show_progress', label: 'Fortschritt ansehen', help: [], details: '' };
-const DEMO_BROKEN_HELP = ['„Nochmal versuchen“ drücken.', 'Klappt es wieder nicht: „Überspringen“ drücken – alles andere bleibt gesichert.', 'Protokoll an den Support schicken („Hoppla – Protokoll sichern“).'];
+const DEMO_BROKEN_HELP = ['„Erneut versuchen“ drücken.', 'Klappt es wieder nicht: „Überspringen“ drücken – alles andere bleibt gesichert.', 'Protokoll an den Support schicken („Hoppla – Protokoll sichern“).'];
 const demo = {
   connected: false, running: false, phase: '', done: 0, total: 0, events: [], error: null,
   result: null, target: 'notizen', timer: null, limit: DEMO_TOTAL, failed: [], started: 0, last: {},
@@ -69,7 +69,42 @@ function demoNotesUpTo(limit) {
   return demo.source.notebooks.slice(0, limit).reduce((sum, b) => sum + b.count, 0);
 }
 
+const DEMO_FAKE_NOTES = 15242;
+
+function demoIcloudError() {
+  return {
+    code: 'ICLOUD_FULL', text: 'Der iCloud-Speicher ist voll. Der Export ist bei Notizbuch ' + (demo.done + 1) + ' angehalten.',
+    action: 'backup', label: 'Erneut versuchen', details: 'Notes: storage full (Vorschau)',
+    help: ['In den Systemeinstellungen unter „Apple-ID → iCloud“ Platz freimachen.', 'Dann „Erneut versuchen“ drücken. Es geht an derselben Stelle weiter.'],
+  };
+}
+
+function demoFailStop() {
+  clearInterval(demo.timer);
+  demo.running = false;
+  demo.phase = 'angehalten';
+  demo.failAt = 0;
+  demo.error = demoIcloudError();
+  demoEvent(demo.error.text);
+}
+
+function demoFailAt() {
+  if (new URLSearchParams(location.search).get('demo') !== 'exportfehler') return 0;
+  return Math.max(1, Math.ceil(demo.limit * 0.4));
+}
+
+function demoNotesDone() {
+  if (demo.source) return demoNotesUpTo(demo.done);
+  return Math.round((demo.done / DEMO_TOTAL) * DEMO_FAKE_NOTES);
+}
+
+function demoNotesTotal() {
+  if (demo.source) return demoNotesUpTo(demo.limit);
+  return Math.round((demo.limit / DEMO_TOTAL) * DEMO_FAKE_NOTES);
+}
+
 function demoStepOne() {
+  if (demo.failAt && demo.done + 1 === demo.failAt) return demoFailStop();
   demo.done += 1;
   const n = demo.done;
   if (n === DEMO_BROKEN && !demo.source) {
@@ -83,8 +118,8 @@ function demoStepOne() {
 
 function demoTick() {
   const steps = demo.limit < 10 || demo.source ? 1 : 9;
-  for (let i = 0; i < steps && demo.done < demo.limit; i += 1) demoStepOne();
-  if (demo.done >= demo.limit) demoFinish();
+  for (let i = 0; i < steps && demo.done < demo.limit && demo.running; i += 1) demoStepOne();
+  if (demo.running && demo.done >= demo.limit) demoFinish();
 }
 
 function demoFinishProbe() {
@@ -101,7 +136,7 @@ function demoFinishFull() {
   demo.last = { saved_at: Date.now() / 1000 };
   if (!failed.length) return demoEvent('Fertig. Alles ist gesichert.');
   const text = '„' + failed[0] + '“ konnte nicht gesichert werden. Alles andere ist gesichert.';
-  demo.error = { code: 'BROKEN_NOTEBOOK', text: text, action: 'backup', label: 'Nochmal versuchen', secondary: { action: 'skip', label: 'Überspringen' }, help: DEMO_BROKEN_HELP, details: 'ParseError: no element found: line 1, column 48 (Vorschau)' };
+  demo.error = { code: 'BROKEN_NOTEBOOK', text: text, action: 'backup', label: 'Erneut versuchen', secondary: { action: 'skip', label: 'Überspringen' }, help: DEMO_BROKEN_HELP, details: 'ParseError: no element found: line 1, column 48 (Vorschau)' };
   demoEvent(text);
 }
 
@@ -135,6 +170,7 @@ function demoReset(probe) {
   demo.total = demo.source ? demo.source.notebooks.length : DEMO_TOTAL;
   demo.probe = !!probe;
   demo.limit = probe ? Math.min(2, demo.total) : demo.total;
+  demo.failAt = demoFailAt();
   demo.started = Date.now();
   demo.events = [];
   if (!demo.last.saved_at) demoEvent('Gleich fragt der Mac, ob der Helfer Notizen nutzen darf. Bitte „OK“ klicken.');
@@ -204,6 +240,7 @@ const DemoBackend = {
       local: false, connected: demo.connected, running: demo.running, phase: demo.phase, done: demo.done,
       total: demo.total, events: demo.events, error: demo.error, result: demo.result, target: demo.target,
       eta: demoEta(), last: demo.last, provider: demo.provider,
+      notes_done: demoNotesDone(), notes_total: demoNotesTotal(),
     };
   },
   async post(path, body) {
@@ -227,8 +264,8 @@ let backend = LiveBackend;
 /* ---------- Texte ---------- */
 const OFFLINE_ERROR = {
   code: 'HELPER_OFFLINE', text: 'Der Helfer auf dem iMac antwortet nicht.', action: 'retry_poll',
-  label: 'Nochmal versuchen', details: 'fetch /api/status fehlgeschlagen',
-  help: ['Auf dem Schreibtisch „Evernote-Sicherung starten“ doppelklicken.', 'Dann „Nochmal versuchen“ drücken.'],
+  label: 'Erneut versuchen', details: 'fetch /api/status fehlgeschlagen',
+  help: ['Auf dem Schreibtisch „Evernote-Sicherung starten“ doppelklicken.', 'Dann „Erneut versuchen“ drücken.'],
 };
 
 function plural(n, one, many) {
@@ -327,15 +364,57 @@ function renderExport(s) {
   $('#target-box').disabled = busy;
 }
 
+/* ---------- Hubschrauber-Fortschritt (Import und Export) ---------- */
+function heliState(s) {
+  if (s.phase === 'fertig') return 'done';
+  if (!s.running) return 'stopped';
+  return 'fly';
+}
+
+function heliPercent(s) {
+  if (s.phase === 'fertig') return 100;
+  if (s.notes_total) return Math.round((s.notes_done / s.notes_total) * 100);
+  return s.total ? Math.round((s.done / s.total) * 100) : 0;
+}
+
+function heliLabel(s, pct) {
+  if (s.notes_total) return s.notes_done.toLocaleString('de-DE') + ' von ' + s.notes_total.toLocaleString('de-DE') + ' Notizen – ' + pct + ' %';
+  return 'Notizbuch ' + s.done + ' von ' + s.total + ' – ' + pct + ' %';
+}
+
+function heliPallets(track, pct) {
+  track.querySelectorAll('.pallet').forEach((p, i) => p.classList.toggle('lifted', pct >= (i + 1) * 10));
+}
+
+/* Ein Baustein fuer beide Balken: Position, Paletten, Text, Zustand. */
+function heliRender(ids, pct, label, state) {
+  const track = $(ids.track);
+  track.style.setProperty('--p', String(pct));
+  track.setAttribute('aria-valuenow', String(pct));
+  track.setAttribute('aria-valuetext', label);
+  track.classList.toggle('done', state === 'done');
+  track.classList.toggle('stopped', state === 'stopped');
+  heliPallets(track, pct);
+  $(ids.text).textContent = label;
+  $(ids.done).hidden = state !== 'done';
+}
+
+function runStateText(s) {
+  if (s.running) return 'Exportiere … Notizbuch ' + s.done + ' von ' + s.total;
+  if (s.phase === 'fertig') return 'Export abgeschlossen.';
+  if (currentError(s)) return 'Gestoppt bei Notizbuch ' + s.done + ' von ' + s.total + '.';
+  return 'Angehalten bei Notizbuch ' + s.done + ' von ' + s.total + '.';
+}
+
 function renderRun(s) {
-  const showRun = s.running || s.phase === 'angehalten';
+  const showRun = s.running || s.phase === 'angehalten' || (s.phase === 'fertig' && !!s.result);
   $('#run').hidden = !showRun;
   if (!showRun) return;
-  const pct = s.total ? Math.round((s.done / s.total) * 100) : 2;
-  $('#run-state').textContent = s.running ? 'Exportiere … Notizbuch ' + s.done + ' von ' + s.total : 'Angehalten bei Notizbuch ' + s.done + ' von ' + s.total + '.';
+  const pct = heliPercent(s);
+  heliRender({ track: '#bar', text: '#run-text', done: '#run-done' }, pct, heliLabel(s, pct), heliState(s));
+  $('#run-state').textContent = runStateText(s);
   $('#run-eta').textContent = s.running ? etaText(s.eta) : '';
-  $('#bar-fill').style.width = pct + '%';
-  $('#bar').setAttribute('aria-valuenow', String(pct));
+  $('#run-keep').hidden = !s.running;
 }
 
 function whereText(target) {
@@ -407,7 +486,7 @@ function renderError(s) {
   $('#error').hidden = !err;
   if (!err) return;
   $('#err-text').textContent = err.text;
-  $('#err-action').textContent = err.label || 'Nochmal versuchen';
+  $('#err-action').textContent = err.label || 'Erneut versuchen';
   $('#err-action').hidden = err.action === 'none';
   $('#err-action').onclick = () => runAction(err.action);
   $('#err-second').hidden = !err.secondary;
@@ -588,6 +667,8 @@ function chooseEnex() {
   $('#enex-file').click();
 }
 
+const IMPORT_DONE_PAUSE = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 300 : 1400;
+
 function applyImport(data, reports) {
   ui.imported = data;
   demoUseSource(data);
@@ -595,7 +676,7 @@ function applyImport(data, reports) {
   $('#enex-error').hidden = true;
   refresh();
   if (reports.some((r) => r.error)) return showView('daten'); // erst das Protokoll zeigen
-  showVorschau(); // nach dem Einlesen gleich die Notizen zeigen
+  setTimeout(showVorschau, IMPORT_DONE_PAUSE); // kurz „Rohbau fertig“ zeigen, dann die Notizen
 }
 
 function showEnexError(report) {
@@ -684,9 +765,32 @@ async function copyLog() {
   $('#copy-msg').hidden = false;
 }
 
+function importLabel(done, total) {
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  return { pct: pct, text: done + ' von ' + total + ' Notizen – ' + pct + ' %' };
+}
+
+function onImportProgress(done, total) {
+  const l = importLabel(done, total);
+  heliRender({ track: '#imp-bar', text: '#imp-text', done: '#imp-done' }, l.pct, l.text, 'fly');
+}
+
+function finishImportHeli(r) {
+  const l = importLabel(r.done || 0, r.total || 0);
+  const state = r.ok ? 'done' : 'stopped';
+  const text = r.ok ? l.text : 'Import gestoppt – die Datei ist fehlerhaft. Hinweise stehen unten.';
+  heliRender({ track: '#imp-bar', text: '#imp-text', done: '#imp-done' }, r.ok ? 100 : l.pct, text, state);
+}
+
+function startImportHeli() {
+  $('#import-run').hidden = false;
+  $('#enex-error').hidden = true;
+  onImportProgress(0, 0);
+}
+
 async function readEnexSafely(files) {
   try {
-    return await enexReadFiles(files);
+    return await enexReadFiles(files, onImportProgress);
   } catch (e) {
     return { ok: false, data: null, reports: [{ file: files[0].name, size: files[0].size, ms: 0, warnings: [], error: ENEX_ERRORS.read }] };
   }
@@ -696,10 +800,22 @@ async function onEnexChosen(e) {
   const files = Array.from(e.target.files || []);
   e.target.value = '';
   if (!files.length) return;
+  await importFiles(files);
+}
+
+async function importFiles(files) {
+  ui.lastFiles = files;
+  startImportHeli();
   const r = await readEnexSafely(files);
+  finishImportHeli(r);
   renderImportLog(r.reports);
   if (!r.ok) return showEnexError(r.reports.find((x) => x.error) || r.reports[0]);
   applyImport(r.data, r.reports);
+}
+
+function retryImport() {
+  if (ui.lastFiles && ui.lastFiles.length) return importFiles(ui.lastFiles);
+  chooseEnex();
 }
 
 function nextAfterSource() {
@@ -810,6 +926,7 @@ function bindEvents() {
   $('#enex-retry').addEventListener('click', chooseEnex);
   $('#enex-file').addEventListener('change', onEnexChosen);
   $('#copy-log').addEventListener('click', copyLog);
+  $('#enex-again').addEventListener('click', retryImport);
   document.querySelectorAll('input[name="target"]').forEach((r) => r.addEventListener('change', onTargetChange));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => { d.open = false; }); });
 }

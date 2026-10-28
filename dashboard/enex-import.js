@@ -168,38 +168,86 @@ function enexFail(report, key) {
   return null;
 }
 
+/* ---------- Fortschritt ---------- */
+const ENEX_MIN_SECONDS = 1.5; // kleine Dateien: kurz sichtbar fliegen lassen, grosse Dateien laufen in Echtzeit
+
+function enexPause(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function enexCountNotes(text) {
+  return (text.match(/<note>/g) || []).length;
+}
+
+async function enexReadText(file) {
+  if (!/\.enex$/i.test(file.name) || file.size > ENEX_MAX_BYTES) return '';
+  try { return await file.text(); } catch (e) { return ''; }
+}
+
 /* ---------- Datei ---------- */
-async function enexReadFile(file, index, firstId, report) {
-  if (!/\.enex$/i.test(file.name)) return enexFail(report, 'type');
-  if (file.size > ENEX_MAX_BYTES) return enexFail(report, 'size');
-  const doc = enexParseXml(await file.text());
+function enexCheckFile(file, text, report) {
+  if (!/\.enex$/i.test(file.name)) return enexFail(report, 'type') || false;
+  if (file.size > ENEX_MAX_BYTES) return enexFail(report, 'size') || false;
+  return true;
+}
+
+async function enexParseNotes(doc, bookId, firstId, report, progress) {
+  const els = Array.from(doc.documentElement.getElementsByTagName('note'));
+  const notes = [];
+  for (let i = 0; i < els.length; i += 1) {
+    notes.push(enexNote(els[i], bookId, firstId + i, report));
+    await progress.step();
+  }
+  return notes;
+}
+
+async function enexReadFile(file, text, index, firstId, report, progress) {
+  if (!enexCheckFile(file, text, report)) return null;
+  const doc = enexParseXml(text);
   if (!doc) return enexFail(report, 'xml');
   if (doc.documentElement.tagName !== 'en-export') return enexFail(report, 'root');
   const bookId = 'b' + index;
-  const notes = Array.from(doc.documentElement.getElementsByTagName('note')).map((n, i) => enexNote(n, bookId, firstId + i, report));
+  const notes = await enexParseNotes(doc, bookId, firstId, report, progress);
   if (!notes.length) return enexFail(report, 'empty');
   return { notebook: { id: bookId, name: enexNotebookName(file.name) }, notes: notes };
 }
 
-async function enexReadOne(file, index, firstId) {
+async function enexReadOne(file, text, index, firstId, progress) {
   const report = enexNewReport(file);
   const t0 = performance.now();
   let part = null;
-  try { part = await enexReadFile(file, index, firstId, report); } catch (e) { part = enexFail(report, 'read'); }
+  try { part = await enexReadFile(file, text, index, firstId, report, progress); } catch (e) { part = enexFail(report, 'read'); }
   report.ms = Math.round(performance.now() - t0);
   return { part: part, report: report };
 }
 
-/* Liest alle Dateien. Gute Dateien werden geladen, schlechte stehen mit Loesung im Protokoll. */
-async function enexReadFiles(files) {
+function enexProgress(total, onProgress) {
+  const pace = total ? Math.min(60, (ENEX_MIN_SECONDS * 1000) / total) : 0;
+  const p = { done: 0, total: total };
+  p.step = async () => {
+    p.done += 1;
+    onProgress(p.done, p.total);
+    await enexPause(pace);
+  };
+  return p;
+}
+
+/* Liest alle Dateien. Gute Dateien werden geladen, schlechte stehen mit Loesung im Protokoll.
+   onProgress(done, total) meldet den echten Fortschritt in Notizen. */
+async function enexReadFiles(files, onProgress) {
+  const texts = [];
+  for (let i = 0; i < files.length; i += 1) texts.push(await enexReadText(files[i]));
+  const total = texts.reduce((n, t) => n + enexCountNotes(t), 0);
+  const progress = enexProgress(total, onProgress || (() => {}));
+  onProgress && onProgress(0, total);
   const data = { notebooks: [], notes: [] };
   const reports = [];
   for (let i = 0; i < files.length; i += 1) {
-    const r = await enexReadOne(files[i], i + 1, data.notes.length + 1);
+    const r = await enexReadOne(files[i], texts[i], i + 1, data.notes.length + 1, progress);
     reports.push(r.report);
     if (!r.part) continue;
     data.notebooks.push(r.part.notebook);
     data.notes = data.notes.concat(r.part.notes);
   }
-  return { ok: data.notes.length > 0, data: data, reports: reports };
+  return { ok: data.notes.length > 0, data: data, reports: reports, total: total, done: progress.done };
 }
