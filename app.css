@@ -1,42 +1,75 @@
+/* 16-Bit-Look der 90er – eigene Gestaltung, keine Spiel-Vorlagen */
+@font-face{font-family:"Pixel";src:url("fonts/PressStart2P-Regular.ttf") format("truetype");font-display:swap}
 *{box-sizing:border-box}
 html{font-size:18px}
 @media (max-width:600px){html{font-size:17px}}
-body{margin:0;background:#fff;color:#000;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+:root{--ink:#0d0d26;--sky:#2b4bd8;--sky2:#16237a;--gold:#ffd23f;--gold2:#c99700;--grass:#2fbf3f;--red:#e8433a;--paper:#fff8e1}
+body{margin:0;color:var(--ink);line-height:1.55;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background-color:#3a2a8c;
+  background-image:linear-gradient(45deg,#33257d 25%,transparent 25%,transparent 75%,#33257d 75%),linear-gradient(45deg,#33257d 25%,transparent 25%,transparent 75%,#33257d 75%);
+  background-size:32px 32px;background-position:0 0,16px 16px}
 header,main,footer{max-width:760px;margin:0 auto;padding:1rem}
-h1{font-size:1.8rem;margin:.2rem 0 0}
-.sub{margin:0;font-size:1.1rem}
-h2{font-size:1.35rem;margin:.5rem 0}
-.lead{font-size:1.15rem}
-.progress{list-style:none;display:flex;gap:.6rem;padding:0;margin:1rem 0 0}
-.progress li{width:2.4rem;height:2.4rem;border:4px solid #000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}
-.progress li.on{background:#000;color:#ffeb3b}
-.progress li.done{background:#2e7d32;color:#fff;border-color:#2e7d32}
-.pic{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+h1,h2,.big,.progress li,.logtitle,.preview,summary{font-family:"Pixel",monospace;letter-spacing:.5px}
+header{color:#fff;text-align:center}
+h1{font-size:1.45rem;margin:.6rem 0 .3rem;color:var(--gold);text-shadow:3px 3px 0 #000;line-height:1.4}
+.sub{margin:0;font-size:1.05rem;text-shadow:2px 2px 0 #000}
+h2{font-size:1rem;line-height:1.6;margin:.6rem 0;color:var(--sky2)}
+.lead{font-size:1.12rem}
+.progress{list-style:none;display:flex;justify-content:center;gap:.6rem;padding:0;margin:1rem 0 0}
+.progress li{width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;font-size:.9rem;background:#555;color:#ccc;
+  box-shadow:0 0 0 3px #000,inset -4px -4px 0 #333,inset 4px 4px 0 #777}
+.progress li.on{background:var(--gold);color:#000;box-shadow:0 0 0 3px #000,inset -4px -4px 0 var(--gold2),inset 4px 4px 0 #fff1a8}
+.progress li.done{background:var(--grass);color:#fff;box-shadow:0 0 0 3px #000,inset -4px -4px 0 #167a24,inset 4px 4px 0 #7be07f}
+/* Pixel-Fenster */
+.step{background:var(--paper);padding:1.2rem 1.1rem;margin:.6rem 4px;
+  box-shadow:0 0 0 4px #000,0 0 0 8px #fff,0 0 0 12px #000,10px 10px 0 12px rgba(0,0,0,.45)}
+.pic{width:100%;max-width:260px;height:auto;display:block;margin:0 auto .4rem;image-rendering:pixelated}
 button,.as-btn{font:inherit;cursor:pointer}
-.big{display:block;width:100%;min-height:3.4rem;margin:1.2rem 0 .5rem;font-size:1.2rem;font-weight:bold;background:#0b3d91;color:#fff;border:4px solid #000;border-radius:14px;padding:.6rem 1rem;text-align:center}
-.big:hover,.big:focus{background:#000;outline:5px solid #ffeb3b}
-.small{background:none;border:none;font-size:1.05rem;text-decoration:underline;padding:.6rem 0;color:#000}
-details{margin:.8rem 0;border:3px solid #000;border-radius:10px;padding:.5rem .8rem}
-summary{font-weight:bold;cursor:pointer;font-size:1.1rem}
-.how li{margin:.4rem 0}
-.tip{background:#fff8c4;padding:.6rem;border-left:6px solid #000}
-.drop{display:block;border:6px dashed #000;background:#ffeb3b;border-radius:16px;padding:1rem;text-align:center;cursor:pointer}
-.drop.over{background:#fff176;outline:6px solid #0b3d91}
+.big{display:block;width:100%;min-height:3.4rem;margin:1.3rem 0 .6rem;font-size:.95rem;line-height:1.5;color:#fff;background:var(--sky);border:0;padding:.8rem 1rem;text-align:center;
+  box-shadow:0 0 0 4px #000,inset -6px -6px 0 var(--sky2),inset 6px 6px 0 #6f8bff;text-shadow:2px 2px 0 #000}
+.big:hover,.big:focus{background:#3b5cf0;outline:4px solid var(--gold);outline-offset:4px}
+.big:active{box-shadow:0 0 0 4px #000,inset 6px 6px 0 var(--sky2);transform:translate(2px,2px)}
+.big:disabled{background:#777;box-shadow:0 0 0 4px #000,inset -6px -6px 0 #555,inset 6px 6px 0 #999;cursor:wait}
+.small{background:none;border:none;font-size:1.02rem;text-decoration:underline;padding:.6rem 0;color:var(--sky2)}
+details{margin:.9rem 0;background:#fff;padding:.6rem .8rem;box-shadow:0 0 0 3px #000}
+summary{font-size:.75rem;line-height:1.6;cursor:pointer;color:var(--sky2)}
+.how li{margin:.45rem 0}
+.tip{background:#fff1a8;padding:.6rem;box-shadow:0 0 0 3px var(--gold2)}
+.drop{display:block;background:var(--gold);padding:1rem;text-align:center;cursor:pointer;
+  box-shadow:0 0 0 4px #000,inset -6px -6px 0 var(--gold2),inset 6px 6px 0 #fff1a8}
+.drop.over{background:#ffe680;outline:5px dashed var(--sky);outline-offset:4px}
 .drop input{position:absolute;width:1px;height:1px;opacity:0}
 .drop .as-btn{margin:.4rem 0}
 .hint{display:block;font-size:1rem}
-.card{border:4px solid #000;border-radius:12px;padding:.8rem;margin:1rem 0}
-.card.ok{border-color:#2e7d32}
-.card.bad{border-color:#b00020;background:#fff0f0}
-.card h3{margin:0 0 .3rem;font-size:1.2rem;word-break:break-all}
-.sum{font-size:1.15rem;font-weight:bold;background:#e8f5e9;border:4px solid #2e7d32;border-radius:12px;padding:.8rem}
-.warn{color:#7a0000;font-weight:bold}
-.bar{height:1.2rem;border:3px solid #000;border-radius:8px;overflow:hidden}
-.bar i{display:block;height:100%;background:#0b3d91;width:0}
-footer{font-size:1rem;border-top:3px solid #000;margin-top:2rem}
-.preview{background:#000;color:#ffeb3b;font-weight:bold;padding:.6rem;border-radius:8px;text-align:center}
-.logwrap{border:3px solid #000;border-radius:10px;padding:.5rem .8rem;margin:.8rem 0}
-.logtitle{font-weight:bold;margin:.2rem 0}.pv{font-weight:normal}
-.log{height:11rem;overflow-y:auto;margin:0;padding:.3rem .3rem .3rem 1.6rem;background:#f6f6f6;border-radius:6px}
-.log li{margin:.15rem 0}
+.card{background:#fff;padding:.8rem;margin:1.1rem 0;box-shadow:0 0 0 4px #000,inset 0 0 0 4px var(--grass)}
+.card.bad{background:#ffe3e0;box-shadow:0 0 0 4px #000,inset 0 0 0 4px var(--red)}
+.card h3{margin:0 0 .3rem;font-size:1.1rem;word-break:break-all}
+.sum{font-size:1.1rem;font-weight:bold;background:#d9ffd9;padding:.8rem;box-shadow:0 0 0 4px #000,inset 0 0 0 4px var(--grass)}
+.warn{color:#8a0000;font-weight:bold}
+/* Retro-Fortschrittsbalken in Bloecken */
+.bar{height:1.6rem;background:#000;padding:4px;box-shadow:0 0 0 3px #fff,0 0 0 6px #000;margin:.9rem 6px}
+.bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--grass) 0 14px,#000 14px 18px);transition:width .2s steps(4)}
+/* Log-Fenster als Textbox */
+.logwrap{margin:1.2rem 6px;padding:.7rem .9rem;color:#fff;background:linear-gradient(#2b4bd8,#16237a);
+  box-shadow:0 0 0 4px #000,0 0 0 8px #fff,0 0 0 12px #000}
+.logtitle{font-size:.7rem;margin:.2rem 0 .5rem;color:var(--gold)}.pv{color:#fff}
+.log{height:11rem;overflow-y:auto;margin:0;padding:.2rem .2rem .2rem 0;list-style:none;font-size:1.02rem}
+.log li{margin:.2rem 0;padding-left:1.3rem;position:relative}
+.log li::before{content:"";position:absolute;left:.2rem;top:.45rem;border:6px solid transparent;border-left:8px solid var(--gold)}
+.log li:last-child::after{content:"▼";color:var(--gold);margin-left:.4rem;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.tech{background:#0d0d26;color:#cfd8ff;box-shadow:0 0 0 3px #fff}
+.tech summary{color:#fff}
 .tech pre{max-height:10rem;overflow:auto;font-size:.8rem;white-space:pre-wrap;margin:.4rem 0}
+.preview{background:#000;color:var(--gold);font-size:.7rem;line-height:1.7;padding:.6rem;text-align:center;box-shadow:0 0 0 3px var(--gold)}
+footer{font-size:1rem;color:#fff;margin-top:1.5rem;text-shadow:1px 1px 0 #000}
+footer details{color:var(--ink);text-shadow:none}
+@media (prefers-reduced-motion:reduce){.log li:last-child::after{animation:none}.bar i{transition:none}}
+h2:focus{outline:none}
+.step{position:relative;margin:1.6rem 4px}
+.num{position:absolute;top:-1.1rem;left:-.6rem;width:2.8rem;height:2.8rem;display:flex;align-items:center;justify-content:center;font-family:"Pixel",monospace;font-size:1.1rem;background:var(--gold);color:#000;
+  box-shadow:0 0 0 4px #000,inset -4px -4px 0 var(--gold2),inset 4px 4px 0 #fff1a8}
+.step.done .num{background:var(--grass);color:#fff;box-shadow:0 0 0 4px #000,inset -4px -4px 0 #167a24,inset 4px 4px 0 #7be07f}
+.state{font-weight:bold;background:#d9ffd9;padding:.6rem .8rem;box-shadow:0 0 0 3px #000,inset 0 0 0 3px var(--grass)}
+.small-note{font-size:1rem}
+header .preview{margin:1rem 0 0}

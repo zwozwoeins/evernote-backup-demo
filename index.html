@@ -11,140 +11,47 @@
 <body>
 <header>
   <h1>Evernote sichern</h1>
-  <p class="sub">in 4 Schritten in Apple&nbsp;Notizen</p>
-  <ol class="progress" aria-label="Fortschritt">
-    <li data-s="1">1</li><li data-s="2">2</li><li data-s="3">3</li><li data-s="4">4</li>
-  </ol>
-</header>
-
-<main>
-<!-- SCHRITT 1 -->
-<section class="step" id="s1">
-  <svg class="pic" viewBox="0 0 200 120" aria-hidden="true">
-    <rect x="20" y="10" width="160" height="95" rx="8" fill="#fff" stroke="#000" stroke-width="5"/>
-    <rect x="20" y="10" width="45" height="95" rx="8" fill="#2e7d32"/>
-    <rect x="30" y="28" width="25" height="8" fill="#fff"/><rect x="30" y="44" width="25" height="8" fill="#fff"/><rect x="30" y="60" width="25" height="8" fill="#fff"/>
-    <rect x="70" y="40" width="95" height="50" fill="#ffeb3b" stroke="#000" stroke-width="4"/>
-    <text x="117" y="72" font-size="18" font-family="sans-serif" font-weight="bold" text-anchor="middle">Exportieren</text>
-    <path d="M150 100 l12 -30 l8 10 l12 -4 z" fill="#000"/>
-  </svg>
-  <h2>Schritt 1: Notizbuch aus Evernote speichern</h2>
-  <p class="lead">Öffnen Sie Evernote am Mac, klicken Sie mit der <b>rechten Maustaste</b> auf ein Notizbuch und wählen Sie <b>„Notizbuch exportieren …“</b>.</p>
-  <details>
-    <summary>Genauer zeigen</summary>
-    <ol class="how">
-      <li>Das Programm Evernote am Mac öffnen (nicht die Internetseite – dort geht es nicht).</li>
-      <li>Links auf <b>Notizbücher</b> klicken.</li>
-      <li>Rechte Maustaste (oder <b>ctrl</b> + Klick) auf ein Notizbuch → <b>Notizbuch exportieren …</b></li>
-      <li>Bei „Format“ <b>ENEX</b> wählen und auf <b>Exportieren</b> klicken.</li>
-      <li>Beim ersten Mal auf dem <b>Schreibtisch</b> einen neuen Ordner <b>„Evernote-Sicherung“</b> anlegen und dort speichern – alle weiteren Notizbücher auch dorthin.</li>
-      <li><b>Für jedes Notizbuch wiederholen.</b></li>
-    </ol>
-  </details>
-  <button class="big" data-go="2">Fertig gespeichert&nbsp;→</button>
-  <button class="small" data-go="demo">Vorschau: automatische Sicherung ansehen</button>
-</section>
-
-<!-- SCHRITT 2 -->
-<section class="step" id="s2" hidden>
-  <svg class="pic" viewBox="0 0 200 120" aria-hidden="true">
-    <rect x="35" y="10" width="130" height="100" rx="10" fill="#fff" stroke="#000" stroke-width="5" stroke-dasharray="12 8"/>
-    <path d="M80 30 h30 l14 14 v42 h-44 z" fill="#ffeb3b" stroke="#000" stroke-width="4"/>
-    <text x="102" y="74" font-size="14" font-family="sans-serif" font-weight="bold" text-anchor="middle">.enex</text>
-    <path d="M150 55 l-18 18 l-10 -10" fill="none" stroke="#2e7d32" stroke-width="8" stroke-linecap="round"/>
-  </svg>
-  <h2>Schritt 2: Dateien prüfen lassen</h2>
-  <p class="lead">Ziehen Sie die gespeicherten Dateien in das gelbe Feld – oder drücken Sie den großen Knopf.</p>
-  <label id="drop" class="drop" tabindex="0">
-    <input type="file" id="file" accept=".enex" multiple>
-    <span class="big as-btn">Dateien auswählen</span>
-    <span class="hint">Ihre Daten bleiben auf diesem Gerät. Es wird nichts hochgeladen.</span>
-  </label>
-  <div id="result" aria-live="polite"></div>
-  <button class="big" data-go="3" id="to3" hidden>Weiter zum Import&nbsp;→</button>
-  <button class="small" data-go="1">← zurück</button>
-</section>
-
-<!-- SCHRITT 3 -->
-<section class="step" id="s3" hidden>
-  <svg class="pic" viewBox="0 0 200 120" aria-hidden="true">
-    <rect x="20" y="8" width="160" height="22" fill="#eee" stroke="#000" stroke-width="4"/>
-    <text x="40" y="25" font-size="15" font-family="sans-serif" font-weight="bold">Datei</text>
-    <rect x="30" y="30" width="140" height="80" fill="#fff" stroke="#000" stroke-width="4"/>
-    <rect x="34" y="40" width="132" height="22" fill="#ffeb3b"/>
-    <text x="42" y="57" font-size="13" font-family="sans-serif" font-weight="bold">In „Notizen“ importieren …</text>
-    <rect x="42" y="72" width="100" height="7" fill="#bbb"/><rect x="42" y="90" width="80" height="7" fill="#bbb"/>
-  </svg>
-  <h2>Schritt 3: In Notizen holen</h2>
-  <p class="lead">Öffnen Sie <b>Notizen</b> am Mac, klicken Sie links auf <b>iCloud</b> und wählen Sie oben <b>Datei → In „Notizen“ importieren …</b></p>
-  <details open>
-    <summary>Genauer zeigen</summary>
-    <ol class="how">
-      <li>Programm <b>Notizen</b> öffnen (gelbes Notizblock-Symbol).</li>
-      <li>Links unter <b>iCloud</b> einen Ordner anklicken – nur so erscheinen die Notizen später auch auf iPhone und iPad.</li>
-      <li>Oben im Menü <b>Datei</b> → <b>In „Notizen“ importieren …</b></li>
-      <li>Einfach den ganzen Ordner <b>„Evernote-Sicherung“</b> vom Schreibtisch anklicken → <b>Importieren</b> → noch einmal <b>Importieren</b>. So kommen alle Notizbücher auf einmal.</li>
-    </ol>
-    <p class="tip">Tipp: Vorher den Mac auf den neuesten Stand bringen (Apfel-Menü → Systemeinstellungen → Allgemein → Softwareupdate). Sonst fehlen manchmal Bilder und Dateien.</p>
-  </details>
-  <button class="big" data-go="4">Import ist fertig&nbsp;→</button>
-  <button class="small" data-go="2">← zurück</button>
-</section>
-
-<!-- SCHRITT 4 -->
-<section class="step" id="s4" hidden>
-  <svg class="pic" viewBox="0 0 200 120" aria-hidden="true">
-    <rect x="10" y="20" width="95" height="65" rx="6" fill="#fff" stroke="#000" stroke-width="5"/>
-    <rect x="40" y="85" width="35" height="10" fill="#000"/>
-    <rect x="125" y="25" width="40" height="75" rx="8" fill="#fff" stroke="#000" stroke-width="5"/>
-    <path d="M150 8 a14 10 0 0 1 26 4 a10 9 0 0 1 -2 18 h-30 a9 9 0 0 1 6 -22" fill="#90caf9" stroke="#000" stroke-width="3"/>
-    <path d="M35 55 l12 12 l24 -26" fill="none" stroke="#2e7d32" stroke-width="9" stroke-linecap="round"/>
-    <path d="M135 62 l7 7 l14 -15" fill="none" stroke="#2e7d32" stroke-width="6" stroke-linecap="round"/>
-  </svg>
-  <h2>Schritt 4: Nachsehen – fertig!</h2>
-  <p class="lead">In Notizen gibt es jetzt den Ordner <b>„Importierte Notizen“</b>. Nach kurzer Zeit erscheint er auch auf iPhone und iPad.</p>
-  <div id="check"></div>
-  <ul class="how">
-    <li>Bei vielen Notizen kann es einige Stunden dauern, bis alles auf iPhone und iPad ist. Internet anlassen.</li>
-    <li>Den Ordner „Evernote-Sicherung“ <b>aufheben</b> (z.&nbsp;B. auf einen USB-Stick) – das ist Ihre zusätzliche Sicherung.</li>
-    <li>Evernote erst löschen, wenn alles in Notizen zu sehen ist.</li>
-  </ul>
-  <button class="big" data-go="1">Noch ein Notizbuch&nbsp;↺</button>
-</section>
-<!-- VORSCHAU -->
-<section class="step" id="sdemo" hidden>
+  <p class="sub">Alle Notizen von Evernote in Apple Notizen – in 3 Schritten.</p>
   <p class="preview">VORSCHAU – nur zum Ansehen. Hier passiert noch nichts Echtes.</p>
-  <svg class="pic" viewBox="0 0 200 120" aria-hidden="true">
-    <rect x="15" y="15" width="110" height="75" rx="6" fill="#fff" stroke="#000" stroke-width="5"/>
-    <rect x="50" y="90" width="40" height="10" fill="#000"/>
-    <path d="M140 60 a25 25 0 1 1 25 25" fill="none" stroke="#0b3d91" stroke-width="9"/>
-    <path d="M150 92 l15 -7 l-10 -12" fill="none" stroke="#0b3d91" stroke-width="7"/>
-    <path d="M45 52 l12 12 l24 -26" fill="none" stroke="#2e7d32" stroke-width="9" stroke-linecap="round"/>
-  </svg>
-  <h2>Automatische Sicherung</h2>
-  <p class="lead">Später reicht ein Knopfdruck: Alle Notizbücher kommen von Evernote in Notizen – und jeden Sonntag geschieht das von selbst.</p>
-  <p id="demostate" class="sum">Letzte Sicherung: Sonntag, 10:00 Uhr · 1.000 Notizbücher</p>
-  <div class="bar" id="demobarwrap" hidden><i id="demobar"></i></div>
+</header>
+<main>
+<section class="step" id="s1">
+  <div class="num" aria-hidden="true">1</div>
+  <svg class="pic" viewBox="0 0 20 15" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="1" width="8" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#000"/><rect x="2" y="2" width="1" height="1" fill="#167a24"/><rect x="3" y="2" width="5" height="1" fill="#2fbf3f"/><rect x="8" y="2" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#000"/><rect x="2" y="3" width="1" height="1" fill="#167a24"/><rect x="3" y="3" width="1" height="1" fill="#2fbf3f"/><rect x="4" y="3" width="2" height="1" fill="#fff"/><rect x="6" y="3" width="2" height="1" fill="#2fbf3f"/><rect x="8" y="3" width="1" height="1" fill="#000"/><rect x="1" y="4" width="1" height="1" fill="#000"/><rect x="2" y="4" width="1" height="1" fill="#167a24"/><rect x="3" y="4" width="5" height="1" fill="#2fbf3f"/><rect x="8" y="4" width="1" height="1" fill="#000"/><rect x="11" y="4" width="2" height="1" fill="#ffd23f"/><rect x="14" y="4" width="2" height="1" fill="#ffd23f"/><rect x="1" y="5" width="1" height="1" fill="#000"/><rect x="2" y="5" width="1" height="1" fill="#167a24"/><rect x="3" y="5" width="1" height="1" fill="#2fbf3f"/><rect x="4" y="5" width="2" height="1" fill="#fff"/><rect x="6" y="5" width="2" height="1" fill="#2fbf3f"/><rect x="8" y="5" width="1" height="1" fill="#000"/><rect x="9" y="5" width="2" height="1" fill="#ffd23f"/><rect x="12" y="5" width="2" height="1" fill="#ffd23f"/><rect x="15" y="5" width="2" height="1" fill="#ffd23f"/><rect x="1" y="6" width="1" height="1" fill="#000"/><rect x="2" y="6" width="1" height="1" fill="#167a24"/><rect x="3" y="6" width="5" height="1" fill="#2fbf3f"/><rect x="8" y="6" width="1" height="1" fill="#000"/><rect x="11" y="6" width="2" height="1" fill="#ffd23f"/><rect x="14" y="6" width="2" height="1" fill="#ffd23f"/><rect x="18" y="6" width="2" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#000"/><rect x="2" y="7" width="1" height="1" fill="#167a24"/><rect x="3" y="7" width="1" height="1" fill="#2fbf3f"/><rect x="4" y="7" width="2" height="1" fill="#fff"/><rect x="6" y="7" width="2" height="1" fill="#2fbf3f"/><rect x="8" y="7" width="1" height="1" fill="#000"/><rect x="16" y="7" width="2" height="1" fill="#000"/><rect x="18" y="7" width="1" height="1" fill="#7fd3ff"/><rect x="19" y="7" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#000"/><rect x="2" y="8" width="1" height="1" fill="#167a24"/><rect x="3" y="8" width="5" height="1" fill="#2fbf3f"/><rect x="8" y="8" width="1" height="1" fill="#000"/><rect x="15" y="8" width="1" height="1" fill="#000"/><rect x="16" y="8" width="3" height="1" fill="#7fd3ff"/><rect x="19" y="8" width="1" height="1" fill="#000"/><rect x="1" y="9" width="8" height="1" fill="#000"/><rect x="14" y="9" width="1" height="1" fill="#000"/><rect x="15" y="9" width="2" height="1" fill="#7fd3ff"/><rect x="17" y="9" width="1" height="1" fill="#2fbf3f"/><rect x="18" y="9" width="1" height="1" fill="#7fd3ff"/><rect x="19" y="9" width="1" height="1" fill="#000"/><rect x="14" y="10" width="1" height="1" fill="#000"/><rect x="15" y="10" width="1" height="1" fill="#7fd3ff"/><rect x="16" y="10" width="2" height="1" fill="#2fbf3f"/><rect x="18" y="10" width="1" height="1" fill="#7fd3ff"/><rect x="19" y="10" width="1" height="1" fill="#000"/><rect x="14" y="11" width="1" height="1" fill="#000"/><rect x="15" y="11" width="2" height="1" fill="#2fbf3f"/><rect x="17" y="11" width="2" height="1" fill="#7fd3ff"/><rect x="19" y="11" width="1" height="1" fill="#000"/><rect x="14" y="12" width="1" height="1" fill="#000"/><rect x="15" y="12" width="4" height="1" fill="#7fd3ff"/><rect x="19" y="12" width="1" height="1" fill="#000"/><rect x="14" y="13" width="6" height="1" fill="#000"/></svg>
+  <h2>Mit Evernote verbinden</h2>
+  <p class="lead">Der Helfer auf dem iMac nutzt Ihre Anmeldung in Evernote. Sie müssen kein Passwort eingeben.</p>
+  <p id="c-state" class="state" hidden></p>
+  <button class="big" id="c-btn">Mit Evernote verbinden</button>
+</section>
+<section class="step" id="s2">
+  <div class="num" aria-hidden="true">2</div>
+  <svg class="pic" viewBox="0 0 20 15" shape-rendering="crispEdges" aria-hidden="true"><rect x="7" y="0" width="4" height="1" fill="#ffd23f"/><rect x="5" y="1" width="2" height="1" fill="#ffd23f"/><rect x="11" y="1" width="2" height="1" fill="#ffd23f"/><rect x="4" y="2" width="1" height="1" fill="#ffd23f"/><rect x="13" y="2" width="1" height="1" fill="#ffd23f"/><rect x="3" y="3" width="1" height="1" fill="#ffd23f"/><rect x="6" y="3" width="7" height="1" fill="#000"/><rect x="14" y="3" width="1" height="1" fill="#ffd23f"/><rect x="2" y="4" width="2" height="1" fill="#ffd23f"/><rect x="6" y="4" width="1" height="1" fill="#000"/><rect x="7" y="4" width="1" height="1" fill="#16237a"/><rect x="8" y="4" width="3" height="1" fill="#2b4bd8"/><rect x="11" y="4" width="1" height="1" fill="#fff"/><rect x="12" y="4" width="1" height="1" fill="#000"/><rect x="15" y="4" width="1" height="1" fill="#ffd23f"/><rect x="2" y="5" width="1" height="1" fill="#ffd23f"/><rect x="6" y="5" width="1" height="1" fill="#000"/><rect x="7" y="5" width="1" height="1" fill="#16237a"/><rect x="8" y="5" width="3" height="1" fill="#2b4bd8"/><rect x="11" y="5" width="1" height="1" fill="#fff"/><rect x="12" y="5" width="1" height="1" fill="#000"/><rect x="15" y="5" width="2" height="1" fill="#ffd23f"/><rect x="2" y="6" width="1" height="1" fill="#ffd23f"/><rect x="6" y="6" width="1" height="1" fill="#000"/><rect x="7" y="6" width="1" height="1" fill="#16237a"/><rect x="8" y="6" width="3" height="1" fill="#9aa3b5"/><rect x="11" y="6" width="1" height="1" fill="#16237a"/><rect x="12" y="6" width="1" height="1" fill="#000"/><rect x="16" y="6" width="1" height="1" fill="#ffd23f"/><rect x="2" y="7" width="1" height="1" fill="#ffd23f"/><rect x="6" y="7" width="1" height="1" fill="#000"/><rect x="7" y="7" width="1" height="1" fill="#16237a"/><rect x="8" y="7" width="1" height="1" fill="#9aa3b5"/><rect x="9" y="7" width="1" height="1" fill="#000"/><rect x="10" y="7" width="1" height="1" fill="#9aa3b5"/><rect x="11" y="7" width="1" height="1" fill="#16237a"/><rect x="12" y="7" width="1" height="1" fill="#000"/><rect x="16" y="7" width="1" height="1" fill="#ffd23f"/><rect x="2" y="8" width="2" height="1" fill="#ffd23f"/><rect x="6" y="8" width="7" height="1" fill="#000"/><rect x="15" y="8" width="2" height="1" fill="#ffd23f"/><rect x="3" y="9" width="1" height="1" fill="#ffd23f"/><rect x="14" y="9" width="2" height="1" fill="#ffd23f"/><rect x="4" y="10" width="1" height="1" fill="#ffd23f"/><rect x="13" y="10" width="1" height="1" fill="#ffd23f"/><rect x="5" y="11" width="2" height="1" fill="#ffd23f"/><rect x="11" y="11" width="2" height="1" fill="#ffd23f"/><rect x="7" y="12" width="6" height="1" fill="#ffd23f"/></svg>
+  <h2>Backup jetzt</h2>
+  <p class="lead">Alle Notizbücher kommen nach Apple Notizen. Schon gesicherte Notizen werden nicht doppelt angelegt.</p>
+  <p id="b-state" class="state" hidden></p>
+  <div class="bar" id="b-bar" hidden><i id="b-fill"></i></div>
   <div class="logwrap" id="logwrap" hidden>
-    <p class="logtitle">Was gerade passiert <span class="pv">(Vorschau)</span></p>
+    <p class="logtitle">Was gerade passiert</p>
     <ol class="log" id="log" aria-live="polite"></ol>
     <details class="tech"><summary>Technische Einzelheiten</summary><pre id="techlog"></pre></details>
   </div>
-  <button class="big" id="demobtn">Backup jetzt</button>
-  <p>Nächste automatische Sicherung: Sonntag, 10:00 Uhr</p>
-  <button class="small" data-go="1">← zurück zum Handbetrieb</button>
+  <button class="big" id="b-btn" disabled>Backup jetzt</button>
+</section>
+<section class="step" id="s3">
+  <div class="num" aria-hidden="true">3</div>
+  <svg class="pic" viewBox="0 0 20 15" shape-rendering="crispEdges" aria-hidden="true"><rect x="12" y="0" width="5" height="1" fill="#000"/><rect x="10" y="1" width="2" height="1" fill="#000"/><rect x="12" y="1" width="5" height="1" fill="#7fd3ff"/><rect x="17" y="1" width="2" height="1" fill="#000"/><rect x="9" y="2" width="1" height="1" fill="#000"/><rect x="10" y="2" width="2" height="1" fill="#7fd3ff"/><rect x="12" y="2" width="2" height="1" fill="#fff"/><rect x="14" y="2" width="5" height="1" fill="#7fd3ff"/><rect x="19" y="2" width="1" height="1" fill="#000"/><rect x="8" y="3" width="1" height="1" fill="#000"/><rect x="9" y="3" width="10" height="1" fill="#7fd3ff"/><rect x="19" y="3" width="1" height="1" fill="#000"/><rect x="9" y="4" width="10" height="1" fill="#000"/><rect x="0" y="5" width="11" height="1" fill="#000"/><rect x="0" y="6" width="1" height="1" fill="#000"/><rect x="1" y="6" width="9" height="1" fill="#7fd3ff"/><rect x="10" y="6" width="1" height="1" fill="#000"/><rect x="14" y="6" width="5" height="1" fill="#000"/><rect x="0" y="7" width="1" height="1" fill="#000"/><rect x="1" y="7" width="7" height="1" fill="#7fd3ff"/><rect x="8" y="7" width="1" height="1" fill="#2fbf3f"/><rect x="9" y="7" width="1" height="1" fill="#7fd3ff"/><rect x="10" y="7" width="1" height="1" fill="#000"/><rect x="14" y="7" width="1" height="1" fill="#000"/><rect x="15" y="7" width="3" height="1" fill="#7fd3ff"/><rect x="18" y="7" width="1" height="1" fill="#000"/><rect x="0" y="8" width="1" height="1" fill="#000"/><rect x="1" y="8" width="6" height="1" fill="#7fd3ff"/><rect x="7" y="8" width="2" height="1" fill="#2fbf3f"/><rect x="9" y="8" width="1" height="1" fill="#7fd3ff"/><rect x="10" y="8" width="1" height="1" fill="#000"/><rect x="14" y="8" width="1" height="1" fill="#000"/><rect x="15" y="8" width="2" height="1" fill="#7fd3ff"/><rect x="17" y="8" width="1" height="1" fill="#2fbf3f"/><rect x="18" y="8" width="1" height="1" fill="#000"/><rect x="0" y="9" width="1" height="1" fill="#000"/><rect x="1" y="9" width="1" height="1" fill="#7fd3ff"/><rect x="2" y="9" width="1" height="1" fill="#2fbf3f"/><rect x="3" y="9" width="3" height="1" fill="#7fd3ff"/><rect x="6" y="9" width="2" height="1" fill="#2fbf3f"/><rect x="8" y="9" width="2" height="1" fill="#7fd3ff"/><rect x="10" y="9" width="1" height="1" fill="#000"/><rect x="14" y="9" width="1" height="1" fill="#000"/><rect x="15" y="9" width="1" height="1" fill="#7fd3ff"/><rect x="16" y="9" width="1" height="1" fill="#2fbf3f"/><rect x="17" y="9" width="1" height="1" fill="#7fd3ff"/><rect x="18" y="9" width="1" height="1" fill="#000"/><rect x="0" y="10" width="1" height="1" fill="#000"/><rect x="1" y="10" width="1" height="1" fill="#7fd3ff"/><rect x="2" y="10" width="2" height="1" fill="#2fbf3f"/><rect x="4" y="10" width="1" height="1" fill="#7fd3ff"/><rect x="5" y="10" width="2" height="1" fill="#2fbf3f"/><rect x="7" y="10" width="3" height="1" fill="#7fd3ff"/><rect x="10" y="10" width="1" height="1" fill="#000"/><rect x="14" y="10" width="1" height="1" fill="#000"/><rect x="15" y="10" width="2" height="1" fill="#2fbf3f"/><rect x="17" y="10" width="1" height="1" fill="#7fd3ff"/><rect x="18" y="10" width="1" height="1" fill="#000"/><rect x="0" y="11" width="1" height="1" fill="#000"/><rect x="1" y="11" width="2" height="1" fill="#7fd3ff"/><rect x="3" y="11" width="3" height="1" fill="#2fbf3f"/><rect x="6" y="11" width="4" height="1" fill="#7fd3ff"/><rect x="10" y="11" width="1" height="1" fill="#000"/><rect x="14" y="11" width="1" height="1" fill="#000"/><rect x="15" y="11" width="3" height="1" fill="#7fd3ff"/><rect x="18" y="11" width="1" height="1" fill="#000"/><rect x="0" y="12" width="11" height="1" fill="#000"/><rect x="14" y="12" width="1" height="1" fill="#000"/><rect x="15" y="12" width="3" height="1" fill="#7fd3ff"/><rect x="18" y="12" width="1" height="1" fill="#000"/><rect x="4" y="13" width="1" height="1" fill="#000"/><rect x="5" y="13" width="1" height="1" fill="#5b6273"/><rect x="6" y="13" width="1" height="1" fill="#000"/><rect x="14" y="13" width="1" height="1" fill="#000"/><rect x="15" y="13" width="1" height="1" fill="#7fd3ff"/><rect x="16" y="13" width="1" height="1" fill="#000"/><rect x="17" y="13" width="1" height="1" fill="#7fd3ff"/><rect x="18" y="13" width="1" height="1" fill="#000"/><rect x="2" y="14" width="7" height="1" fill="#000"/><rect x="14" y="14" width="5" height="1" fill="#000"/></svg>
+  <h2>In Notizen ansehen</h2>
+  <p class="lead">Öffnen Sie <b>Notizen</b> und klicken Sie links unter <b>iCloud</b> auf den Ordner <b>„Evernote“</b>. Dort ist jedes Notizbuch ein eigener Ordner.</p>
+  <p class="small-note">Auf iPhone und iPad erscheinen die Notizen von selbst. Bei sehr vielen Notizen kann das ein paar Stunden dauern.</p>
 </section>
 </main>
-
 <footer>
-  <p>Kostenlos · ohne Anmeldung · alles bleibt auf Ihrem Gerät</p>
+  <p>Der Helfer auf dem iMac kann jeden Sonntag von selbst sichern.</p>
   <details><summary>Was wird nicht übernommen?</summary>
     <ul>
-      <li>Mit Passwort geschützter Text aus Evernote bleibt unlesbar.</li>
-      <li>Erinnerungen, Aufgaben und ältere Fassungen einer Notiz gehen verloren.</li>
-      <li>Schlagwörter (Tags) kommen mit, ihre Rangfolge nicht.</li>
-      <li>Links zwischen Notizen funktionieren meist nicht mehr.</li>
-      <li>Sehr seltene Dateiarten lässt Notizen eventuell weg.</li>
+      <li>Mit Passwort geschützter Text aus Evernote.</li>
+      <li>Erinnerungen, Aufgaben und ältere Fassungen einer Notiz.</li>
+      <li>Links zwischen Notizen.</li>
     </ul>
   </details>
 </footer>
