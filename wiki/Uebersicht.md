@@ -22,7 +22,6 @@ Der Notiz-Converter liest Evernote-Exportdateien (`.enex`) und bereitet die Übe
 |---|---|
 | Kern ohne DOM (Browser und Node) | `dashboard/notiz-core.js`, `dashboard/md5.js` |
 | ENEX-Import im Browser | `dashboard/enex-import.js` |
-| Oberfläche | `dashboard/index.html`, `dashboard.css`, `dashboard.js` |
+| Oberfläche | `dashboard/index.html`, `converter.css`, `converter.js` |
 | Joplin-Vorschau | `joplin-vorschau/` |
-| Debug-Upload | `dashboard/debug-upload.js`, `dashboard/config.js`, `apps-script/Code.gs` |
 | Kommandozeile | `cli/notiz-converter.mjs`, `cli/gen-large.mjs` |

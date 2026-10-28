@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.0 – 28.10.2026
+- Oberfläche aufs Minimum: **Dateien wählen → Joplin-Vorschau**. Keine Anmeldung, keine Einstellungen, kein Ziel-Auswahl (immer Joplin)
+- Übernahme vom Programm **Syncline**: Syncline öffnet den Converter mit Einmal-Code im #-Teil der Adresse; der Converter holt die .enex-Dateien direkt von Syncline (nur 127.0.0.1, Code gilt einmal und 5 Minuten). Anmeldedaten erreichen den Converter nie
+- Klappt das Holen nicht: Hinweis mit Weg „In Syncline ‚Ordner zeigen‘ → hier Dateien wählen“
+- Startseite auf einen Knopf reduziert; Simulation, Debug-Upload und ausgegraute Knöpfe entfernt
+
 ## v5.3 – 28.10.2026
 - Im Browser ausgegraut (nicht klickbar, mit Hinweis „Kommt bald – funktioniert bisher nur mit dem Mac-Helfer.“): Anmeldung über Evernote-App, Google und Apple, „Mit Evernote verbinden“ und „Jetzt sichern“ auf der Startseite, Export („Jetzt exportieren“, „Erst mit 2 Notizbüchern ausprobieren“), Joplin-Schlüssel und „Ziel speichern“, „Protokoll sichern“ in der Hilfe
 - Jeder Hinweis zeigt den Weg, der schon geht: „Datei wählen (.enex)“ bzw. „Zur Joplin-Vorschau“
