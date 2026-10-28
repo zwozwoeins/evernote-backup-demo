@@ -184,9 +184,9 @@ function etaText(sec) {
   const min = Math.max(1, Math.round(sec / 60));
   if (min === 1) return 'Noch etwa 1 Minute.';
   if (min < 60) return 'Noch etwa ' + min + ' Minuten.';
-  const h = Math.floor(min / 60);
-  const m = Math.round((min % 60) / 10) * 10;
-  return 'Noch etwa ' + h + ' Std.' + (m ? ' ' + m + ' Min.' : '');
+  const h = Math.round(min / 60);
+  if (h === 1) return 'Noch etwa 1 Stunde.';
+  return 'Noch etwa ' + h + ' Stunden.';
 }
 
 function lastText(last) {

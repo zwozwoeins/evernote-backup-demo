@@ -19,9 +19,11 @@
   function techLine(t){ var p = $('#techlog'); p.textContent += new Date().toLocaleTimeString('de-DE') + '  ' + t + '\n'; p.scrollTop = p.scrollHeight; }
   function eta(left){
     var min = Math.max(1, Math.round(left * 7 / 60)); // grob: 7 Sekunden je Notizbuch
+    if(min === 1) return 'Noch etwa 1 Minute.';
     if(min < 60) return 'Noch etwa ' + min + ' Minuten.';
-    var h = Math.floor(min / 60), m = Math.round((min % 60) / 10) * 10;
-    return 'Noch etwa ' + h + ' Std.' + (m ? ' ' + m + ' Min.' : '');
+    var h = Math.round(min / 60);
+    if(h === 1) return 'Noch etwa 1 Stunde.';
+    return 'Noch etwa ' + h + ' Stunden.';
   }
 
   $('#c-btn').addEventListener('click', function(){
