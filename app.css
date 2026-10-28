@@ -68,3 +68,4 @@ footer li{margin:.35rem 0}
 .jbtn span{font-size:1rem;color:var(--ink)}
 [hidden]{display:none!important}
 a{color:var(--head)}
+a.big{text-align:center;text-decoration:none;box-sizing:border-box}
