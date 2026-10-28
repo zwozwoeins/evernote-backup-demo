@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Joplin – Vorschau mit Beispieldaten</title>
+<link rel="stylesheet" href="vorschau.css">
+</head>
+<body>
+<div class="banner" role="note"><strong>Vorschau mit Beispieldaten</strong> – So sehen gesicherte Evernote-Notizen in Joplin aus. Nur zum Ansehen, nichts wird gespeichert.</div>
+<div class="app">
+  <nav class="sidebar" aria-label="Notizbücher">
+    <div class="side-head">Notizbücher</div>
+    <ul id="notebooks"></ul>
+    <div class="side-head">Schlagwörter</div>
+    <ul id="tags" class="tags-side"></ul>
+  </nav>
+  <section class="list" aria-label="Notizliste">
+    <div class="list-head"><input id="search" type="search" placeholder="Suchen …" aria-label="Notizen durchsuchen"></div>
+    <ul id="notes"></ul>
+  </section>
+  <main class="note" id="note" aria-live="polite"></main>
+</div>
+<script src="daten.js"></script>
+<script src="vorschau.js"></script>
+</body>
+</html>
