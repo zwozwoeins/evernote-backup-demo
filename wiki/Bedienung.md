@@ -3,7 +3,7 @@
 Links (auf dem Handy unten) gibt es vier Reiter. Rechts daneben zeigt die Statusspalte **Daten**, **Ziel** (Standard: Joplin), **Zuletzt exportiert** und **Gerade**.
 
 ## 1. Datenverbindung
-- **In der Evernote-App anmelden**, **Mit Google anmelden**, **Mit Apple anmelden** – im Browser nur simuliert; echt nur mit dem Helfer auf dem iMac.
+- **In der Evernote-App anmelden**, **Mit Google anmelden**, **Mit Apple anmelden** – im Browser ausgegraut („Kommt bald – funktioniert bisher nur mit dem Mac-Helfer.“) mit Knopf **Datei wählen (.enex)**; echt nur mit dem Helfer auf dem iMac.
 - **Verbindungsquittung** (ein grüner Kasten, bei Passwort, Google und Apple gleich): „✓ Verbindung zu Evernote hergestellt (über Google). Angemeldet als … (E-Mail).“ Der Helfer liest Name und E-Mail aus der Ausgabe von evernote-backup („Successfully authenticated as …“).
 - **Dateien laden (.enex)** – echte Datei(en) wählen, auch mehrere auf einmal. Die Dateien bleiben im Browser. Weitere Dateien kommen zu den schon geladenen dazu.
 - Fortschrittsbalken: „37 von 120 Notizen – 31 %“, kurz „✓ Fertig …“, danach steht das Ergebnis nur noch im grünen Kasten.
@@ -32,5 +32,6 @@ Regeln beim Dazuladen:
 Was nicht übernommen wird, warum Joplin empfohlen ist, regelmäßig sichern, Protokoll sichern, Fernhilfe (RustDesk – ID und Passwort nur jemandem nennen, den Sie selbst angerufen haben; keinen dauerhaften Zugriff einrichten).
 
 ## Test-Schalter (nur Vorschau)
+- `?demo=simulation` – ausgegraute Knöpfe (Anmeldung, Export) wieder klickbar, alles simuliert.
 - `?demo=exportfehler` – Export stoppt bei 40 % mit „Joplin antwortet nicht“.
 - `?demo=anmeldefehler` – Anmeldung schlägt fehl.

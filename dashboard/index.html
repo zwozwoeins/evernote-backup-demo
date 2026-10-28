@@ -100,6 +100,8 @@
           <button class="btn-primary" id="login-app">In der Evernote-App anmelden</button>
           <button class="btn-secondary" id="login-google">Mit Google anmelden</button>
           <button class="btn-secondary" id="login-apple">Mit Apple anmelden</button>
+          <p class="soon-note" id="login-soon" hidden>Kommt bald – die Anmeldung bei Evernote funktioniert bisher nur mit dem Mac-Helfer. Im Browser laden Sie bitte eine .enex-Datei:</p>
+          <button class="btn-primary" id="login-soon-file" hidden>Datei wählen (.enex)</button>
           <p class="hint" id="login-hint">Die Anmeldung läuft auf der offiziellen Evernote-Seite. Hier geben Sie kein Passwort ein.</p>
         </div>
         <div id="file-box" hidden>
@@ -197,6 +199,11 @@
         <p class="done-text" id="probe-text"></p>
       </div>
 
+      <div id="export-soon" class="card" hidden>
+        <p class="soon-note" id="export-soon-text">Kommt bald – der Export nach Joplin oder Apple Notizen funktioniert bisher nur mit dem Mac-Helfer. Ihre Notizen sehen Sie schon jetzt in der Joplin-Vorschau.</p>
+        <button class="btn-primary" id="export-soon-preview">Zur Joplin-Vorschau</button>
+        <button class="btn-secondary" id="export-soon-file">Datei wählen (.enex)</button>
+      </div>
       <button class="btn-primary btn-main" id="export-btn" hidden>Jetzt exportieren</button>
       <button class="btn-secondary" id="probe-btn" hidden>Erst mit 2 Notizbüchern ausprobieren</button>
       <button class="btn-secondary" id="stop-btn" hidden>Anhalten</button>
@@ -229,6 +236,7 @@
       </details>
       <details><summary>Hilfe anfordern</summary>
         <button class="btn-secondary" id="report-btn-2">Protokoll sichern</button>
+        <p class="soon-note" id="report-soon" hidden>Kommt bald – das Protokoll sichert bisher nur der Mac-Helfer. Im Browser: unter „Datenverbindung“ → „Protokoll kopieren“.</p>
         <p id="report-msg-2" hidden>Protokoll auf dem Schreibtisch gesichert. Bitte an den Support schicken.</p>
       </details>
       <details id="fernhilfe"><summary>Fernhilfe</summary>

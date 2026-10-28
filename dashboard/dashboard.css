@@ -142,3 +142,8 @@ main:focus,main:focus-visible{outline:none}
 .files-merge{font-weight:bold;color:var(--head)}
 .files-confirm{margin-top:.7rem;padding:.7rem;box-shadow:0 0 0 3px var(--line)}
 .files-details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--head);font-weight:bold}
+
+/* Im Browser noch nicht echt: ausgegraut, nicht klickbar */
+.soon-off,.soon-off:hover,.btn-primary.soon-off:disabled,.btn-secondary.soon-off:disabled{background:#1d2127;color:#aab2bd;cursor:not-allowed;box-shadow:0 0 0 3px #4a5260;transform:none}
+input.soon-off{opacity:1}
+.soon-note{margin:.6rem 0 .3rem;font-weight:bold;color:var(--gold)}

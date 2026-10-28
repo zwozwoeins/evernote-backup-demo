@@ -69,3 +69,8 @@ footer li{margin:.35rem 0}
 [hidden]{display:none!important}
 a{color:var(--head)}
 a.big{text-align:center;text-decoration:none;box-sizing:border-box}
+
+/* Im Browser noch nicht echt: ausgegraut mit Hinweis */
+.soon{margin:.3rem 0 .6rem;font-weight:bold;color:var(--gold)}
+a.second{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
+.big:disabled:hover{background:#2a2f37;outline:none}

@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.3 – 28.10.2026
+- Im Browser ausgegraut (nicht klickbar, mit Hinweis „Kommt bald – funktioniert bisher nur mit dem Mac-Helfer.“): Anmeldung über Evernote-App, Google und Apple, „Mit Evernote verbinden“ und „Jetzt sichern“ auf der Startseite, Export („Jetzt exportieren“, „Erst mit 2 Notizbüchern ausprobieren“), Joplin-Schlüssel und „Ziel speichern“, „Protokoll sichern“ in der Hilfe
+- Jeder Hinweis zeigt den Weg, der schon geht: „Datei wählen (.enex)“ bzw. „Zur Joplin-Vorschau“
+- Weiter echt: Datei-Import, Joplin-Vorschau, Liste der geladenen Dateien, Import-Protokoll, Daten zur Fehlersuche senden, Joplin-Downloads
+- Simulation zum Testen weiter erreichbar mit `?demo=simulation` (oder `?demo=exportfehler`, `?demo=anmeldefehler`)
+
 ## v5.2 – 28.10.2026
 - Joplin-Vorschau: Liste **Geladene Dateien** (Name, Notizbuch, Notizen, Anhänge, Größe, Ladezeit) mit **Entfernen** je Datei
 - Weitere Dateien kommen dazu statt zu ersetzen; doppelte Dateien und Notizen werden übersprungen („X doppelte Notizen übersprungen“), ein neuerer Stand desselben Notizbuchs ersetzt den alten

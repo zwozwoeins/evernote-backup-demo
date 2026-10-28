@@ -509,6 +509,7 @@ function renderExport(s) {
   const ready = hasData(s);
   const busy = !!s.running;
   $('#export-empty').hidden = ready;
+  $('#export-soon').hidden = !ui.soon || !ready;
   $('#empty-file').hidden = ui.mode !== 'demo';
   $('#export-btn').hidden = !ready || busy || !!currentError(s);
   $('#export-btn').textContent = exportLabel(s);
@@ -686,7 +687,7 @@ function render(s) {
 const LOGIN_FIX = 'Bitte versuchen Sie es noch einmal. Klappt es nicht, laden Sie stattdessen eine .enex-Datei aus Evernote.';
 
 function setLoginBusy(busy) {
-  document.querySelectorAll('#login-box button').forEach((b) => { b.disabled = busy; });
+  document.querySelectorAll('#login-box button').forEach((b) => { b.disabled = busy || b.classList.contains('soon-off'); });
 }
 
 function renderConnectError() {
@@ -1169,6 +1170,9 @@ function bindEvents() {
   $('#joplin-frame').addEventListener('load', sendImportToJoplin);
   $('#enex-btn').addEventListener('click', chooseEnex);
   $('#files-add').addEventListener('click', chooseEnex);
+  $('#login-soon-file').addEventListener('click', chooseEnex);
+  $('#export-soon-file').addEventListener('click', chooseEnex);
+  $('#export-soon-preview').addEventListener('click', () => showView('vorschau'));
   $('#files-clear').addEventListener('click', askClearAll);
   $('#files-clear-yes').addEventListener('click', clearAll);
   $('#files-clear-no').addEventListener('click', cancelClearAll);
@@ -1185,9 +1189,39 @@ function bindEvents() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => { d.open = false; }); });
 }
 
+/* ---------- Was im Browser noch nicht echt geht: ausgegraut, mit Hinweis und Weg zur Datei ----------
+   Zum Testen der Simulation: Adresse mit ?demo=simulation (oder ?demo=exportfehler / ?demo=anmeldefehler). */
+const SOON = [
+  { ids: ['#login-app', '#login-google', '#login-apple'], note: '#login-soon' },
+  { ids: ['#export-btn', '#probe-btn', '#save-target', '#joplin-token'], note: '#export-soon-text' },
+  { ids: ['#report-btn-2'], note: '#report-soon' },
+];
+
+function browserOnly() {
+  return ui.mode === 'demo' && !new URLSearchParams(location.search).has('demo');
+}
+
+function greyOut(id, noteId) {
+  const el = $(id);
+  el.disabled = true;
+  el.setAttribute('aria-disabled', 'true');
+  el.setAttribute('aria-describedby', noteId.slice(1));
+  el.classList.add('soon-off');
+}
+
+function applyBrowserLimits() {
+  ui.soon = browserOnly();
+  if (!ui.soon) return;
+  SOON.forEach((g) => { g.ids.forEach((id) => greyOut(id, g.note)); $(g.note).hidden = false; });
+  $('#login-soon-file').hidden = false;
+  $('#export-soon').hidden = false;
+  $('#login-hint').hidden = true;
+}
+
 async function init() {
   bindEvents();
   ui.mode = await detectMode();
+  applyBrowserLimits();
   backend = ui.mode === 'live' ? LiveBackend : DemoBackend;
   $('#mode').hidden = ui.mode === 'live';
   await refresh();
