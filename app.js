@@ -2,57 +2,94 @@
 // Klickbarer Prototyp: Alles hier ist simuliert (Vorschau). Es werden keine Daten gesendet.
 (function(){
   var $ = function(s){ return document.querySelector(s); };
-  var connected = false;
+  var TOTAL = 1000, PROBE = 2;
+  var MSG = {
+    offline: 'Keine Verbindung. Bitte später nochmal.',
+    skip: 'Schon gesichert, wird übersprungen.',
+    full: 'Kein Platz mehr in iCloud. Bitte Platz freimachen, dann „Weiter sichern“.',
+    apple: 'Nicht bei Apple angemeldet. Bitte in den Einstellungen anmelden.'
+  };
+  var NAMES = ['Familie','Rezepte','Garten','Reisen','Steuer','Auto','Gesundheit','Fotos','Haus','Briefe'];
+  var connected = false, pos = 0, notes = 0, timer = null, probeDone = false;
+  var btn = $('#b-btn'), stop = $('#b-stop'), test = $('#b-test');
 
+  function fmt(n){ return n.toLocaleString('de-DE'); }
+  function show(el, on){ el.hidden = !on; }
   function logLine(t){ var li = document.createElement('li'); li.textContent = t; var l = $('#log'); l.appendChild(li); l.scrollTop = l.scrollHeight; }
   function techLine(t){ var p = $('#techlog'); p.textContent += new Date().toLocaleTimeString('de-DE') + '  ' + t + '\n'; p.scrollTop = p.scrollHeight; }
-  function state(id, text){ var e = $(id); e.hidden = false; e.textContent = text; }
+  function eta(left){
+    var min = Math.max(1, Math.round(left * 7 / 60)); // grob: 7 Sekunden je Notizbuch
+    if(min < 60) return 'Noch etwa ' + min + ' Minuten.';
+    var h = Math.floor(min / 60), m = Math.round((min % 60) / 10) * 10;
+    return 'Noch etwa ' + h + ' Std.' + (m ? ' ' + m + ' Min.' : '');
+  }
 
-  // Schritt 1: Verbinden (simuliert)
   $('#c-btn').addEventListener('click', function(){
     var b = this; if(connected || b.disabled) return;
     b.disabled = true; b.textContent = 'Verbinde …';
     setTimeout(function(){
       connected = true;
-      state('#c-state', '✓ Verbunden mit Evernote (Beispiel)');
-      b.textContent = 'Verbunden';
+      b.textContent = 'Verbunden ✓'; b.classList.add('ok');
       $('#s1').classList.add('done');
-      $('#b-btn').disabled = false;
-      $('#s2').scrollIntoView({behavior:'smooth', block:'start'});
+      btn.disabled = false; btn.textContent = 'Jetzt sichern';
+      show(test, true);
     }, 1200);
   });
 
-  // Schritt 2: Backup jetzt (simuliert)
-  $('#b-btn').addEventListener('click', function(){
-    var btn = this; if(btn.disabled || !connected) return;
-    btn.disabled = true; btn.textContent = 'Sichert …';
-    $('#b-bar').hidden = false; $('#logwrap').hidden = false;
-    $('#log').innerHTML = ''; $('#techlog').textContent = '';
-    var names = ['Familie','Rezepte','Garten','Reisen','Steuer','Auto','Gesundheit','Fotos'];
-    var total = 1000, steps = [];
-    steps.push(function(){ logLine('Verbindung zu Evernote wird aufgebaut …'); techLine('evernote-backup sync'); });
-    steps.push(function(){ logLine('Evernote meldet: 15 Notizen sind neu oder geändert.'); techLine('15 notes to download'); });
-    names.forEach(function(n, i){
-      var nr = Math.round((i + 1) * total / names.length);
-      steps.push(function(){ logLine('Notizbuch „' + n + '“ wird geholt (' + nr + ' von ' + total + ')'); techLine('notebook ' + n); });
-      steps.push(function(){
-        var k = (i * 7) % 3;
-        logLine(k ? (k === 1 ? '1 Notiz' : k + ' Notizen') + ' in Notizen gespeichert' : 'Keine Änderungen – wird übersprungen');
-        techLine('notes_writer folder=Evernote/' + n + ' items=' + k);
-      });
-    });
-    steps.push(function(){ logLine('Fertig! Alles ist gesichert.'); techLine('done new=12 changed=3'); });
-    var i = 0;
-    state('#b-state', 'Sicherung läuft …');
-    var t = setInterval(function(){
-      steps[i](); i++;
-      $('#b-fill').style.width = Math.round(i / steps.length * 100) + '%';
-      if(i >= steps.length){
-        clearInterval(t);
-        state('#b-state', '✓ Fertig! 12 neue und 3 geänderte Notizen gesichert. (Beispielzahlen)');
-        btn.disabled = false; btn.textContent = 'Backup jetzt';
-        $('#s2').classList.add('done');
+  function tick(limit){
+    var step = limit === PROBE ? 1 : 7;
+    for(var k = 0; k < step && pos < limit; k++){
+      pos++;
+      var name = NAMES[pos % NAMES.length] + (pos > NAMES.length ? ' ' + pos : '');
+      var n = (pos * 7) % 4;
+      notes += n;
+      if(k === 0){
+        logLine('Notizbuch „' + name + '“ (' + pos + ' von ' + TOTAL + '): ' + (n ? (n === 1 ? '1 Notiz' : n + ' Notizen') + ' gespeichert' : MSG.skip));
+        techLine('notebook #' + pos + ' items=' + n);
       }
-    }, 450);
-  });
+    }
+    $('#b-state').textContent = 'Sichere … Notizbuch ' + pos + ' von ' + TOTAL;
+    $('#b-eta').textContent = eta(TOTAL - pos);
+    $('#b-fill').style.width = (pos / TOTAL * 100) + '%';
+    if(pos >= limit){ finish(limit); }
+  }
+
+  function run(limit){
+    if(!connected) return;
+    show($('#b-run'), true); show($('#b-done'), false); show($('#b-probe'), false);
+    show(test, false); show(stop, true);
+    btn.disabled = true; btn.textContent = 'Sichere …';
+    if(pos === 0){ $('#log').innerHTML = ''; $('#techlog').textContent = ''; logLine('Verbindung zu Evernote steht.'); }
+    else logLine('Es geht weiter bei Notizbuch ' + (pos + 1) + '.');
+    timer = setInterval(function(){ tick(limit); }, limit === PROBE ? 700 : 120);
+  }
+
+  function halt(){
+    clearInterval(timer); timer = null; show(stop, false);
+    logLine('Angehalten. Mit „Weiter sichern“ geht es an dieser Stelle weiter.');
+    $('#b-state').textContent = 'Angehalten bei Notizbuch ' + pos + ' von ' + TOTAL + '.';
+    btn.disabled = false; btn.textContent = 'Weiter sichern';
+  }
+
+  function finish(limit){
+    clearInterval(timer); timer = null; show(stop, false);
+    btn.disabled = false;
+    if(limit === PROBE){
+      probeDone = true; show($('#b-probe'), true);
+      btn.textContent = 'Weiter sichern'; show(btn, false);
+      $('#b-state').textContent = 'Probe fertig.';
+      return;
+    }
+    $('#b-state').textContent = 'Fertig.'; $('#b-eta').textContent = '';
+    $('#b-done-text').textContent = 'Fertig: ' + fmt(notes) + ' Notizen in ' + fmt(TOTAL) + ' Ordnern (Beispielzahlen).';
+    show($('#b-done'), true);
+    $('#s2').classList.add('done');
+    logLine('Fertig! Alles ist gesichert.');
+    pos = 0; notes = 0; btn.textContent = 'Jetzt sichern';
+  }
+
+  btn.addEventListener('click', function(){ if(!btn.disabled) run(TOTAL); });
+  test.addEventListener('click', function(){ run(PROBE); });
+  stop.addEventListener('click', halt);
+  $('#b-probe-ok').addEventListener('click', function(){ show(btn, true); run(TOTAL); });
 })();
