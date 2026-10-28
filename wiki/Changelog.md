@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.1 – 28.10.2026 (Live-Test mit echtem Evernote-Konto)
+- Markdown: Leerzeile nach Absätzen, Tabellen und Listen – die Zeile nach einer Tabelle landet nicht mehr in der Tabelle
+- Links bleiben erhalten: `<a href>` wird zu `[Text](Adresse)`
+- Nummerierte Listen bleiben nummeriert (`1.`, `2.` …)
+- Neu: Zitate (`>`), Trennlinien (`---`) und Code im Text (`` `x` ``)
+- Geprüft: 510 Notizen, 504 Anhänge mit der Kommandozeile umgewandelt und in Joplin importiert
+
 ## v5 – 28.10.2026
 - Name **Notiz-Converter**; alle Spielereien entfernt (Hubschrauber, Paletten, Easter Eggs, UFO, Jet, Flugzeugträger, Wellen)
 - Schlichter Fortschrittsbalken mit `role=progressbar`, Text „x von y Notizen – z %“, Fertig-Meldungen mit ✓

@@ -111,24 +111,115 @@
     }));
   }
 
+  /* ---- ENML -> Markdown: jede Funktion macht genau einen Schritt, enmlToMarkdown ruft sie der Reihe nach auf. ---- */
+
+  function stripTags(t) {
+    return t.replace(/<[^>]+>/g, '');
+  }
+
+  function removeEnmlFrame(t) {
+    return t.replace(/<\?xml[^>]*>|<!DOCTYPE[^>]*>/g, '').replace(/<\/?en-note[^>]*>/g, '');
+  }
+
+  function mediaToMarkdown(t, linkFor) {
+    return t.replace(/<en-media[^>]*hash="([0-9a-f]+)"[^>]*\/?>(<\/en-media>)?/g, (_, h) => '\n\n' + linkFor(h) + '\n\n');
+  }
+
+  function todosToMarkdown(t) {
+    return t.replace(/<en-todo[^>]*checked="true"[^>]*\/?>(<\/en-todo>)?/g, '- [x] ').replace(/<en-todo[^>]*\/?>(<\/en-todo>)?/g, '- [ ] ');
+  }
+
+  /* Leerzeichen und Klammern in der Adresse wuerden den Markdown-Link zerbrechen. */
+  function safeUrl(url) {
+    return url.trim().replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
+  }
+
+  function linkMarkdown(url, text) {
+    const label = stripTags(text).trim().replace(/([\[\]])/g, '\\$1');
+    return label ? '[' + label + '](' + safeUrl(url) + ')' : '<' + safeUrl(url) + '>';
+  }
+
+  /* Muss vor dem Entfernen der Tags laufen, sonst geht die Adresse verloren. */
+  function linksToMarkdown(t) {
+    return t.replace(/<a\s[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g, (_, url, text) => linkMarkdown(url, text));
+  }
+
+  function inlineToMarkdown(t) {
+    return t.replace(/<(b|strong)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/g, '**$2**').replace(/<(i|em)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/g, '*$2*')
+      .replace(/<code(?:\s[^>]*)?>([\s\S]*?)<\/code>/g, (_, c) => '`' + stripTags(c) + '`');
+  }
+
+  function headingsToMarkdown(t) {
+    return t.replace(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/g, (_, l, x) => '\n\n' + '#'.repeat(+l) + ' ' + stripTags(x).trim() + '\n\n');
+  }
+
   function tableMarkdown(tb) {
-    const rows = allTags(tb, 'tr').map((r) => (r.match(/<t[hd][^>]*>[\s\S]*?<\/t[hd]>/g) || []).map((c) => c.replace(/<[^>]+>/g, '').replace(/\|/g, '\\|').trim()));
+    const rows = allTags(tb, 'tr').map((r) => (r.match(/<t[hd][^>]*>[\s\S]*?<\/t[hd]>/g) || []).map((c) => stripTags(c).replace(/\|/g, '\\|').trim()));
     if (!rows.length) return '';
     const line = (r) => '| ' + r.join(' | ') + ' |';
     return [line(rows[0]), line(rows[0].map(() => '---'))].concat(rows.slice(1).map(line)).join('\n');
   }
 
+  /* Leerzeile davor und danach: sonst haengt Joplin die naechste Zeile an die Tabelle. */
+  function tablesToMarkdown(t) {
+    return t.replace(/<table[^>]*>([\s\S]*?)<\/table>/g, (_, tb) => '\n\n' + tableMarkdown(tb) + '\n\n');
+  }
+
+  /* Evernote packt Listenpunkte oft in <div> oder <p>; die brauchen dort keinen eigenen Absatz. */
+  function listItemText(li) {
+    return li.replace(/<\/?(div|p)(?:\s[^>]*)?>/g, '').replace(/<br\s*\/?>/g, ' ').trim();
+  }
+
+  function listItems(list) {
+    return allTags(list, 'li').map(listItemText);
+  }
+
+  function orderedListsToMarkdown(t) {
+    return t.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/g, (_, l) => '\n\n' + listItems(l).map((x, i) => (i + 1) + '. ' + x).join('\n') + '\n\n');
+  }
+
+  function bulletListsToMarkdown(t) {
+    return t.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/g, (_, l) => '\n\n' + listItems(l).map((x) => '- ' + x).join('\n') + '\n\n');
+  }
+
+  function quoteMarkdown(inner) {
+    const text = stripTags(blocksToLines(inner)).replace(/\n{2,}/g, '\n').trim();
+    return '\n\n' + text.split('\n').map((x) => '> ' + x).join('\n') + '\n\n';
+  }
+
+  function quotesToMarkdown(t) {
+    return t.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/g, (_, q) => quoteMarkdown(q));
+  }
+
+  /* Leerzeilen drumherum, sonst macht Markdown aus der Zeile davor eine Ueberschrift. */
+  function rulesToMarkdown(t) {
+    return t.replace(/<hr[^>]*\/?>(<\/hr>)?/g, '\n\n---\n\n');
+  }
+
+  /* Absatz = Leerzeile danach; <div> und <br> = einfacher Zeilenumbruch (wie in Evernote). */
+  function blocksToLines(t) {
+    return t.replace(/<br\s*\/?>/g, '\n').replace(/<\/p>/g, '\n\n').replace(/<\/div>/g, '\n');
+  }
+
+  function tidyBlankLines(t) {
+    return t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+  }
+
   /* ENML -> Markdown (einfach, wie Joplin es braucht). linkFor(hash) liefert den Pfad zum Anhang. */
   function enmlToMarkdown(enml, linkFor) {
-    let t = enml.replace(/<\?xml[^>]*>|<!DOCTYPE[^>]*>/g, '').replace(/<\/?en-note[^>]*>/g, '');
-    t = t.replace(/<en-media[^>]*hash="([0-9a-f]+)"[^>]*\/?>(<\/en-media>)?/g, (_, h) => '\n' + linkFor(h) + '\n');
-    t = t.replace(/<en-todo[^>]*checked="true"[^>]*\/?>/g, '- [x] ').replace(/<en-todo[^>]*\/?>/g, '- [ ] ');
-    t = t.replace(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/g, (_, l, x) => '\n' + '#'.repeat(+l) + ' ' + x + '\n');
-    t = t.replace(/<table[^>]*>([\s\S]*?)<\/table>/g, (_, tb) => '\n' + tableMarkdown(tb) + '\n');
-    t = t.replace(/<li[^>]*>([\s\S]*?)<\/li>/g, '- $1\n');
-    t = t.replace(/<(b|strong)>([\s\S]*?)<\/\1>/g, '**$2**').replace(/<(i|em)>([\s\S]*?)<\/\1>/g, '*$2*');
-    t = t.replace(/<br\s*\/?>/g, '\n').replace(/<\/(div|p|table|ul|ol)>/g, '\n').replace(/<[^>]+>/g, '');
-    return decodeEntities(t).replace(/\n{3,}/g, '\n\n').trim() + '\n';
+    let t = removeEnmlFrame(enml);
+    t = mediaToMarkdown(t, linkFor);
+    t = todosToMarkdown(t);
+    t = linksToMarkdown(t);
+    t = inlineToMarkdown(t);
+    t = headingsToMarkdown(t);
+    t = tablesToMarkdown(t);
+    t = orderedListsToMarkdown(t);
+    t = bulletListsToMarkdown(t);
+    t = quotesToMarkdown(t);
+    t = rulesToMarkdown(t);
+    t = blocksToLines(t);
+    return tidyBlankLines(decodeEntities(stripTags(t)));
   }
 
   const api = { htmlEntitiesToNumeric, parseDate, notebookName, attachmentKind, safeFileName, uniqueName, parseEnex, enmlToMarkdown, md5: md5fn };
