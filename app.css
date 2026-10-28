@@ -24,7 +24,7 @@ button{font:inherit;cursor:pointer}
   box-shadow:0 0 0 4px #000,inset -6px -6px 0 var(--sky2),inset 6px 6px 0 #6f8bff}
 .big:hover,.big:focus-visible{background:#3b5cf0;outline:4px solid var(--gold);outline-offset:4px}
 .big:active{box-shadow:0 0 0 4px #000,inset 6px 6px 0 var(--sky2);transform:translate(2px,2px)}
-.big:disabled{background:#d6d6d6;color:#1a1a1a;cursor:not-allowed;box-shadow:0 0 0 4px #000,inset -6px -6px 0 #a8a8a8,inset 6px 6px 0 #f2f2f2}
+.big:disabled{background:#E0E0E0;color:#212121;cursor:not-allowed;box-shadow:0 0 0 4px #000,inset -6px -6px 0 #b8b8b8,inset 6px 6px 0 #f5f5f5}
 .big.ok,.big.ok:disabled{background:var(--grass);cursor:default;box-shadow:0 0 0 4px #000,inset -6px -6px 0 var(--grass2),inset 6px 6px 0 #7be07f}
 .second{display:block;width:100%;margin:.9rem 0 .3rem;padding:.7rem 1rem;font-size:1.05rem;background:#fff;color:var(--sky2);border:0;box-shadow:0 0 0 3px #000}
 .second:hover,.second:focus-visible{background:#eef1ff;outline:3px solid var(--gold);outline-offset:3px}
@@ -58,3 +58,6 @@ footer{color:#fff;margin-top:1rem;padding-bottom:2rem}
 footer details{color:var(--ink)}
 footer li{margin:.35rem 0}
 @media (max-width:420px){.step{margin:2rem 10px;padding:1.6rem .8rem 1rem}}
+.why{margin:.2rem 0 .4rem;font-weight:bold;color:#212121}
+.fail{background:#fff0ee;padding:.6rem .8rem;box-shadow:0 0 0 3px #000,inset 0 0 0 3px var(--red);margin:.6rem 0}
+.fail .second{margin:.6rem 0 0}

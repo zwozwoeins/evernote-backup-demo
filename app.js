@@ -31,7 +31,7 @@
       connected = true;
       b.textContent = 'Verbunden ✓'; b.classList.add('ok');
       $('#s1').classList.add('done');
-      btn.disabled = false; btn.textContent = 'Jetzt sichern';
+      btn.disabled = false; show($('#b-why'), false);
       show(test, true);
     }, 1200);
   });
@@ -59,7 +59,7 @@
     show($('#b-run'), true); show($('#b-done'), false); show($('#b-probe'), false);
     show(test, false); show(stop, true);
     btn.disabled = true; btn.textContent = 'Sichere …';
-    if(pos === 0){ $('#log').innerHTML = ''; $('#techlog').textContent = ''; logLine('Verbindung zu Evernote steht.'); }
+    if(pos === 0){ $('#log').innerHTML = ''; $('#techlog').textContent = ''; logLine('Gleich fragt der Mac, ob der Helfer Notizen nutzen darf. Bitte „OK“ klicken.'); logLine('Verbindung zu Evernote steht.'); }
     else logLine('Es geht weiter bei Notizbuch ' + (pos + 1) + '.');
     timer = setInterval(function(){ tick(limit); }, limit === PROBE ? 700 : 120);
   }
@@ -82,6 +82,8 @@
     }
     $('#b-state').textContent = 'Fertig.'; $('#b-eta').textContent = '';
     $('#b-done-text').textContent = 'Fertig: ' + fmt(notes) + ' Notizen in ' + fmt(TOTAL) + ' Ordnern (Beispielzahlen).';
+    $('#b-fail-text').textContent = '1 Notizbuch konnte nicht gesichert werden: „Briefe 734“. Alles andere ist gesichert.';
+    show($('#b-fail'), true);
     show($('#b-done'), true);
     $('#s2').classList.add('done');
     logLine('Fertig! Alles ist gesichert.');
@@ -91,5 +93,10 @@
   btn.addEventListener('click', function(){ if(!btn.disabled) run(TOTAL); });
   test.addEventListener('click', function(){ run(PROBE); });
   stop.addEventListener('click', halt);
+  $('#b-retry').addEventListener('click', function(){
+    show($('#b-fail'), false);
+    logLine('Notizbuch „Briefe 734“ wird noch einmal versucht … gesichert.');
+    $('#b-done-text').textContent = 'Fertig: alles gesichert (Beispiel).';
+  });
   $('#b-probe-ok').addEventListener('click', function(){ show(btn, true); run(TOTAL); });
 })();

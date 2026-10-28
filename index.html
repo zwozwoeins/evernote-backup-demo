@@ -44,9 +44,14 @@
   </div>
   <div id="b-done" class="card" hidden>
     <p class="done-title" id="b-done-text"></p>
+    <div class="fail" id="b-fail" hidden>
+      <p id="b-fail-text"></p>
+      <button class="second" id="b-retry">Nochmal versuchen</button>
+    </div>
     <p>Falls etwas fehlt: einfach noch einmal „Jetzt sichern“ drücken.</p>
   </div>
-  <button class="big" id="b-btn" disabled>Erst Schritt 1 erledigen</button>
+  <button class="big" id="b-btn" disabled aria-describedby="b-why">Jetzt sichern</button>
+  <p class="why" id="b-why">Erst Schritt 1 erledigen.</p>
   <button class="second" id="b-test" hidden>Erst mit 2 Notizbüchern ausprobieren</button>
   <button class="second" id="b-stop" hidden>Anhalten</button>
   <details><summary>Wenn eine Meldung erscheint</summary>
