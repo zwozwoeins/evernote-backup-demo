@@ -52,6 +52,7 @@
       <div id="error" class="card card-error" role="alert" hidden>
         <p class="err-text" id="err-text"></p>
         <button class="btn-primary" id="err-action"></button>
+        <button class="btn-secondary" id="err-second" hidden></button>
         <ol class="err-help" id="err-help"></ol>
         <div class="report-row">
           <button class="btn-secondary" id="report-btn">Hoppla – Protokoll sichern</button>
@@ -75,7 +76,7 @@
       <button class="btn-secondary" id="probe-btn" hidden>Erst mit 2 Notizbüchern ausprobieren</button>
       <button class="btn-secondary" id="stop-btn" hidden>Anhalten</button>
 
-      <div class="logwrap">
+      <div class="logwrap" hidden>
         <h3 class="logtitle">Was gerade passiert</h3>
         <ol class="log" id="log" aria-live="polite" tabindex="0" aria-label="Was gerade passiert"></ol>
       </div>

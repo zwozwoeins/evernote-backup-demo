@@ -5,7 +5,7 @@
    Regeln: eine Funktion = eine Aufgabe, flach (async/await, fruehe Returns). */
 
 const $ = (sel) => document.querySelector(sel);
-const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null };
+const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null, inlineError: null, started: false };
 
 /* ---------- Helfer-Verbindung (echt) ---------- */
 const LiveBackend = {
@@ -28,6 +28,8 @@ const LiveBackend = {
 const NAMES = ['Familie', 'Rezepte', 'Garten', 'Reisen', 'Steuer', 'Auto', 'Gesundheit', 'Fotos', 'Haus', 'Briefe'];
 const DEMO_TOTAL = 1000;
 const DEMO_BROKEN = 734;
+const DEMO_BUSY = { code: 'BUSY', text: 'Es läuft gerade eine Sicherung.', action: 'show_progress', label: 'Fortschritt ansehen', help: [], details: '' };
+const DEMO_BROKEN_HELP = ['„Nochmal versuchen“ drücken.', 'Klappt es wieder nicht: „Überspringen“ drücken – alles andere bleibt gesichert.', 'Protokoll an Ihren Neffen schicken („Hoppla – Protokoll sichern“).'];
 const demo = {
   connected: false, running: false, phase: '', done: 0, total: 0, events: [], error: null,
   result: null, target: 'notizen', timer: null, limit: DEMO_TOTAL, failed: [], started: 0, last: {},
@@ -73,8 +75,8 @@ function demoFinishFull() {
   demo.result = { probe: false, notebooks: demo.total, new: 15230, changed: 12, failed: failed };
   demo.last = { saved_at: Date.now() / 1000 };
   if (!failed.length) return demoEvent('Fertig! Alles ist gesichert.');
-  const text = '1 Notizbuch konnte nicht gesichert werden: „' + failed[0] + '“. Alles andere ist gesichert.';
-  demo.error = { code: 'BROKEN_NOTEBOOK', text: text, action: 'backup', label: 'Nochmal versuchen', help: [], details: 'ParseError: no element found: line 1, column 48 (Vorschau)' };
+  const text = '„' + failed[0] + '“ konnte nicht gesichert werden. Alles andere ist gesichert.';
+  demo.error = { code: 'BROKEN_NOTEBOOK', text: text, action: 'backup', label: 'Nochmal versuchen', secondary: { action: 'skip', label: 'Überspringen' }, help: DEMO_BROKEN_HELP, details: 'ParseError: no element found: line 1, column 48 (Vorschau)' };
   demoEvent(text);
 }
 
@@ -117,6 +119,19 @@ function demoRetryBroken() {
   demoEvent('Fertig! Alles ist gesichert.');
 }
 
+function demoSkip() {
+  demo.failed.forEach((n) => demoEvent('Notizbuch „' + n + '“ wird künftig übersprungen.'));
+  demo.failed = [];
+  demo.error = null;
+  demo.result = Object.assign({}, demo.result, { failed: [] });
+}
+
+function demoBackup(body) {
+  if (demo.running) return { ok: false, error: DEMO_BUSY };
+  demoStart(body && body.probe);
+  return { ok: true };
+}
+
 function demoStop() {
   clearInterval(demo.timer);
   demo.running = false;
@@ -140,8 +155,9 @@ const DemoBackend = {
   async post(path, body) {
     const routes = {
       '/api/connect': () => { setTimeout(() => { demo.connected = true; }, 900); return { ok: true }; },
-      '/api/backup': () => { demoStart(body && body.probe); return { ok: true }; },
+      '/api/backup': () => demoBackup(body),
       '/api/stop': () => { demoStop(); return { ok: true }; },
+      '/api/skip': () => { demoSkip(); return { ok: true }; },
       '/api/target': () => { demo.target = (body && body.target) || demo.target; return { ok: true }; },
       '/api/report': () => ({ ok: true, path: '~/Desktop/Evernote-Sicherung-Fehlerbericht.txt' }),
     };
@@ -204,7 +220,7 @@ function mainAction(s) {
 function renderMain(s) {
   const a = mainAction(s);
   const btn = $('#main-btn');
-  btn.hidden = !!currentError(s); // eine Hauptaktion: bei Fehler zeigt die Fehlerkarte den Loesungsknopf
+  btn.hidden = !!currentError(s) || s.running; // eine Hauptaktion; waehrend der Sicherung nur „Anhalten“
   btn.textContent = a.label;
   btn.disabled = a.disabled;
   btn.onclick = a.run;
@@ -235,7 +251,8 @@ function renderDone(s) {
 
 function currentError(s) {
   if (ui.offline) return OFFLINE_ERROR;
-  if (!s.error || s.error.code === 'STOPPED' || s.error.code === 'BUSY') return null;
+  if (ui.inlineError) return ui.inlineError;
+  if (!s.error || s.error.code === 'STOPPED') return null;
   return s.error;
 }
 
@@ -258,6 +275,9 @@ function renderError(s) {
   $('#err-action').textContent = err.label || 'Nochmal versuchen';
   $('#err-action').hidden = err.action === 'none';
   $('#err-action').onclick = () => runAction(err.action);
+  $('#err-second').hidden = !err.secondary;
+  $('#err-second').textContent = err.secondary ? err.secondary.label : '';
+  $('#err-second').onclick = err.secondary ? () => runAction(err.secondary.action) : null;
   $('#err-details').textContent = (err.code || '') + '\n' + (err.details || '');
   $('#report-btn').hidden = ui.offline; // ohne Helfer kann kein Protokoll geschrieben werden
   renderHelp(err.help);
@@ -265,6 +285,7 @@ function renderError(s) {
 
 function renderLog(s) {
   const events = s.events || [];
+  $('.logwrap').hidden = !ui.started && !events.length;
   const log = $('#log');
   if (events.length < ui.shown) { log.textContent = ''; ui.shown = 0; }
   for (; ui.shown < events.length; ui.shown += 1) {
@@ -293,6 +314,8 @@ function render(s) {
 
 /* ---------- Aktionen ---------- */
 async function doConnect() {
+  ui.started = true;
+  ui.inlineError = null;
   $('#main-btn').disabled = true;
   $('#main-btn').textContent = 'Verbinde …';
   const r = await backend.post('/api/connect');
@@ -310,8 +333,25 @@ async function doConnectFinish() {
 }
 
 async function doBackup(probe) {
-  await backend.post('/api/backup', { probe: probe === true });
+  ui.started = true;
+  ui.inlineError = null;
+  const r = await backend.post('/api/backup', { probe: probe === true });
+  if (!r.ok && r.error) showInlineError(r.error);
   await refresh();
+}
+
+async function doSkip() {
+  ui.inlineError = null;
+  await backend.post('/api/skip');
+  await refresh();
+}
+
+function showProgress() {
+  ui.inlineError = null;
+  ui.started = true;
+  showView('sichern');
+  render(ui.status);
+  $('#run').scrollIntoView({ block: 'start' });
 }
 
 async function doStop() {
@@ -342,8 +382,8 @@ async function doSaveTarget() {
 }
 
 function showInlineError(err) {
-  ui.status = Object.assign({}, ui.status, { error: err });
-  renderError(ui.status);
+  ui.inlineError = err;
+  render(ui.status);
 }
 
 function runAction(action) {
@@ -351,6 +391,8 @@ function runAction(action) {
     connect: doConnect,
     backup: () => doBackup(false),
     retry_poll: refresh,
+    skip: doSkip,
+    show_progress: showProgress,
     target: () => { showView('hilfe'); $('#opt').open = true; },
   };
   if (actions[action]) return actions[action]();
