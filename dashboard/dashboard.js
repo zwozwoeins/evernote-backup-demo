@@ -8,16 +8,26 @@ const $ = (sel) => document.querySelector(sel);
 const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null, inlineError: null, started: false };
 
 /* ---------- Helfer-Verbindung (echt) ---------- */
+function readToken() {
+  const fromUrl = new URLSearchParams(location.search).get('t');
+  if (!fromUrl) return sessionStorage.getItem('helfer-t') || '';
+  sessionStorage.setItem('helfer-t', fromUrl);
+  history.replaceState(null, '', location.pathname); // Token nicht in der Adresszeile stehen lassen
+  return fromUrl;
+}
+
+const TOKEN = readToken();
+
 const LiveBackend = {
   async status() {
-    const r = await fetch('/api/status', { cache: 'no-store' });
+    const r = await fetch('/api/status', { cache: 'no-store', headers: { 'X-Helfer': TOKEN } });
     if (!r.ok) throw new Error('status ' + r.status);
     return r.json();
   },
   async post(path, body) {
     const r = await fetch(path, {
       method: 'POST',
-      headers: { 'X-Helfer': '1', 'Content-Type': 'application/json' },
+      headers: { 'X-Helfer': TOKEN, 'Content-Type': 'application/json' },
       body: JSON.stringify(body || {}),
     });
     return r.json();
@@ -247,6 +257,20 @@ function renderDone(s) {
   if (!finished || r.probe) return;
   const notes = (r.new || 0) + (r.changed || 0) + (r.same || 0);
   $('#done-text').textContent = 'Fertig: ' + plural(notes, 'Notiz', 'Notizen') + ' in ' + plural(r.notebooks, 'Ordner', 'Ordnern') + '.';
+  renderMissing(r.att_failed || 0);
+}
+
+function renderMissing(n) {
+  const btn = $('#att-missing');
+  btn.hidden = n < 1;
+  btn.textContent = n === 1 ? '1 Anhang fehlt – ansehen' : n + ' Anhänge fehlen – ansehen';
+}
+
+function showLog() {
+  ui.started = true;
+  render(ui.status);
+  $('.logwrap').scrollIntoView({ block: 'start' });
+  $('#log').focus({ preventScroll: true });
 }
 
 function currentError(s) {
@@ -452,6 +476,7 @@ function bindEvents() {
   $('#report-btn-2').addEventListener('click', () => doReport('#report-msg-2'));
   $('#reveal-btn').addEventListener('click', doReveal);
   $('#open-notes').addEventListener('click', doOpenNotes);
+  $('#att-missing').addEventListener('click', showLog);
   $('#save-target').addEventListener('click', doSaveTarget);
   document.querySelectorAll('input[name="target"]').forEach((r) => r.addEventListener('change', onTargetChange));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => { d.open = false; }); });
