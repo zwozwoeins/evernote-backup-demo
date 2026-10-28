@@ -5,41 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'">
-<title>Evernote-Sicherung</title>
+<title>NotizSchrabSchrab</title>
+<meta name="application-name" content="NotizSchrabSchrab">
+<meta name="apple-mobile-web-app-title" content="NotizSchrabSchrab">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <div class="app">
   <nav class="rail" aria-label="Bereiche">
-    <button class="rail-btn" data-view="sichern" aria-current="page"><svg class="ico" viewBox="0 0 12 10" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="1" fill="#000"/><rect x="0" y="1" width="1" height="1" fill="#000"/><rect x="1" y="1" width="1" height="1" fill="#16237a"/><rect x="2" y="1" width="6" height="1" fill="#2b4bd8"/><rect x="8" y="1" width="1" height="1" fill="#fff"/><rect x="9" y="1" width="2" height="1" fill="#000"/><rect x="0" y="2" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#16237a"/><rect x="2" y="2" width="6" height="1" fill="#2b4bd8"/><rect x="8" y="2" width="1" height="1" fill="#fff"/><rect x="9" y="2" width="1" height="1" fill="#000"/><rect x="10" y="2" width="1" height="1" fill="#16237a"/><rect x="11" y="2" width="1" height="1" fill="#000"/><rect x="0" y="3" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#16237a"/><rect x="2" y="3" width="8" height="1" fill="#2b4bd8"/><rect x="10" y="3" width="1" height="1" fill="#16237a"/><rect x="11" y="3" width="1" height="1" fill="#000"/><rect x="0" y="4" width="1" height="1" fill="#000"/><rect x="1" y="4" width="10" height="1" fill="#16237a"/><rect x="11" y="4" width="1" height="1" fill="#000"/><rect x="0" y="5" width="1" height="1" fill="#000"/><rect x="1" y="5" width="1" height="1" fill="#16237a"/><rect x="2" y="5" width="8" height="1" fill="#9aa3b5"/><rect x="10" y="5" width="1" height="1" fill="#16237a"/><rect x="11" y="5" width="1" height="1" fill="#000"/><rect x="0" y="6" width="1" height="1" fill="#000"/><rect x="1" y="6" width="1" height="1" fill="#16237a"/><rect x="2" y="6" width="1" height="1" fill="#9aa3b5"/><rect x="3" y="6" width="2" height="1" fill="#000"/><rect x="5" y="6" width="5" height="1" fill="#9aa3b5"/><rect x="10" y="6" width="1" height="1" fill="#16237a"/><rect x="11" y="6" width="1" height="1" fill="#000"/><rect x="0" y="7" width="1" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#16237a"/><rect x="2" y="7" width="1" height="1" fill="#9aa3b5"/><rect x="3" y="7" width="2" height="1" fill="#000"/><rect x="5" y="7" width="5" height="1" fill="#9aa3b5"/><rect x="10" y="7" width="1" height="1" fill="#16237a"/><rect x="11" y="7" width="1" height="1" fill="#000"/><rect x="0" y="8" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#16237a"/><rect x="2" y="8" width="8" height="1" fill="#9aa3b5"/><rect x="10" y="8" width="1" height="1" fill="#16237a"/><rect x="11" y="8" width="1" height="1" fill="#000"/><rect x="0" y="9" width="12" height="1" fill="#000"/></svg><span>Sichern</span></button>
-    <button class="rail-btn" data-view="notizen"><svg class="ico" viewBox="0 0 12 10" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="0" width="10" height="1" fill="#000"/><rect x="1" y="1" width="1" height="1" fill="#000"/><rect x="2" y="1" width="8" height="1" fill="#ffd23f"/><rect x="10" y="1" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#000"/><rect x="2" y="2" width="8" height="1" fill="#c99700"/><rect x="10" y="2" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#000"/><rect x="2" y="3" width="8" height="1" fill="#fff"/><rect x="10" y="3" width="1" height="1" fill="#000"/><rect x="1" y="4" width="1" height="1" fill="#000"/><rect x="2" y="4" width="1" height="1" fill="#fff"/><rect x="3" y="4" width="6" height="1" fill="#9aa3b5"/><rect x="9" y="4" width="1" height="1" fill="#fff"/><rect x="10" y="4" width="1" height="1" fill="#000"/><rect x="1" y="5" width="1" height="1" fill="#000"/><rect x="2" y="5" width="8" height="1" fill="#fff"/><rect x="10" y="5" width="1" height="1" fill="#000"/><rect x="1" y="6" width="1" height="1" fill="#000"/><rect x="2" y="6" width="1" height="1" fill="#fff"/><rect x="3" y="6" width="5" height="1" fill="#9aa3b5"/><rect x="8" y="6" width="2" height="1" fill="#fff"/><rect x="10" y="6" width="1" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#000"/><rect x="2" y="7" width="8" height="1" fill="#fff"/><rect x="10" y="7" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#000"/><rect x="2" y="8" width="1" height="1" fill="#fff"/><rect x="3" y="8" width="3" height="1" fill="#9aa3b5"/><rect x="6" y="8" width="4" height="1" fill="#fff"/><rect x="10" y="8" width="1" height="1" fill="#000"/><rect x="1" y="9" width="10" height="1" fill="#000"/></svg><span>Notizen</span></button>
+    <button class="rail-btn" data-view="daten" aria-current="page"><svg class="ico" viewBox="0 0 12 10" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="1" fill="#000"/><rect x="0" y="1" width="1" height="1" fill="#000"/><rect x="1" y="1" width="1" height="1" fill="#16237a"/><rect x="2" y="1" width="6" height="1" fill="#2b4bd8"/><rect x="8" y="1" width="1" height="1" fill="#fff"/><rect x="9" y="1" width="2" height="1" fill="#000"/><rect x="0" y="2" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#16237a"/><rect x="2" y="2" width="6" height="1" fill="#2b4bd8"/><rect x="8" y="2" width="1" height="1" fill="#fff"/><rect x="9" y="2" width="1" height="1" fill="#000"/><rect x="10" y="2" width="1" height="1" fill="#16237a"/><rect x="11" y="2" width="1" height="1" fill="#000"/><rect x="0" y="3" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#16237a"/><rect x="2" y="3" width="8" height="1" fill="#2b4bd8"/><rect x="10" y="3" width="1" height="1" fill="#16237a"/><rect x="11" y="3" width="1" height="1" fill="#000"/><rect x="0" y="4" width="1" height="1" fill="#000"/><rect x="1" y="4" width="10" height="1" fill="#16237a"/><rect x="11" y="4" width="1" height="1" fill="#000"/><rect x="0" y="5" width="1" height="1" fill="#000"/><rect x="1" y="5" width="1" height="1" fill="#16237a"/><rect x="2" y="5" width="8" height="1" fill="#9aa3b5"/><rect x="10" y="5" width="1" height="1" fill="#16237a"/><rect x="11" y="5" width="1" height="1" fill="#000"/><rect x="0" y="6" width="1" height="1" fill="#000"/><rect x="1" y="6" width="1" height="1" fill="#16237a"/><rect x="2" y="6" width="1" height="1" fill="#9aa3b5"/><rect x="3" y="6" width="2" height="1" fill="#000"/><rect x="5" y="6" width="5" height="1" fill="#9aa3b5"/><rect x="10" y="6" width="1" height="1" fill="#16237a"/><rect x="11" y="6" width="1" height="1" fill="#000"/><rect x="0" y="7" width="1" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#16237a"/><rect x="2" y="7" width="1" height="1" fill="#9aa3b5"/><rect x="3" y="7" width="2" height="1" fill="#000"/><rect x="5" y="7" width="5" height="1" fill="#9aa3b5"/><rect x="10" y="7" width="1" height="1" fill="#16237a"/><rect x="11" y="7" width="1" height="1" fill="#000"/><rect x="0" y="8" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#16237a"/><rect x="2" y="8" width="8" height="1" fill="#9aa3b5"/><rect x="10" y="8" width="1" height="1" fill="#16237a"/><rect x="11" y="8" width="1" height="1" fill="#000"/><rect x="0" y="9" width="12" height="1" fill="#000"/></svg><span>Daten&shy;verbindung</span></button>
+    <button class="rail-btn" data-view="vorschau"><svg class="ico" viewBox="0 0 12 10" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="0" width="10" height="1" fill="#000"/><rect x="1" y="1" width="1" height="1" fill="#000"/><rect x="2" y="1" width="8" height="1" fill="#ffd23f"/><rect x="10" y="1" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#000"/><rect x="2" y="2" width="8" height="1" fill="#c99700"/><rect x="10" y="2" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#000"/><rect x="2" y="3" width="8" height="1" fill="#fff"/><rect x="10" y="3" width="1" height="1" fill="#000"/><rect x="1" y="4" width="1" height="1" fill="#000"/><rect x="2" y="4" width="1" height="1" fill="#fff"/><rect x="3" y="4" width="6" height="1" fill="#9aa3b5"/><rect x="9" y="4" width="1" height="1" fill="#fff"/><rect x="10" y="4" width="1" height="1" fill="#000"/><rect x="1" y="5" width="1" height="1" fill="#000"/><rect x="2" y="5" width="8" height="1" fill="#fff"/><rect x="10" y="5" width="1" height="1" fill="#000"/><rect x="1" y="6" width="1" height="1" fill="#000"/><rect x="2" y="6" width="1" height="1" fill="#fff"/><rect x="3" y="6" width="5" height="1" fill="#9aa3b5"/><rect x="8" y="6" width="2" height="1" fill="#fff"/><rect x="10" y="6" width="1" height="1" fill="#000"/><rect x="1" y="7" width="1" height="1" fill="#000"/><rect x="2" y="7" width="8" height="1" fill="#fff"/><rect x="10" y="7" width="1" height="1" fill="#000"/><rect x="1" y="8" width="1" height="1" fill="#000"/><rect x="2" y="8" width="1" height="1" fill="#fff"/><rect x="3" y="8" width="3" height="1" fill="#9aa3b5"/><rect x="6" y="8" width="4" height="1" fill="#fff"/><rect x="10" y="8" width="1" height="1" fill="#000"/><rect x="1" y="9" width="10" height="1" fill="#000"/></svg><span>Joplin-Vorschau</span></button>
+    <button class="rail-btn" data-view="export"><svg class="ico" viewBox="0 0 12 10" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="7" height="1" fill="#000"/><rect x="0" y="9" width="7" height="1" fill="#000"/><rect x="0" y="1" width="1" height="8" fill="#000"/><rect x="6" y="1" width="1" height="2" fill="#000"/><rect x="6" y="7" width="1" height="2" fill="#000"/><rect x="1" y="1" width="5" height="8" fill="#fff"/><rect x="2" y="2" width="3" height="1" fill="#9aa3b5"/><rect x="2" y="7" width="3" height="1" fill="#9aa3b5"/><rect x="3" y="4" width="6" height="2" fill="#2fbf3f"/><rect x="9" y="2" width="1" height="6" fill="#2fbf3f"/><rect x="10" y="3" width="1" height="4" fill="#2fbf3f"/><rect x="11" y="4" width="1" height="2" fill="#2fbf3f"/></svg><span>Export</span></button>
     <button class="rail-btn" data-view="hilfe"><svg class="ico" viewBox="0 0 12 11" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="0" width="6" height="1" fill="#000"/><rect x="2" y="1" width="1" height="1" fill="#000"/><rect x="3" y="1" width="6" height="1" fill="#ffd23f"/><rect x="9" y="1" width="1" height="1" fill="#000"/><rect x="1" y="2" width="1" height="1" fill="#000"/><rect x="2" y="2" width="2" height="1" fill="#ffd23f"/><rect x="4" y="2" width="4" height="1" fill="#000"/><rect x="8" y="2" width="2" height="1" fill="#ffd23f"/><rect x="10" y="2" width="1" height="1" fill="#000"/><rect x="1" y="3" width="1" height="1" fill="#000"/><rect x="2" y="3" width="1" height="1" fill="#ffd23f"/><rect x="3" y="3" width="2" height="1" fill="#000"/><rect x="7" y="3" width="2" height="1" fill="#000"/><rect x="9" y="3" width="1" height="1" fill="#ffd23f"/><rect x="10" y="3" width="1" height="1" fill="#000"/><rect x="1" y="4" width="3" height="1" fill="#000"/><rect x="6" y="4" width="2" height="1" fill="#000"/><rect x="8" y="4" width="2" height="1" fill="#ffd23f"/><rect x="10" y="4" width="1" height="1" fill="#000"/><rect x="5" y="5" width="2" height="1" fill="#000"/><rect x="7" y="5" width="2" height="1" fill="#ffd23f"/><rect x="9" y="5" width="1" height="1" fill="#000"/><rect x="4" y="6" width="1" height="1" fill="#000"/><rect x="5" y="6" width="2" height="1" fill="#ffd23f"/><rect x="7" y="6" width="2" height="1" fill="#000"/><rect x="4" y="7" width="1" height="1" fill="#000"/><rect x="5" y="7" width="2" height="1" fill="#ffd23f"/><rect x="7" y="7" width="1" height="1" fill="#000"/><rect x="5" y="8" width="2" height="1" fill="#000"/><rect x="4" y="9" width="1" height="1" fill="#000"/><rect x="5" y="9" width="2" height="1" fill="#ffd23f"/><rect x="7" y="9" width="1" height="1" fill="#000"/><rect x="4" y="10" width="4" height="1" fill="#000"/></svg><span>Hilfe</span></button>
   </nav>
 
   <aside class="statuscol" aria-label="Status">
-    <h1>Evernote-Sicherung</h1>
+    <h1 class="logo" aria-label="NotizSchrabSchrab">Notiz<wbr>Schrab<wbr>Schrab</h1>
     <p class="mode" id="mode" hidden>Vorschau – so sieht es auf dem iMac aus</p>
     <dl class="facts">
-      <div><dt>Evernote</dt><dd id="f-conn">–</dd></div>
+      <div><dt>Daten</dt><dd id="f-conn">–</dd></div>
       <div><dt>Ziel</dt><dd id="f-target">Apple Notizen</dd></div>
-      <div><dt>Zuletzt gesichert</dt><dd id="f-last">noch nie</dd></div>
+      <div><dt>Zuletzt exportiert</dt><dd id="f-last">noch nie</dd></div>
       <div><dt>Gerade</dt><dd id="f-now" aria-live="polite">bereit</dd></div>
     </dl>
-    <p class="note">Ihr Evernote bleibt unverändert.</p>
-  </aside>
+      </aside>
 
   <main id="main" tabindex="-1">
-    <!-- SICHERN -->
-    <section class="view" id="v-sichern" aria-labelledby="h-sichern">
-      <h2 id="h-sichern">Sichern</h2>
-      <p class="lead" id="lead">Alle Notizbücher kommen nach Apple Notizen. Schon Gesichertes wird übersprungen.</p>
+    <!-- 1 DATENVERBINDUNG -->
+    <section class="view" id="v-daten" aria-labelledby="h-daten">
+      <h2 id="h-daten">Datenverbindung</h2>
+      <p class="lead">Woher kommen Ihre Notizen? Verbinden Sie Evernote oder laden Sie eine Exportdatei (.enex).</p>
+
+      <div id="source-ok" class="card card-ok" hidden>
+        <p class="done-text" id="source-text"></p>
+        <button class="btn-primary" id="source-next">Weiter</button>
+        <button class="btn-secondary" id="logout-btn" hidden>Abmelden</button>
+      </div>
+
+      <div id="connect-error" class="card card-error" role="alert" hidden>
+        <p class="err-text" id="connect-error-text"></p>
+        <p id="connect-error-fix"></p>
+        <button class="btn-primary" id="connect-retry">Nochmal anmelden</button>
+        <button class="btn-secondary" id="connect-to-file" hidden>Stattdessen Datei laden</button>
+      </div>
 
       <div id="connect-help" class="card" hidden>
         <p>Evernote hat sich im Browser geöffnet. Melden Sie sich an – mit Passwort, Google oder Apple – und erlauben Sie den Zugriff.</p>
         <p>Danach mit der rechten Maustaste auf „Return to Evernote“ klicken, „Link kopieren“ wählen und hier einfügen:</p>
         <label class="field">Kopierter Link<input id="connect-url" type="text" autocomplete="off" spellcheck="false"></label>
         <button class="btn-primary" id="connect-finish">Anmeldung abschließen</button>
+      </div>
+
+      <div id="enex-error" class="card card-error" role="alert" hidden>
+        <p class="err-text" id="enex-error-text"></p>
+        <p id="enex-error-fix">Bitte eine .enex-Datei aus Evernote wählen.</p>
+        <button class="btn-primary" id="enex-retry">Andere Datei wählen</button>
+      </div>
+
+      <div id="import-log" class="card" hidden>
+        <h3 class="testtitle">Import-Protokoll</h3>
+        <p class="done-text" id="import-summary"></p>
+        <details><summary>Detailprotokoll</summary><ol class="implog" id="import-lines"></ol></details>
+        <button class="btn-secondary" id="copy-log">Protokoll kopieren</button>
+        <p id="copy-msg" role="status" hidden>Protokoll kopiert.</p>
+      </div>
+
+      <div class="choice">
+        <div id="login-box">
+          <h3 class="testtitle">Bei Evernote anmelden</h3>
+          <button class="btn-primary" id="login-app">In der Evernote-App anmelden</button>
+          <button class="btn-secondary" id="login-google">Mit Google anmelden</button>
+          <button class="btn-secondary" id="login-apple">Mit Apple anmelden</button>
+          <p class="hint" id="login-hint">Die Anmeldung läuft auf der offiziellen Evernote-Seite. Hier geben Sie kein Passwort ein.</p>
+        </div>
+        <div id="file-box" hidden>
+          <p class="or">oder</p>
+          <input type="file" id="enex-file" accept=".enex" multiple hidden>
+          <button class="btn-secondary" id="enex-btn">Beispieldatei laden</button>
+          <p class="hint">Die Datei bleibt auf diesem Gerät. <a class="small-link" href="../beispiel-export/">Beispieldateien herunterladen</a></p>
+        </div>
+      </div>
+      <p class="note-small">Ihr Evernote bleibt unverändert.</p>
+    </section>
+
+    <!-- 2 JOPLIN-VORSCHAU -->
+    <section class="view view-wide" id="v-vorschau" aria-labelledby="h-vorschau" hidden>
+      <h2 id="h-vorschau">Joplin-Vorschau</h2>
+      <p class="lead" id="vorschau-lead">Beispieldaten zum Ansehen. Laden Sie eine Datei, dann sehen Sie hier Ihre Notizen.</p>
+      <div id="vorschau-none" class="card" hidden>
+        <p>Die Vorschau gibt es nur in der Testversion im Browser.</p>
+      </div>
+      <iframe class="joplin-frame" id="joplin-frame" title="Joplin-Vorschau" loading="lazy"></iframe>
+      <button class="btn-primary" id="vorschau-next">Weiter zum Export</button>
+    </section>
+
+    <!-- 3 EXPORT -->
+    <section class="view" id="v-export" aria-labelledby="h-export" hidden>
+      <h2 id="h-export">Export</h2>
+      <p class="lead">Wohin sollen die Notizen? Schon Exportiertes wird übersprungen.</p>
+
+      <fieldset class="target" id="target-box">
+        <legend>Ziel</legend>
+        <label class="radio"><input type="radio" name="target" value="notizen" checked> Apple Notizen (empfohlen für den Mac)</label>
+        <label class="radio radio-off"><input type="radio" name="target" value="onenote" disabled aria-describedby="onenote-hint"> OneNote <span class="soon" id="onenote-hint">bald verfügbar</span></label>
+        <label class="radio"><input type="radio" name="target" value="joplin"> Joplin</label>
+      </fieldset>
+      <div id="joplin-box" hidden>
+        <label class="field">Schlüssel aus Joplin (Einstellungen → Web Clipper)<input id="joplin-token" type="password" autocomplete="off"></label>
+        <button class="btn-secondary" id="save-target">Ziel speichern</button>
+        <p>Joplin herunterladen (offizielle Seite):</p>
+        <a class="btn-secondary link-btn" href="https://joplinapp.org/download/" target="_blank" rel="noopener noreferrer">Für den iMac</a>
+        <a class="btn-secondary link-btn" href="https://joplinapp.org/download/" target="_blank" rel="noopener noreferrer">Für Windows-PCs</a>
+      </div>
+
+      <div id="export-empty" class="card" hidden>
+        <p class="done-text">Es sind noch keine Notizen da.</p>
+        <p>Verbinden Sie zuerst Evernote oder laden Sie eine Datei.</p>
+        <button class="btn-primary" id="empty-connect">Mit Evernote verbinden</button>
+        <button class="btn-secondary" id="empty-file" hidden>Datei laden</button>
       </div>
 
       <div id="run" hidden>
@@ -64,34 +150,19 @@
 
       <div id="done" class="card card-ok" hidden>
         <p class="done-text" id="done-text"></p>
-        <button class="btn-secondary" id="result-btn">Ergebnis ansehen</button>
-        <button class="btn-secondary" id="joplin-peek" hidden>So sähe es in Joplin aus</button>
+        <p id="done-where"></p>
+        <button class="btn-secondary" id="result-btn" hidden></button>
         <button class="btn-secondary" id="att-missing" hidden></button>
-        <p>Falls etwas fehlt: einfach noch einmal „Jetzt sichern“ drücken.</p>
+        <p>Falls etwas fehlt: einfach noch einmal „Jetzt exportieren“ drücken.</p>
       </div>
 
       <div id="probe-ok" class="card card-ok" hidden>
-        <p class="done-text">Probe fertig: 2 Notizbücher sind in Notizen. Bitte kurz prüfen.</p>
+        <p class="done-text" id="probe-text"></p>
       </div>
 
-      <button class="btn-primary btn-main" id="main-btn" disabled>Mit Evernote verbinden</button>
-      <p class="why" id="main-why" hidden></p>
+      <button class="btn-primary btn-main" id="export-btn" hidden>Jetzt exportieren</button>
       <button class="btn-secondary" id="probe-btn" hidden>Erst mit 2 Notizbüchern ausprobieren</button>
       <button class="btn-secondary" id="stop-btn" hidden>Anhalten</button>
-
-      <div id="enex-error" class="card card-error" role="alert" hidden>
-        <p class="err-text" id="enex-error-text"></p>
-        <p>Bitte eine .enex-Datei aus Evernote wählen.</p>
-        <button class="btn-primary" id="enex-retry">Andere Datei wählen</button>
-      </div>
-
-      <div id="test-box" class="testbox" hidden>
-        <h3 class="testtitle">Mit Beispieldateien testen</h3>
-        <p id="test-state">Ohne Datei läuft die Vorschau mit erfundenen Zahlen. Die Datei bleibt auf diesem Gerät.</p>
-        <input type="file" id="enex-file" accept=".enex" multiple hidden>
-        <button class="btn-secondary" id="enex-btn">Beispieldatei laden</button>
-        <a class="small-link" href="../beispiel-export/">Beispieldateien herunterladen</a>
-      </div>
 
       <div class="logwrap" hidden>
         <h3 class="logtitle">Was gerade passiert</h3>
@@ -99,17 +170,10 @@
       </div>
     </section>
 
-    <!-- NOTIZEN -->
-    <section class="view" id="v-notizen" aria-labelledby="h-notizen" hidden>
-      <h2 id="h-notizen">Notizen</h2>
-      <p class="lead">In Notizen finden Sie links unter <b>iCloud</b> den Ordner <b>„Evernote“</b>. Jedes Notizbuch ist dort ein eigener Ordner.</p>
-      <button class="btn-primary btn-main" id="open-notes">In Notizen ansehen</button>
-      <p>Ihre Notizen sind auch auf iPhone und iPad über iCloud.</p>
-    </section>
-
     <!-- HILFE -->
     <section class="view" id="v-hilfe" aria-labelledby="h-hilfe" hidden>
       <h2 id="h-hilfe">Hilfe</h2>
+      <p class="lead">NotizSchrabSchrab überträgt Ihre Evernote-Notizen nach Apple Notizen oder Joplin. Ihr Evernote bleibt dabei unverändert.</p>
       <details><summary>Was wird nicht (ganz) übernommen?</summary>
         <ul>
           <li><b>Bilder</b> kommen mit. Sehr große Bilder kommen als Anhang.</li>
@@ -135,31 +199,14 @@
         <a class="btn-secondary link-btn" href="https://rustdesk.com/" target="_blank" rel="noopener noreferrer">RustDesk – offizielle Seite</a>
         <a class="btn-secondary link-btn" href="https://github.com/rustdesk/rustdesk/releases/latest" target="_blank" rel="noopener noreferrer">RustDesk herunterladen</a>
       </details>
-      <details id="opt"><summary>Andere Ziele (für Tests und Windows)</summary>
-        <fieldset class="target">
-          <legend>Wohin sichern?</legend>
-          <label class="radio"><input type="radio" name="target" value="notizen" checked> Apple Notizen (empfohlen)</label>
-          <label class="radio"><input type="radio" name="target" value="joplin"> Joplin</label>
-        </fieldset>
-        <button class="btn-secondary" id="joplin-help-btn" hidden>Joplin-Vorschau ansehen</button>
-        <div id="joplin-box" hidden>
-          <label class="field">Schlüssel aus Joplin (Einstellungen → Web Clipper)<input id="joplin-token" type="password" autocomplete="off"></label>
-          <button class="btn-secondary" id="save-target">Ziel speichern</button>
-          <p>Joplin herunterladen (offizielle Seite):</p>
-          <a class="btn-secondary link-btn" href="https://joplinapp.org/download/" target="_blank" rel="noopener noreferrer">Für den iMac</a>
-          <a class="btn-secondary link-btn" href="https://joplinapp.org/download/" target="_blank" rel="noopener noreferrer">Für Windows-PCs</a>
-        </div>
-      </details>
-    </section>
-    <!-- JOPLIN-VORSCHAU (nur Vorschau-Modus, Beispieldaten) -->
-    <section class="view view-wide" id="v-joplin" aria-labelledby="h-joplin" hidden>
-      <button class="btn-secondary btn-back" id="joplin-back">← Zurück</button>
-      <h2 id="h-joplin">So sieht es in Joplin aus</h2>
-      <p class="lead" id="joplin-lead">Beispieldaten zum Ansehen. Ihr Ziel bleibt unverändert.</p>
-      <iframe class="joplin-frame" id="joplin-frame" title="Joplin-Vorschau mit Beispieldaten" loading="lazy"></iframe>
     </section>
   </main>
+  <footer class="foot"><svg class="carrier" viewBox="0 0 40 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="4" width="36" height="1" fill="#5c6676"/><rect x="3" y="5" width="34" height="3" fill="#7a8494"/><rect x="6" y="8" width="28" height="1" fill="#5c6676"/><rect x="8" y="4" width="20" height="1" fill="#c9ced6"/><rect x="26" y="1" width="4" height="3" fill="#5c6676"/><rect x="27" y="2" width="2" height="1" fill="#9fd3ff"/><rect x="28" y="0" width="1" height="1" fill="#5c6676"/><g class="wave w1"><rect x="0" y="10" width="3" height="1" fill="#6f8bff"/><rect x="6" y="10" width="3" height="1" fill="#6f8bff"/><rect x="12" y="10" width="3" height="1" fill="#6f8bff"/><rect x="18" y="10" width="3" height="1" fill="#6f8bff"/><rect x="24" y="10" width="3" height="1" fill="#6f8bff"/><rect x="30" y="10" width="3" height="1" fill="#6f8bff"/><rect x="36" y="10" width="3" height="1" fill="#6f8bff"/></g><g class="wave w2"><rect x="3" y="11" width="3" height="1" fill="#2b4bd8"/><rect x="9" y="11" width="3" height="1" fill="#2b4bd8"/><rect x="15" y="11" width="3" height="1" fill="#2b4bd8"/><rect x="21" y="11" width="3" height="1" fill="#2b4bd8"/><rect x="27" y="11" width="3" height="1" fill="#2b4bd8"/><rect x="33" y="11" width="3" height="1" fill="#2b4bd8"/><rect x="39" y="11" width="3" height="1" fill="#2b4bd8"/></g></svg><nav class="foot-links" aria-label="Weitere Seiten"><a href="../">Startseite</a><a href="../beispiel-export/">Beispieldateien</a></nav></footer>
 </div>
+<div class="egg" id="egg" aria-hidden="true" hidden><div class="egg-track"><div class="egg-bricks"><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i></div><div class="egg-run"><svg class="egg-heli" viewBox="0 0 32 18" shape-rendering="crispEdges"><rect class="rotor rotor-a" x="0" y="0" width="15" height="1" fill="#1b1b1b"/><rect class="rotor rotor-b" x="17" y="0" width="15" height="1" fill="#1b1b1b"/><rect x="6" y="1" width="4" height="2" fill="#33401a"/><rect x="24" y="1" width="3" height="2" fill="#33401a"/><rect x="2" y="3" width="28" height="1" fill="#33401a"/><rect x="2" y="4" width="28" height="4" fill="#4b5d23"/><rect x="3" y="8" width="26" height="1" fill="#33401a"/><rect x="30" y="4" width="1" height="3" fill="#4b5d23"/><rect x="31" y="5" width="1" height="2" fill="#33401a"/><rect x="28" y="4" width="3" height="1" fill="#9fd3ff"/><rect x="10" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="14" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="18" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="22" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="6" y="9" width="2" height="1" fill="#000"/><rect x="24" y="9" width="2" height="1" fill="#000"/><rect x="16" y="9" width="1" height="4" fill="#1b1b1b"/><rect x="13" y="13" width="7" height="4" fill="#000"/><rect x="14" y="14" width="5" height="2" fill="#fff8e1"/><rect x="14" y="14" width="5" height="1" fill="#ffd23f"/></svg></div></div><p class="egg-msg">Rohbau fertig – Abnahme erteilt ✓</p></div>
+<div class="ufo-band" id="ufo-band" aria-hidden="true" hidden><div class="ufo" id="ufo"><svg class="ufo-svg" viewBox="0 0 20 10" shape-rendering="crispEdges"><rect x="7" y="0" width="6" height="1" fill="#000"/><rect x="6" y="1" width="8" height="2" fill="#9fd3ff"/><rect x="7" y="1" width="2" height="1" fill="#fff"/><rect x="2" y="3" width="16" height="1" fill="#000"/><rect x="1" y="4" width="18" height="2" fill="#9aa3b5"/><rect x="2" y="6" width="16" height="1" fill="#000"/><rect class="licht l1" x="3" y="4" width="1" height="1" fill="#ffd23f"/><rect class="licht l2" x="7" y="4" width="1" height="1" fill="#2fbf3f"/><rect class="licht l1" x="12" y="4" width="1" height="1" fill="#ff5a4f"/><rect class="licht l2" x="16" y="4" width="1" height="1" fill="#ffd23f"/><rect x="5" y="7" width="10" height="1" fill="#6f8bff"/></svg></div><div class="jet"><svg class="jet-svg" viewBox="0 0 40 10" shape-rendering="crispEdges"><rect x="0" y="4" width="2" height="1" fill="#fff" opacity="0.15"/><rect x="2" y="4" width="2" height="1" fill="#fff" opacity="0.22"/><rect x="4" y="4" width="2" height="1" fill="#fff" opacity="0.30"/><rect x="6" y="4" width="2" height="1" fill="#fff" opacity="0.38"/><rect x="8" y="4" width="2" height="1" fill="#fff" opacity="0.45"/><rect x="10" y="4" width="2" height="1" fill="#fff" opacity="0.53"/><rect x="12" y="4" width="2" height="1" fill="#fff" opacity="0.60"/><rect x="14" y="4" width="2" height="1" fill="#fff" opacity="0.68"/><rect x="16" y="4" width="2" height="2" fill="#333"/><rect x="18" y="4" width="19" height="2" fill="#8a96a8"/><rect x="37" y="4" width="3" height="1" fill="#6b7688"/><rect x="37" y="5" width="2" height="1" fill="#6b7688"/><rect x="32" y="3" width="3" height="1" fill="#9fd3ff"/><rect x="24" y="6" width="6" height="1" fill="#6b7688"/><rect x="23" y="7" width="5" height="1" fill="#6b7688"/><rect x="25" y="3" width="4" height="1" fill="#6b7688"/><rect x="18" y="1" width="2" height="3" fill="#6b7688"/><rect x="21" y="2" width="2" height="2" fill="#6b7688"/></svg></div></div><p class="ufo-msg" id="ufo-msg" aria-hidden="true" hidden>Wir kommen in Frieden – und sichern Notizen.</p>
+<script src="md5.js"></script>
+<script src="easter.js"></script>
 <script src="enex-import.js"></script>
 <script src="dashboard.js"></script>
 </body>

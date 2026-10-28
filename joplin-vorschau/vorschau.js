@@ -1,5 +1,7 @@
 // Joplin-Vorschau: nur lesen. Beispieldaten oder (im Dashboard) die dort geladenen .enex-Notizen.
 var zustand = { buch: "alle", tag: null, suche: "", notiz: 7 };
+var anh = { modus: "notizen", filter: "alle", suche: "", sort: "name", richtung: 1 };
+var SICHER_OEFFNEN = /^(application\/pdf|image\/(png|jpeg|gif|webp)|text\/plain)$/;
 
 function el(tag, klasse, text) {
   var e = document.createElement(tag);
@@ -58,7 +60,7 @@ function zeigeTags() {
 
 function vorschauText(n) {
   var erster = n.inhalt[0];
-  if (!erster || erster[0] === "img") return "";
+  if (!erster || erster[0] === "img" || erster[0] === "file") return "";
   if (erster[0] === "p" || erster[0] === "quote") return erster[1];
   if (erster[0] === "check") return erster[1].map(function (c) { return c[1]; }).join(", ");
   if (typeof erster[1] === "string") return erster[1];
@@ -115,6 +117,72 @@ function blockBild(src, alt) {
   return f;
 }
 
+/* ---------- Anhänge: Blob-Adressen ---------- */
+function bytesAus(b64) {
+  var bin = atob(b64);
+  var out = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function anhangUrl(a) {
+  if (a.url) return a.url;
+  if (a.blobUrl) return a.blobUrl;
+  var typ = SICHER_OEFFNEN.test(a.mime) ? a.mime : "application/octet-stream"; // Unbekanntes nie im Browser ausführen
+  a.blobUrl = URL.createObjectURL(new Blob([bytesAus(a.data)], { type: typ }));
+  return a.blobUrl;
+}
+
+function darfOeffnen(a) {
+  return SICHER_OEFFNEN.test(a.mime) || a.mime === "image/svg+xml" && !!a.url;
+}
+
+function groesse(n) {
+  if (n < 1024) return n.toLocaleString("de-DE") + " Bytes";
+  if (n < 1048576) return (n / 1024).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " KB";
+  return (n / 1048576).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " MB";
+}
+
+function art(a) {
+  if (a.mime === "application/pdf") return "pdf";
+  if (/^image\//.test(a.mime)) return "bild";
+  return "sonstige";
+}
+
+function symbol(a) {
+  return { pdf: "📄", bild: "🖼️", sonstige: "📎" }[art(a)];
+}
+
+function dateiLink(a, text, laden) {
+  var link = el("a", "datei-link", text);
+  link.href = anhangUrl(a);
+  if (laden || !darfOeffnen(a)) link.download = a.name;
+  else { link.target = "_blank"; link.rel = "noopener"; }
+  return link;
+}
+
+/* Wie in Joplin: PDF direkt in der Notiz, andere Dateien als Link. */
+function blockDatei(index) {
+  var n = aktuelleNotiz();
+  var a = n && n.anhaenge ? n.anhaenge[index] : null;
+  var box = el("div", "datei-block");
+  if (!a) return box;
+  if (art(a) === "pdf") box.appendChild(pdfRahmen(a));
+  box.appendChild(dateiLink(a, symbol(a) + " " + a.name + " (" + groesse(a.size) + ")", !darfOeffnen(a)));
+  return box;
+}
+
+function pdfRahmen(a) {
+  var f = el("iframe", "pdf-vorschau");
+  f.title = "PDF-Vorschau: " + a.name;
+  f.src = anhangUrl(a);
+  return f;
+}
+
+function aktuelleNotiz() {
+  return NOTIZEN.filter(function (x) { return x.id === zustand.notiz; })[0];
+}
+
 function block(b) {
   if (b[0] === "h") return el("h2", "", b[1]);
   if (b[0] === "p") return el("p", "", b[1]);
@@ -123,6 +191,7 @@ function block(b) {
   if (b[0] === "ol") return blockListe("ol", b[1]);
   if (b[0] === "check") return blockCheckliste(b[1]);
   if (b[0] === "img") return blockBild(b[1], b[2]);
+  if (b[0] === "file") return blockDatei(b[1]);
   return el("p", "", "");
 }
 
@@ -141,7 +210,8 @@ function kopfzeile(n) {
 function fusszeile(n) {
   var f = el("div", "note-fuss");
   n.tags.forEach(function (t) { f.appendChild(el("span", "tag", t)); });
-  if (n.anhang) f.appendChild(el("span", "anhang", "📎 " + n.anhang));
+  (n.anhaenge || []).forEach(function (a) { f.appendChild(el("span", "anhang", symbol(a) + " " + a.name)); });
+  if (n.anhang && !n.anhaenge) f.appendChild(el("span", "anhang", "📎 " + n.anhang));
   return f;
 }
 
@@ -215,16 +285,185 @@ function zeigeImportBanner() {
   banner.appendChild(document.createTextNode(" – So sehen diese Notizen in Joplin aus. Nur zum Ansehen, nichts wird gespeichert."));
 }
 
+/* ---------- Notizanhänge: eine Liste über den ganzen Datensatz ---------- */
+function alleAnhaenge() {
+  var liste = [];
+  NOTIZEN.forEach(function (n) {
+    (n.anhaenge || []).forEach(function (a) { liste.push({ a: a, notiz: n }); });
+  });
+  return liste;
+}
+
+function passtAnhang(x) {
+  if (anh.filter !== "alle" && art(x.a) !== anh.filter) return false;
+  if (!anh.suche) return true;
+  return (x.a.name + " " + x.notiz.titel).toLowerCase().indexOf(anh.suche) >= 0;
+}
+
+function sortWert(x) {
+  if (anh.sort === "size") return x.a.size;
+  if (anh.sort === "mime") return x.a.mime;
+  if (anh.sort === "notiz") return x.notiz.titel.toLowerCase();
+  return x.a.name.toLowerCase();
+}
+
+function vergleiche(x, y) {
+  var a = sortWert(x), b = sortWert(y);
+  if (a === b) return 0;
+  return (a < b ? -1 : 1) * anh.richtung;
+}
+
+function mehrzahl(n, eins, viele) {
+  return n + " " + (n === 1 ? eins : viele);
+}
+
+function kennzahlen(liste) {
+  var z = { pdf: 0, bild: 0, sonstige: 0 }, bytes = 0;
+  liste.forEach(function (x) { z[art(x.a)] += 1; bytes += x.a.size || 0; });
+  return mehrzahl(liste.length, "Anhang", "Anhänge") + " · " + z.pdf + " PDF · " + mehrzahl(z.bild, "Bild", "Bilder") + " · " + z.sonstige + " Sonstige · zusammen " + groesse(bytes);
+}
+
+function zelle(text, label, klasse) {
+  var td = el("td", klasse || "", text);
+  if (label) td.setAttribute("data-label", label);
+  return td;
+}
+
+function nameZelle(x) {
+  var td = el("td");
+  td.appendChild(el("span", "anh-icon", symbol(x.a)));
+  td.appendChild(el("span", "anh-name", x.a.name));
+  return td;
+}
+
+function notizZelle(x) {
+  var td = zelle(x.notiz.titel, "Notiz");
+  td.appendChild(el("span", "anh-sub", buchName(x.notiz.buch)));
+  return td;
+}
+
+function aktionsZelle(x) {
+  var td = el("td");
+  var box = el("div", "aktionen");
+  box.appendChild(dateiLink(x.a, darfOeffnen(x.a) ? "Öffnen" : "Herunterladen", false));
+  var zur = el("button", "", "Zur Notiz");
+  zur.addEventListener("click", function () { zurNotiz(x.notiz.id); });
+  box.appendChild(zur);
+  td.appendChild(box);
+  return td;
+}
+
+function anhangZeile(x) {
+  var tr = el("tr");
+  tr.appendChild(nameZelle(x));
+  tr.appendChild(zelle(x.a.mime, "Typ"));
+  tr.appendChild(zelle(groesse(x.a.size || 0), "Größe"));
+  tr.appendChild(notizZelle(x));
+  tr.appendChild(aktionsZelle(x));
+  return tr;
+}
+
+function leerText(alle) {
+  if (!alle.length) return "In diesen Notizen gibt es keine Anhänge.";
+  return "Keine Anhänge passen zu Filter oder Suche.";
+}
+
+function zeigeSortierung() {
+  document.querySelectorAll(".anh-tabelle th[data-sort]").forEach(function (th) {
+    var aktiv = th.getAttribute("data-sort") === anh.sort;
+    th.setAttribute("aria-sort", aktiv ? (anh.richtung > 0 ? "ascending" : "descending") : "none");
+  });
+}
+
+function zeigeFilter() {
+  document.querySelectorAll(".filter button").forEach(function (b) {
+    b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === anh.filter));
+  });
+}
+
+function zeigeAnhaenge() {
+  var alle = alleAnhaenge();
+  var liste = alle.filter(passtAnhang).sort(vergleiche);
+  var body = document.getElementById("anh-liste");
+  body.textContent = "";
+  liste.forEach(function (x) { body.appendChild(anhangZeile(x)); });
+  document.getElementById("anh-zahl").textContent = kennzahlen(alle);
+  document.getElementById("anh-leer").textContent = leerText(alle);
+  document.getElementById("anh-leer").hidden = liste.length > 0;
+  document.querySelector(".anh-tabelle").hidden = liste.length === 0;
+  zeigeSortierung();
+  zeigeFilter();
+}
+
+function zeigeModus() {
+  var istAnh = anh.modus === "anhaenge";
+  document.querySelector(".app").classList.toggle("modus-anh", istAnh);
+  document.getElementById("anh").hidden = !istAnh;
+  document.getElementById("modus-notizen").setAttribute("aria-pressed", String(!istAnh));
+  document.getElementById("modus-anhaenge").setAttribute("aria-pressed", String(istAnh));
+  document.getElementById("modus-anhaenge").textContent = "Anhänge (" + alleAnhaenge().length + ")";
+  if (istAnh) zeigeAnhaenge();
+}
+
+function waehleModus(m) {
+  anh.modus = m;
+  zeigeModus();
+}
+
+function zurNotiz(id) {
+  zustand = { buch: "alle", tag: null, suche: "", notiz: id };
+  document.getElementById("search").value = "";
+  waehleModus("notizen");
+  allesZeigen();
+  document.getElementById("note").scrollIntoView({ block: "start" });
+}
+
+function sortiere(feld) {
+  anh.richtung = anh.sort === feld ? -anh.richtung : 1;
+  anh.sort = feld;
+  zeigeAnhaenge();
+}
+
+function filtere(f) {
+  anh.filter = f;
+  zeigeAnhaenge();
+}
+
+function sucheAnhang(e) {
+  anh.suche = e.target.value.trim().toLowerCase();
+  zeigeAnhaenge();
+}
+
+function freigebenBlobs() {
+  alleAnhaenge().forEach(function (x) { if (x.a.blobUrl) URL.revokeObjectURL(x.a.blobUrl); });
+}
+
+function bindeAnhaenge() {
+  document.getElementById("modus-notizen").addEventListener("click", function () { waehleModus("notizen"); });
+  document.getElementById("modus-anhaenge").addEventListener("click", function () { waehleModus("anhaenge"); });
+  document.getElementById("anh-suche").addEventListener("input", sucheAnhang);
+  document.querySelectorAll(".anh-tabelle th button").forEach(function (b) {
+    b.addEventListener("click", function () { sortiere(b.getAttribute("data-sort")); });
+  });
+  document.querySelectorAll(".filter button").forEach(function (b) {
+    b.addEventListener("click", function () { filtere(b.getAttribute("data-filter")); });
+  });
+}
+
 function uebernehmeImport(e) {
   if (e.origin !== location.origin || e.source !== window.parent || !gueltigerImport(e.data)) return;
+  freigebenBlobs();
   NOTIZBUECHER = e.data.notebooks;
   NOTIZEN = e.data.notes;
   zustand = { buch: "alle", tag: null, suche: "", notiz: ersteMitBild() };
   document.getElementById("search").value = "";
   zeigeImportBanner();
   allesZeigen();
+  zeigeModus();
 }
 
 window.addEventListener("message", uebernehmeImport);
 document.getElementById("search").addEventListener("input", beiSuche);
+bindeAnhaenge();
 allesZeigen();
+zeigeModus();

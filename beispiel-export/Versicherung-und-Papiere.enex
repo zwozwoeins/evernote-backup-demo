@@ -3,7 +3,20 @@
 <en-export export-date="20261028T060000Z" application="Evernote" version="10.0">
 <note><title>Versicherungen Übersicht</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
-<en-note><div>Nur Beispielwerte, keine echten Nummern.</div><ul><li>Hausrat: Musterversicherung AG, Vertrag 000-BEISPIEL</li><li>Haftpflicht: Beispiel-Versicherung, Vertrag 000-MUSTER</li><li>Kfz: läuft am 30.11. aus – rechtzeitig vergleichen</li></ul></en-note>]]></content><created>20260107T131000Z</created><updated>20260107T131000Z</updated><tag>wichtig</tag><note-attributes><author>Beispiel</author></note-attributes></note>
+<en-note><div>Nur Beispielwerte, keine echten Nummern.</div><ul><li>Hausrat: Musterversicherung AG, Vertrag 000-BEISPIEL</li><li>Haftpflicht: Beispiel-Versicherung, Vertrag 000-MUSTER</li><li>Kfz: läuft am 30.11. aus – rechtzeitig vergleichen</li></ul><div><en-media type="application/pdf" hash="9060c5851adb7581d301737dc3f96dda"/></div></en-note>]]></content><created>20260107T131000Z</created><updated>20260107T131000Z</updated><tag>wichtig</tag><note-attributes><author>Beispiel</author></note-attributes><resource><data encoding="base64">
+JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2Jq
+CjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2Jq
+CjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA0MjAg
+MjAwXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4g
+Pj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMzAgPj4Kc3RyZWFtCkJUIC9GMSAxOCBU
+ZiA1MCAxMjAgVGQgKEJlaXNwaWVsLVBvbGljZSAtIG51ciBUZXN0ZGF0ZW4pIFRqIDAgLTMwIFRk
+IC9GMSAxMiBUZiAoTXVzdGVydmVyc2ljaGVydW5nIEFHLCBWZXJ0cmFnIDAwMC1CRUlTUElFTCkg
+VGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9U
+eXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2
+NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDEx
+NSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDA0MjIgMDAwMDAgbiAKdHJhaWxl
+cgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0OTIKJSVFT0YK
+</data><mime>application/pdf</mime><resource-attributes><file-name>Beispiel-Police.pdf</file-name></resource-attributes></resource></note>
 <note><title>Wo liegt was?</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
 <en-note><ul><li>Geburtsurkunden: blauer Ordner, Arbeitszimmer</li><li>Garantiescheine: Schublade im Flur</li><li>Zweitschlüssel Auto: Schlüsselbrett</li></ul></en-note>]]></content><created>20251122T153300Z</created><updated>20251122T153300Z</updated><tag>wichtig</tag><tag>wohnung</tag><note-attributes><author>Beispiel</author></note-attributes></note>

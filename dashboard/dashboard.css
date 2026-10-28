@@ -1,4 +1,4 @@
-/* Evernote-Sicherung – Dashboard. iMac-first, 16-Bit nur als Haut.
+/* NotizSchrabSchrab – Dashboard. iMac-first, 16-Bit nur als Haut.
    WCAG 2.2 AA: Kontrast >= 4.5:1, Ziele >= 48px, sichtbarer Fokus, reduzierte Bewegung. */
 @font-face{font-family:"Pixel";src:url("fonts/PressStart2P-Regular.ttf") format("truetype");font-display:swap}
 :root{--ink:#0d0d26;--sky:#2b4bd8;--sky2:#16237a;--gold:#ffd23f;--gold2:#c99700;--grass:#2fbf3f;--grass2:#167a24;
@@ -10,16 +10,18 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Bl
 :focus-visible{outline:4px solid var(--focus);outline-offset:3px}
 .skip{position:absolute;left:-999px;top:0;background:#000;color:#fff;padding:.6rem 1rem;z-index:9}
 .skip:focus{left:.5rem}
-.app{display:grid;grid-template-columns:96px 300px minmax(0,1fr);min-height:100vh}
+.app{display:grid;grid-template-columns:108px 300px minmax(0,1fr);min-height:100vh}
 /* Leiste links */
-.rail{background:var(--rail);display:flex;flex-direction:column;gap:.8rem;padding:1rem .6rem;box-shadow:inset -4px 0 0 #000}
-.rail-btn{display:flex;flex-direction:column;align-items:center;gap:.3rem;min-height:72px;padding:.5rem .2rem;border:0;background:transparent;color:#fff;font:inherit;font-size:1rem;cursor:pointer;border-radius:0}
+.rail{background:var(--rail);display:flex;flex-direction:column;gap:.8rem;padding:1rem .4rem;box-shadow:inset -4px 0 0 #000}
+.rail-btn{display:flex;flex-direction:column;align-items:center;gap:.3rem;min-height:72px;padding:.5rem .1rem;border:0;background:transparent;color:#fff;font:inherit;font-size:.8rem;line-height:1.2;text-align:center;hyphens:manual;cursor:pointer;border-radius:0}
+.rail-btn span{max-width:100%}
 .rail-btn .ico{width:40px;height:40px}
 .rail-btn[aria-current="page"]{background:var(--sky);box-shadow:0 0 0 3px #000,inset -4px -4px 0 var(--sky2),inset 4px 4px 0 #6f8bff}
 .rail-btn:hover{background:#2c2580}
 /* Statusspalte */
 .statuscol{background:var(--col);color:#fff;padding:1.4rem 1.1rem;box-shadow:inset -4px 0 0 #000}
 h1{font-family:"Pixel",monospace;font-weight:normal;font-size:1rem;line-height:1.6;color:var(--gold);text-shadow:2px 2px 0 #000;margin:0 0 1rem}
+.logo{font-size:1.05rem;line-height:1.5;letter-spacing:.04em;color:var(--gold);text-shadow:2px 2px 0 #000,-1px -1px 0 var(--gold2);overflow-wrap:normal;user-select:none;cursor:default}
 .mode{background:#000;color:var(--gold);font-weight:bold;padding:.5rem .7rem;box-shadow:0 0 0 3px var(--gold);margin:0 0 1rem}
 .facts{margin:0}
 .facts div{padding:.6rem 0;border-bottom:2px solid #3a3390}
@@ -71,22 +73,75 @@ pre{white-space:pre-wrap;font-size:1rem;max-height:12rem;overflow:auto}
 .view-wide{max-width:1200px}
 .btn-back{width:auto;min-width:44px;display:inline-block;margin:0 0 .8rem;padding:.6rem 1.1rem;font-weight:bold}
 .joplin-frame{display:block;width:100%;height:70vh;min-height:480px;border:0;background:#fff;box-shadow:0 0 0 4px #000}
+/* Datenverbindung und Export */
+.or{text-align:center;font-weight:bold;margin:.6rem 0 0}
+.hint{margin:.2rem 0}
+.note-small{margin:1.2rem 0 0;color:#3d3d55}
+fieldset.target:disabled{opacity:.6}
+.radio-off{color:#555}
+.soon{background:#000;color:var(--gold);font-size:.85rem;font-weight:bold;padding:.1rem .5rem}
+#vorschau-next{margin-top:1.4rem}
+/* Import-Protokoll */
+.implog{margin:.4rem 0;padding-left:1.4rem;max-height:20rem;overflow:auto;font-size:.95rem;overflow-wrap:anywhere}
+.implog li{margin:.2rem 0}
+.implog-warn{color:#8a1c14;font-weight:bold}
 /* Testen mit .enex-Dateien (nur Vorschau) */
 .testbox{margin:1.4rem 4px .4rem;padding:.6rem 1rem;background:#fff;box-shadow:0 0 0 3px #000}
 .testtitle{font-size:1.05rem;margin:.3rem 0;color:var(--sky2)}
 .small-link{display:inline-flex;align-items:center;min-height:48px;color:var(--sky2);font-weight:bold}
+/* Footer mit kleinem Pixel-Schiff (dezent, aria-hidden) */
+.rail,.statuscol{grid-row:1 / span 2}
+.app{grid-template-rows:1fr auto}
+.foot{grid-column:3;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem 1rem;padding:.4rem 2.4rem 1rem;color:#fff}
+.carrier{width:80px;height:24px;flex:none}
+.wave{animation:wave 2.4s steps(2) infinite}
+.w2{animation-delay:1.2s}
+@keyframes wave{50%{transform:translateX(2px)}}
+.foot-links{display:flex;flex-wrap:wrap;gap:0 1.2rem}
+.foot-links a{display:inline-flex;align-items:center;min-height:48px;color:#fff;font-weight:bold}
 /* Kleine Bildschirme (nur Vorschau): Leiste unten */
 @media (max-width:760px){
   .app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
   .statuscol{box-shadow:none;padding:1rem}
   .facts{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
   main{order:1;padding:1rem .4rem 1rem}
-  .statuscol{order:2;padding-bottom:6rem}
+  .statuscol{order:2;padding-bottom:1rem}
+  .rail,.statuscol{grid-row:auto}
+  .foot{grid-column:auto;order:3;padding:.4rem 1rem 6rem}
   .view{padding:1.2rem 1rem}
   .view-wide{padding:1rem .6rem}
   .joplin-frame{height:75vh;min-height:420px}
   .rail{position:fixed;bottom:0;left:0;right:0;flex-direction:row;justify-content:space-around;padding:.3rem .4rem;gap:.4rem;box-shadow:inset 0 4px 0 #000;z-index:5}
-  .rail-btn{flex:1;min-height:60px;padding:.2rem;gap:.1rem;font-size:.9rem}
+  .rail-btn{flex:1;min-width:0;min-height:60px;padding:.2rem .1rem;gap:.1rem;font-size:.78rem}
   .rail-btn .ico{width:28px;height:28px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+/* Easter Egg 1 (5x Logo): Tandem-Rotor-Hubschrauber bringt Notizen als Ziegel, generische Pixel-Art */
+.egg{position:fixed;left:50%;bottom:96px;width:min(560px,92vw);transform:translateX(-50%);pointer-events:none;z-index:20}
+.egg-track{position:relative;height:128px;background:#000;box-shadow:0 0 0 3px #fff,0 0 0 6px #000;overflow:hidden}
+.egg-bricks{position:absolute;left:8px;right:8px;bottom:8px;height:24px;display:flex;gap:4px}
+.egg-brick{flex:1;background:var(--paper);box-shadow:inset 0 -6px 0 var(--gold2),inset 0 0 0 2px #000;opacity:0;animation:egg-show .2s steps(1) forwards}
+.egg-brick:nth-child(1){animation-delay:0.20s}.egg-brick:nth-child(2){animation-delay:0.54s}.egg-brick:nth-child(3){animation-delay:0.88s}.egg-brick:nth-child(4){animation-delay:1.22s}.egg-brick:nth-child(5){animation-delay:1.56s}.egg-brick:nth-child(6){animation-delay:1.90s}.egg-brick:nth-child(7){animation-delay:2.24s}.egg-brick:nth-child(8){animation-delay:2.58s}
+.egg-run{position:absolute;left:0;top:6px;width:100%;animation:egg-run 3s steps(30) forwards}
+.egg-heli{width:96px;height:54px;display:block}
+.rotor{transform-box:fill-box;transform-origin:center;animation:rotor .12s steps(2) infinite}
+.rotor-b{animation-delay:.06s}
+.egg-msg{margin:12px auto 0;width:max-content;max-width:100%;background:var(--grass2);color:#fff;font-weight:bold;padding:.5rem .9rem;box-shadow:0 0 0 3px #000;opacity:0;animation:egg-show .2s steps(1) 3s forwards}
+@keyframes egg-run{from{transform:translateX(-96px)}to{transform:translateX(calc(100% - 40px))}}
+@keyframes rotor{50%{transform:scaleX(.35)}}
+@keyframes egg-show{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.egg-track{display:none}.egg-msg{opacity:1!important}}
+/* Easter Egg 2: seltenes UFO im Kopfbereich, gejagt von einem generischen Pixel-Jet (ohne Gewalt) */
+.ufo-band{position:fixed;left:0;right:0;top:0;height:72px;pointer-events:none;z-index:19;overflow:hidden}
+.ufo{position:absolute;left:0;top:14px;width:60px;height:30px;pointer-events:auto;cursor:pointer;animation:ufo-fly 4s linear forwards}
+.ufo-svg{width:60px;height:30px;display:block;animation:ufo-wobble .5s steps(2) infinite}
+.licht{animation:blink .4s steps(1) infinite}
+.l2{animation-delay:.2s}
+.jet{position:absolute;left:0;top:22px;width:120px;height:30px;opacity:0;animation:jet-fly 2.6s linear .9s forwards}
+.jet-svg{width:120px;height:30px;display:block}
+.ufo-msg{position:fixed;top:78px;left:50%;transform:translateX(-50%);margin:0;max-width:92vw;background:#000;color:var(--gold);font-weight:bold;padding:.5rem .9rem;box-shadow:0 0 0 3px var(--gold);z-index:21;pointer-events:none}
+@keyframes ufo-fly{0%{transform:translate(-70px,0)}15%{transform:translate(15vw,14px)}30%{transform:translate(30vw,-6px)}45%{transform:translate(45vw,14px)}60%{transform:translate(60vw,-6px)}75%{transform:translate(72vw,10px);opacity:1}80%{opacity:0}84%{opacity:1}88%{opacity:0}92%{opacity:1;transform:translate(78vw,4px) scale(1)}100%{opacity:0;transform:translate(80vw,4px) scale(.1,1.6)}}
+@keyframes ufo-wobble{50%{transform:translateY(2px) rotate(-3deg)}}
+@keyframes blink{50%{opacity:.2}}
+@keyframes jet-fly{0%{opacity:1;transform:translate(-130px,0)}100%{opacity:1;transform:translate(105vw,-4px)}}
+@media (prefers-reduced-motion:reduce){.ufo-band{display:none!important}}
