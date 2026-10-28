@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'none'; form-action 'none'">
-<title>NotizSchrabSchrab – Evernote nach Apple Notizen</title>
-<meta name="application-name" content="NotizSchrabSchrab">
+<title>Notiz-Converter – Evernote nach Joplin oder Apple Notizen</title>
+<meta name="application-name" content="Notiz-Converter">
+<meta name="color-scheme" content="dark">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
 <header>
-  <h1 class="logo">Notiz<wbr>Schrab<wbr>Schrab</h1>
-  <p class="sub">Evernote sichern mit NotizSchrabSchrab: alle Notizen von Evernote in Apple Notizen – in 3 Schritten.<br>Ihr Evernote bleibt unverändert.</p>
+  <h1 class="logo">Notiz-<wbr>Converter</h1>
+  <p class="sub">Alle Notizen von Evernote in Apple Notizen – in 3 Schritten.<br>Ihr Evernote bleibt unverändert.</p>
   <p class="preview">Vorschau zum Ansehen – hier passiert noch nichts Echtes.</p>
 </header>
 <main>
@@ -32,7 +33,7 @@
     <p id="b-state" class="state" aria-live="polite"></p>
     <p id="b-eta" class="eta"></p>
     <p class="keep">iMac anlassen, nicht zuklappen.</p>
-    <div class="bar"><i id="b-fill"></i></div>
+    <div class="bar" id="b-bar" role="progressbar" aria-label="Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="b-fill"></i></div>
     <div class="logwrap">
       <p class="logtitle">Was gerade passiert</p>
       <ol class="log" id="log"></ol>
@@ -47,7 +48,7 @@
     <p class="done-title" id="b-done-text"></p>
     <div class="fail" id="b-fail" hidden>
       <p id="b-fail-text"></p>
-      <button class="second" id="b-retry">Nochmal versuchen</button>
+      <button class="second" id="b-retry">Erneut versuchen</button>
     </div>
     <p>Falls etwas fehlt: einfach noch einmal „Jetzt sichern“ drücken.</p>
   </div>

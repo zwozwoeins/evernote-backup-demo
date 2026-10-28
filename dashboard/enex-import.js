@@ -4,12 +4,12 @@
    Ergebnis im Format der Joplin-Vorschau: { notebooks: [{id, name}], notes: [{id, buch, titel, datum, tags, inhalt, anhaenge}] }
    Dazu ein Protokoll je Datei (Zahlen, Warnungen, Fehler mit Loesung). */
 
-const ENEX_MAX_BYTES = 50 * 1024 * 1024;
+const ENEX_MAX_BYTES = 100 * 1024 * 1024; // GitHub-Grenze je Datei; groessere Dateien besser mit der Kommandozeile
 const ENEX_IMAGE_MIME = /^image\/(png|jpeg|gif|webp)$/;
 
 const ENEX_ERRORS = {
   type: { text: 'Keine .enex-Datei.', fix: 'Bitte in Evernote ein Notizbuch exportieren (Format .enex) und diese Datei wählen.' },
-  size: { text: 'Die Datei ist größer als 50 MB.', fix: 'Bitte das Notizbuch in Evernote in kleinere Teile aufteilen und einzeln exportieren.' },
+  size: { text: 'Die Datei ist größer als 100 MB.', fix: 'Bitte das Notizbuch in Evernote in kleinere Teile aufteilen und einzeln exportieren.' },
   xml: { text: 'Die Datei ist beschädigt oder unvollständig.', fix: 'Bitte in Evernote noch einmal exportieren und die neue Datei wählen.' },
   root: { text: 'Die Datei ist keine Evernote-Exportdatei.', fix: 'Bitte eine Datei wählen, die Evernote beim Export erstellt hat.' },
   empty: { text: 'Die Datei enthält keine Notizen.', fix: 'Bitte prüfen, ob das Notizbuch in Evernote Notizen hat, und erneut exportieren.' },
@@ -17,9 +17,7 @@ const ENEX_ERRORS = {
 };
 
 /* ---------- kleine Helfer ---------- */
-function enexNotebookName(fileName) {
-  return fileName.replace(/\.enex$/i, '').replace(/[-_]+/g, ' ').replace(' und ', ' & ').trim() || 'Notizbuch';
-}
+const enexNotebookName = NotizCore.notebookName; // gemeinsamer Kern (auch fuer die Kommandozeile)
 
 function enexParseXml(text) {
   const doc = new DOMParser().parseFromString(text, 'application/xml');
@@ -27,11 +25,7 @@ function enexParseXml(text) {
   return doc;
 }
 
-function enexDateObj(raw) {
-  const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(raw || '');
-  if (!m) return null;
-  return new Date(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +m[6]));
-}
+const enexDateObj = NotizCore.parseDate; // gemeinsamer Kern (auch fuer die Kommandozeile)
 
 function enexDateText(d) {
   if (!d) return '';
@@ -50,11 +44,7 @@ function enexBytes(b64) {
   return out;
 }
 
-function enexKind(mime) {
-  if (mime === 'application/pdf') return 'pdf';
-  if (/^image\//.test(mime)) return 'bild';
-  return 'sonstige';
-}
+const enexKind = NotizCore.attachmentKind; // gemeinsamer Kern (auch fuer die Kommandozeile)
 
 /* ---------- Anhaenge ---------- */
 function enexResource(r, i) {
@@ -101,11 +91,16 @@ function enexMediaBlock(el, ctx) {
   return ['file', hit.index];
 }
 
+function enexTableRows(el) {
+  return Array.from(el.getElementsByTagName('tr')).map((tr) => Array.from(tr.children).map((td) => td.textContent.trim()));
+}
+
 function enexBlock(el, ctx) {
   const tag = el.tagName.toLowerCase();
   if (el.getElementsByTagName('en-todo').length) return ['todo', enexTodoItem(el)];
   if (tag === 'en-media' || el.getElementsByTagName('en-media').length) return enexMediaBlock(el, ctx);
   if (/^h[1-6]$/.test(tag)) return ['h', el.textContent.trim()];
+  if (tag === 'table') return ['table', enexTableRows(el)];
   if (tag === 'ul' || tag === 'ol') return [tag, enexListItems(el)];
   if (tag === 'blockquote') return ['quote', el.textContent.trim()];
   const text = el.textContent.trim();
@@ -124,7 +119,7 @@ function enexUnusedFiles(ctx) {
 }
 
 function enexContent(noteEl, ctx) {
-  const doc = enexParseXml(enexChildText(noteEl, 'content').replace(/<!DOCTYPE[^>]*>/i, ''));
+  const doc = enexParseXml(NotizCore.htmlEntitiesToNumeric(enexChildText(noteEl, 'content').replace(/<!DOCTYPE[^>]*>/i, '')));
   if (!doc || doc.documentElement.tagName !== 'en-note') { ctx.warn('Inhalt nicht lesbar'); return [['p', '']]; }
   const blocks = Array.from(doc.documentElement.children).map((el) => enexBlock(el, ctx)).filter(Boolean);
   const merged = blocks.reduce(enexMergeTodos, []).concat(enexUnusedFiles(ctx));
@@ -137,6 +132,7 @@ function enexNote(noteEl, bookId, id, report) {
   const title = enexChildText(noteEl, 'title') || 'Ohne Titel';
   const created = enexDateObj(enexChildText(noteEl, 'created'));
   const files = enexResources(noteEl);
+  enexExportNames(files, report);
   const ctx = { files: files, used: files.map(() => false), warn: (t) => report.warnings.push('„' + title + '“: ' + t) };
   const note = {
     id: id, buch: bookId, titel: title, datum: enexDateText(created),
@@ -147,11 +143,19 @@ function enexNote(noteEl, bookId, id, report) {
   return note;
 }
 
+/* Name fuer die Ablage auf der Platte (Windows/macOS-tauglich, ohne Doppelte). Der Originalname bleibt fuer die Anzeige. */
+function enexExportNames(files, report) {
+  files.forEach((f) => {
+    f.exportName = NotizCore.uniqueName(NotizCore.safeFileName(f.name), report.usedNames);
+    if (f.exportName !== f.name) report.renamed.push('„' + f.name + '“ → „' + f.exportName + '“');
+  });
+}
+
 /* ---------- Protokoll ---------- */
 function enexNewReport(file) {
   return {
     file: file.name, size: file.size, notes: 0, att: { pdf: 0, bild: 0, sonstige: 0 }, attBytes: 0,
-    tags: {}, oldest: null, newest: null, ms: 0, warnings: [], error: null,
+    tags: {}, oldest: null, newest: null, ms: 0, warnings: [], renamed: [], usedNames: new Set(), error: null,
   };
 }
 
@@ -169,7 +173,7 @@ function enexFail(report, key) {
 }
 
 /* ---------- Fortschritt ---------- */
-const ENEX_MIN_SECONDS = 1.5; // kleine Dateien: kurz sichtbar fliegen lassen, grosse Dateien laufen in Echtzeit
+const ENEX_MIN_SECONDS = 1.5; // kleine Dateien: Balken kurz sichtbar, grosse Dateien laufen in Echtzeit
 
 function enexPause(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -215,19 +219,25 @@ async function enexReadFile(file, text, index, firstId, report, progress) {
 async function enexReadOne(file, text, index, firstId, progress) {
   const report = enexNewReport(file);
   const t0 = performance.now();
+  const paused0 = progress.pausedMs;
   let part = null;
   try { part = await enexReadFile(file, text, index, firstId, report, progress); } catch (e) { part = enexFail(report, 'read'); }
-  report.ms = Math.round(performance.now() - t0);
+  report.ms = Math.round(performance.now() - t0 - (progress.pausedMs - paused0));
   return { part: part, report: report };
 }
 
+/* Kleine Dateien: kurze Pause je Notiz, damit der Balken sichtbar laeuft. Grosse Dateien: keine Pause,
+   nur alle 20 Notizen kurz Luft fuer die Anzeige. Die Pausen werden gezaehlt und von der Lesezeit abgezogen. */
 function enexProgress(total, onProgress) {
-  const pace = total ? Math.min(60, (ENEX_MIN_SECONDS * 1000) / total) : 0;
-  const p = { done: 0, total: total };
+  const pace = total && total <= 200 ? Math.min(60, (ENEX_MIN_SECONDS * 1000) / total) : 0;
+  const p = { done: 0, total: total, pausedMs: 0 };
   p.step = async () => {
     p.done += 1;
     onProgress(p.done, p.total);
+    if (!pace && p.done % 20) return;
+    const t = performance.now();
     await enexPause(pace);
+    p.pausedMs += performance.now() - t;
   };
   return p;
 }
@@ -235,6 +245,7 @@ function enexProgress(total, onProgress) {
 /* Liest alle Dateien. Gute Dateien werden geladen, schlechte stehen mit Loesung im Protokoll.
    onProgress(done, total) meldet den echten Fortschritt in Notizen. */
 async function enexReadFiles(files, onProgress) {
+  const t0 = performance.now();
   const texts = [];
   for (let i = 0; i < files.length; i += 1) texts.push(await enexReadText(files[i]));
   const total = texts.reduce((n, t) => n + enexCountNotes(t), 0);
@@ -249,5 +260,6 @@ async function enexReadFiles(files, onProgress) {
     data.notebooks.push(r.part.notebook);
     data.notes = data.notes.concat(r.part.notes);
   }
-  return { ok: data.notes.length > 0, data: data, reports: reports, total: total, done: progress.done };
+  const ms = Math.round(performance.now() - t0 - progress.pausedMs);
+  return { ok: data.notes.length > 0, data: data, reports: reports, total: total, done: progress.done, ms: ms };
 }

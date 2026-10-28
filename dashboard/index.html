@@ -5,10 +5,10 @@
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'">
-<title>NotizSchrabSchrab</title>
-<meta name="application-name" content="NotizSchrabSchrab">
-<meta name="apple-mobile-web-app-title" content="NotizSchrabSchrab">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; frame-ancestors 'none'">
+<title>Notiz-Converter</title>
+<meta name="application-name" content="Notiz-Converter">
+<meta name="apple-mobile-web-app-title" content="Notiz-Converter">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="dashboard.css">
@@ -24,11 +24,11 @@
   </nav>
 
   <aside class="statuscol" aria-label="Status">
-    <h1 class="logo" aria-label="NotizSchrabSchrab">Notiz<wbr>Schrab<wbr>Schrab</h1>
+    <h1 class="logo">Notiz-<wbr>Converter</h1>
     <p class="mode" id="mode" hidden>Vorschau – so sieht es auf dem iMac aus</p>
     <dl class="facts">
       <div><dt>Daten</dt><dd id="f-conn">–</dd></div>
-      <div><dt>Ziel</dt><dd id="f-target">Apple Notizen</dd></div>
+      <div><dt>Ziel</dt><dd id="f-target">Joplin</dd></div>
       <div><dt>Zuletzt exportiert</dt><dd id="f-last">noch nie</dd></div>
       <div><dt>Gerade</dt><dd id="f-now" aria-live="polite">bereit</dd></div>
     </dl>
@@ -68,13 +68,9 @@
       </div>
 
       <div id="import-run" hidden>
-        <div class="heli-track" id="imp-bar" role="progressbar" aria-label="Import-Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <i class="heli-fill" id="imp-fill"></i>
-          <div class="pallets" aria-hidden="true"><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i></div>
-          <div class="heli-pos" id="imp-pos"><svg class="heli-svg" viewBox="0 0 32 18" shape-rendering="crispEdges" aria-hidden="true"><rect class="rotor rotor-a" x="0" y="0" width="15" height="1" fill="#d0d4da"/><rect class="rotor rotor-b" x="17" y="0" width="15" height="1" fill="#d0d4da"/><rect x="6" y="1" width="4" height="2" fill="#5d7330"/><rect x="24" y="1" width="3" height="2" fill="#5d7330"/><rect x="2" y="3" width="28" height="1" fill="#c4d68a"/><rect x="2" y="4" width="28" height="4" fill="#8fae4c"/><rect x="3" y="8" width="26" height="1" fill="#5d7330"/><rect x="30" y="4" width="1" height="3" fill="#8fae4c"/><rect x="31" y="5" width="1" height="2" fill="#c4d68a"/><rect x="28" y="4" width="3" height="1" fill="#9fd3ff"/><rect x="10" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="14" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="18" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="22" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="6" y="9" width="2" height="1" fill="#d0d4da"/><rect x="24" y="9" width="2" height="1" fill="#d0d4da"/><rect x="16" y="9" width="1" height="4" fill="#d0d4da"/><rect x="13" y="13" width="7" height="4" fill="#d0d4da"/><rect x="14" y="14" width="5" height="2" fill="#fff3c4"/><rect x="14" y="14" width="5" height="1" fill="#ffd23f"/></svg></div>
-        </div>
-        <p class="heli-text" id="imp-text"></p>
-        <p class="heli-done" id="imp-done" hidden>Rohbau fertig – Abnahme erteilt ✓</p>
+        <div class="bar" id="imp-bar" role="progressbar" aria-label="Import-Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="bar-fill" id="imp-fill"></i></div>
+        <p class="bar-text" id="imp-text"></p>
+        <p class="bar-done" id="imp-done" hidden></p>
       </div>
 
       <div id="import-log" class="card" hidden>
@@ -83,6 +79,18 @@
         <details><summary>Detailprotokoll</summary><ol class="implog" id="import-lines"></ol></details>
         <button class="btn-secondary" id="copy-log">Protokoll kopieren</button>
         <p id="copy-msg" role="status" hidden>Protokoll kopiert.</p>
+        <button class="btn-secondary" id="debug-btn">Daten zur Fehlersuche senden</button>
+        <p class="hint" id="debug-off" hidden>Noch nicht eingerichtet. Der Support richtet das Senden bei Bedarf ein.</p>
+        <div id="debug-run" hidden>
+          <div class="bar" id="send-bar" role="progressbar" aria-label="Senden an den Support" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="bar-fill" id="send-fill"></i></div>
+          <p class="bar-text" id="send-text"></p>
+          <p class="bar-done" id="send-done" hidden></p>
+        </div>
+        <div id="debug-error" class="card card-error" role="alert" hidden>
+          <p class="err-text" id="debug-error-text"></p>
+          <p id="debug-error-fix"></p>
+          <button class="btn-primary" id="debug-again">Erneut versuchen</button>
+        </div>
       </div>
 
       <div class="choice">
@@ -96,7 +104,7 @@
         <div id="file-box" hidden>
           <p class="or">oder</p>
           <input type="file" id="enex-file" accept=".enex" multiple hidden>
-          <button class="btn-secondary" id="enex-btn">Beispieldatei laden</button>
+          <button class="btn-secondary" id="enex-btn">Datei laden (.enex)</button>
           <p class="hint">Die Datei bleibt auf diesem Gerät. <a class="small-link" href="../beispiel-export/">Beispieldateien herunterladen</a></p>
         </div>
       </div>
@@ -121,9 +129,9 @@
 
       <fieldset class="target" id="target-box">
         <legend>Ziel</legend>
-        <label class="radio"><input type="radio" name="target" value="notizen" checked> Apple Notizen (empfohlen für den Mac)</label>
-        <label class="radio radio-off"><input type="radio" name="target" value="onenote" disabled aria-describedby="onenote-hint"> OneNote <span class="soon" id="onenote-hint">bald verfügbar</span></label>
-        <label class="radio"><input type="radio" name="target" value="joplin"> Joplin</label>
+        <label class="radio"><input type="radio" name="target" value="joplin" checked> Joplin (empfohlen – läuft auf Mac, Windows, Linux, iPhone und Android)</label>
+        <label class="radio"><input type="radio" name="target" value="notizen"> Apple Notizen (nur Apple-Geräte)</label>
+        <label class="radio radio-off"><input type="radio" name="target" value="onenote" disabled aria-describedby="onenote-hint"> OneNote <span class="soon" id="onenote-hint">kommt später</span></label>
       </fieldset>
       <div id="joplin-box" hidden>
         <label class="field">Schlüssel aus Joplin (Einstellungen → Web Clipper)<input id="joplin-token" type="password" autocomplete="off"></label>
@@ -136,19 +144,15 @@
       <div id="export-empty" class="card" hidden>
         <p class="done-text">Es sind noch keine Notizen da.</p>
         <p>Verbinden Sie zuerst Evernote oder laden Sie eine Datei.</p>
-        <button class="btn-primary" id="empty-connect">Mit Evernote verbinden</button>
+        <button class="btn-primary" id="empty-connect">Zur Datenverbindung</button>
         <button class="btn-secondary" id="empty-file" hidden>Datei laden</button>
       </div>
 
       <div id="run" hidden>
         <p class="state" id="run-state"></p>
-        <div class="heli-track" id="bar" role="progressbar" aria-label="Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <i class="heli-fill" id="bar-fill"></i>
-          <div class="pallets" aria-hidden="true"><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i><i class="pallet"></i></div>
-          <div class="heli-pos" id="heli-pos"><svg class="heli-svg" viewBox="0 0 32 18" shape-rendering="crispEdges" aria-hidden="true"><rect class="rotor rotor-a" x="0" y="0" width="15" height="1" fill="#d0d4da"/><rect class="rotor rotor-b" x="17" y="0" width="15" height="1" fill="#d0d4da"/><rect x="6" y="1" width="4" height="2" fill="#5d7330"/><rect x="24" y="1" width="3" height="2" fill="#5d7330"/><rect x="2" y="3" width="28" height="1" fill="#c4d68a"/><rect x="2" y="4" width="28" height="4" fill="#8fae4c"/><rect x="3" y="8" width="26" height="1" fill="#5d7330"/><rect x="30" y="4" width="1" height="3" fill="#8fae4c"/><rect x="31" y="5" width="1" height="2" fill="#c4d68a"/><rect x="28" y="4" width="3" height="1" fill="#9fd3ff"/><rect x="10" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="14" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="18" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="22" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="6" y="9" width="2" height="1" fill="#d0d4da"/><rect x="24" y="9" width="2" height="1" fill="#d0d4da"/><rect x="16" y="9" width="1" height="4" fill="#d0d4da"/><rect x="13" y="13" width="7" height="4" fill="#d0d4da"/><rect x="14" y="14" width="5" height="2" fill="#fff3c4"/><rect x="14" y="14" width="5" height="1" fill="#ffd23f"/></svg></div>
-        </div>
-        <p class="heli-text" id="run-text"></p>
-        <p class="heli-done" id="run-done" hidden>Rohbau fertig – Abnahme erteilt ✓</p>
+        <div class="bar" id="bar" role="progressbar" aria-label="Export-Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="bar-fill" id="bar-fill"></i></div>
+        <p class="bar-text" id="run-text"></p>
+        <p class="bar-done" id="run-done" hidden></p>
         <p id="run-eta"></p>
         <p class="keep" id="run-keep">iMac anlassen, nicht zuklappen.</p>
       </div>
@@ -191,7 +195,7 @@
     <!-- HILFE -->
     <section class="view" id="v-hilfe" aria-labelledby="h-hilfe" hidden>
       <h2 id="h-hilfe">Hilfe</h2>
-      <p class="lead">NotizSchrabSchrab überträgt Ihre Evernote-Notizen nach Apple Notizen oder Joplin. Ihr Evernote bleibt dabei unverändert.</p>
+      <p class="lead">Der Notiz-Converter überträgt Ihre Notizen aus Evernote nach Joplin (empfohlen) oder Apple Notizen. Ihr Evernote bleibt dabei unverändert.</p>
       <details><summary>Was wird nicht (ganz) übernommen?</summary>
         <ul>
           <li><b>Bilder</b> kommen mit. Sehr große Bilder kommen als Anhang.</li>
@@ -199,6 +203,11 @@
           <li><b>Schlagwörter</b> und das <b>ursprüngliche Datum</b> stehen als Text in der Notiz.</li>
           <li><b>Nicht übernommen:</b> Text mit Passwortschutz, Erinnerungen, Aufgaben, ältere Fassungen einer Notiz, Links zwischen Notizen.</li>
         </ul>
+      </details>
+      <details><summary>Warum Joplin empfohlen ist</summary>
+        <p>Joplin ist kostenlos und läuft auf Mac, Windows, Linux, iPhone und Android. Ihre Notizen sind so nicht an einen Hersteller gebunden.</p>
+        <p>Zum Abgleich zwischen Geräten wählen Sie in Joplin unter „Synchronisation“ z.&nbsp;B. Dropbox, OneDrive, Nextcloud oder einen Ordner.</p>
+        <a class="btn-secondary link-btn" href="https://joplinapp.org/download/" target="_blank" rel="noopener noreferrer">Joplin herunterladen</a>
       </details>
       <details><summary>Regelmäßig sichern</summary>
         <p>Der Helfer sichert jeden Sonntag um 10 Uhr von selbst, wenn der iMac an ist. Danach erscheint eine kurze Mitteilung.</p>
@@ -208,7 +217,8 @@
         <p id="report-msg-2" hidden>Protokoll auf dem Schreibtisch gesichert. Bitte an den Support schicken.</p>
       </details>
       <details id="fernhilfe"><summary>Fernhilfe</summary>
-        <p>Wenn Sie Hilfe am Bildschirm brauchen: RustDesk installieren, öffnen und dem Support die ID und das Passwort nennen.</p>
+        <p>Wenn Sie Hilfe am Bildschirm brauchen: RustDesk installieren und öffnen. Nennen Sie ID und Passwort nur jemandem, den Sie selbst angerufen haben – niemals bei einem Anruf von Fremden.</p>
+        <p><b>Keinen dauerhaften Zugriff einrichten:</b> kein festes Passwort setzen und keinen Zugriff ohne Ihre Bestätigung erlauben. Nach der Hilfe RustDesk schließen.</p>
         <ol>
           <li>Beim ersten Start fragt der Mac nach den Rechten für „Bildschirmaufnahme“ und „Bedienungshilfen“.</li>
           <li>Klicken Sie dort auf „Erlauben“ bzw. „Einstellungen öffnen“.</li>
@@ -219,13 +229,23 @@
       </details>
     </section>
   </main>
-  <footer class="foot"><svg class="carrier" viewBox="0 0 40 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="4" width="36" height="1" fill="#5c6676"/><rect x="3" y="5" width="34" height="3" fill="#7a8494"/><rect x="6" y="8" width="28" height="1" fill="#5c6676"/><rect x="8" y="4" width="20" height="1" fill="#c9ced6"/><rect x="26" y="1" width="4" height="3" fill="#5c6676"/><rect x="27" y="2" width="2" height="1" fill="#9fd3ff"/><rect x="28" y="0" width="1" height="1" fill="#5c6676"/><g class="wave w1"><rect x="0" y="10" width="3" height="1" fill="#6f8bff"/><rect x="6" y="10" width="3" height="1" fill="#6f8bff"/><rect x="12" y="10" width="3" height="1" fill="#6f8bff"/><rect x="18" y="10" width="3" height="1" fill="#6f8bff"/><rect x="24" y="10" width="3" height="1" fill="#6f8bff"/><rect x="30" y="10" width="3" height="1" fill="#6f8bff"/><rect x="36" y="10" width="3" height="1" fill="#6f8bff"/></g><g class="wave w2"><rect x="3" y="11" width="3" height="1" fill="#4a6cf0"/><rect x="9" y="11" width="3" height="1" fill="#4a6cf0"/><rect x="15" y="11" width="3" height="1" fill="#4a6cf0"/><rect x="21" y="11" width="3" height="1" fill="#4a6cf0"/><rect x="27" y="11" width="3" height="1" fill="#4a6cf0"/><rect x="33" y="11" width="3" height="1" fill="#4a6cf0"/><rect x="39" y="11" width="3" height="1" fill="#4a6cf0"/></g></svg><nav class="foot-links" aria-label="Weitere Seiten"><a href="../">Startseite</a><a href="../beispiel-export/">Beispieldateien</a></nav></footer>
+  <footer class="foot"><nav class="foot-links" aria-label="Weitere Seiten"><a href="../">Startseite</a><a href="../beispiel-export/">Beispieldateien</a></nav></footer>
 </div>
-<div class="egg" id="egg" aria-hidden="true" hidden><div class="egg-track"><div class="egg-bricks"><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i><i class="egg-brick"></i></div><div class="egg-run"><svg class="egg-heli" viewBox="0 0 32 18" shape-rendering="crispEdges" aria-hidden="true"><rect class="rotor rotor-a" x="0" y="0" width="15" height="1" fill="#d0d4da"/><rect class="rotor rotor-b" x="17" y="0" width="15" height="1" fill="#d0d4da"/><rect x="6" y="1" width="4" height="2" fill="#5d7330"/><rect x="24" y="1" width="3" height="2" fill="#5d7330"/><rect x="2" y="3" width="28" height="1" fill="#c4d68a"/><rect x="2" y="4" width="28" height="4" fill="#8fae4c"/><rect x="3" y="8" width="26" height="1" fill="#5d7330"/><rect x="30" y="4" width="1" height="3" fill="#8fae4c"/><rect x="31" y="5" width="1" height="2" fill="#c4d68a"/><rect x="28" y="4" width="3" height="1" fill="#9fd3ff"/><rect x="10" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="14" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="18" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="22" y="5" width="1" height="1" fill="#9fd3ff"/><rect x="6" y="9" width="2" height="1" fill="#d0d4da"/><rect x="24" y="9" width="2" height="1" fill="#d0d4da"/><rect x="16" y="9" width="1" height="4" fill="#d0d4da"/><rect x="13" y="13" width="7" height="4" fill="#d0d4da"/><rect x="14" y="14" width="5" height="2" fill="#fff3c4"/><rect x="14" y="14" width="5" height="1" fill="#ffd23f"/></svg></div></div><p class="egg-msg">Rohbau fertig – Abnahme erteilt ✓</p></div>
-<div class="ufo-band" id="ufo-band" aria-hidden="true" hidden><div class="ufo" id="ufo"><svg class="ufo-svg" viewBox="0 0 20 10" shape-rendering="crispEdges"><rect x="7" y="0" width="6" height="1" fill="#d0d4da"/><rect x="6" y="1" width="8" height="2" fill="#9fd3ff"/><rect x="7" y="1" width="2" height="1" fill="#fff"/><rect x="2" y="3" width="16" height="1" fill="#d0d4da"/><rect x="1" y="4" width="18" height="2" fill="#9aa3b5"/><rect x="2" y="6" width="16" height="1" fill="#d0d4da"/><rect class="licht l1" x="3" y="4" width="1" height="1" fill="#ffd23f"/><rect class="licht l2" x="7" y="4" width="1" height="1" fill="#2fbf3f"/><rect class="licht l1" x="12" y="4" width="1" height="1" fill="#ff5a4f"/><rect class="licht l2" x="16" y="4" width="1" height="1" fill="#ffd23f"/><rect x="5" y="7" width="10" height="1" fill="#6f8bff"/></svg></div><div class="jet"><svg class="jet-svg" viewBox="0 0 40 10" shape-rendering="crispEdges"><rect x="0" y="4" width="2" height="1" fill="#fff" opacity="0.15"/><rect x="2" y="4" width="2" height="1" fill="#fff" opacity="0.22"/><rect x="4" y="4" width="2" height="1" fill="#fff" opacity="0.30"/><rect x="6" y="4" width="2" height="1" fill="#fff" opacity="0.38"/><rect x="8" y="4" width="2" height="1" fill="#fff" opacity="0.45"/><rect x="10" y="4" width="2" height="1" fill="#fff" opacity="0.53"/><rect x="12" y="4" width="2" height="1" fill="#fff" opacity="0.60"/><rect x="14" y="4" width="2" height="1" fill="#fff" opacity="0.68"/><rect x="16" y="4" width="2" height="2" fill="#333"/><rect x="18" y="4" width="19" height="2" fill="#8a96a8"/><rect x="37" y="4" width="3" height="1" fill="#6b7688"/><rect x="37" y="5" width="2" height="1" fill="#6b7688"/><rect x="32" y="3" width="3" height="1" fill="#9fd3ff"/><rect x="24" y="6" width="6" height="1" fill="#6b7688"/><rect x="23" y="7" width="5" height="1" fill="#6b7688"/><rect x="25" y="3" width="4" height="1" fill="#6b7688"/><rect x="18" y="1" width="2" height="3" fill="#6b7688"/><rect x="21" y="2" width="2" height="2" fill="#6b7688"/></svg></div></div><p class="ufo-msg" id="ufo-msg" aria-hidden="true" hidden>Wir kommen in Frieden – und sichern Notizen.</p>
+<dialog class="dlg" id="debug-dlg" aria-labelledby="debug-h" aria-describedby="debug-what">
+  <h3 id="debug-h">Daten zur Fehlersuche senden</h3>
+  <p id="debug-what">Es werden Ihre Notizen mit allen Anhängen und das Protokoll an den Support gesendet. Sie dienen nur der Fehlersuche.</p>
+  <p id="debug-size"></p>
+  <label class="check"><input type="checkbox" id="debug-ok"> Ich bin einverstanden, dass diese Daten gesendet werden.</label>
+  <div class="dlg-buttons">
+    <button class="btn-primary" id="debug-send" disabled>Senden</button>
+    <button class="btn-secondary" id="debug-cancel">Abbrechen</button>
+  </div>
+</dialog>
+<script src="config.js"></script>
 <script src="md5.js"></script>
-<script src="easter.js"></script>
+<script src="notiz-core.js"></script>
 <script src="enex-import.js"></script>
+<script src="debug-upload.js"></script>
 <script src="dashboard.js"></script>
 </body>
 </html>

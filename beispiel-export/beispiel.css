@@ -9,3 +9,4 @@ h1{font-size:1.6rem;margin:0 0 .4rem;color:#9db8ff}
 .files span{color:#b4bcc6}
 :focus-visible{outline:4px solid #ffd23f;outline-offset:3px}
 @media (max-width:760px){main{margin:16px 12px;padding:1rem}}
+h2{font-size:1.25rem;margin:1.6rem 0 .3rem;color:#9db8ff}

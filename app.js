@@ -52,7 +52,9 @@
     }
     $('#b-state').textContent = 'Sichere … Notizbuch ' + pos + ' von ' + TOTAL;
     $('#b-eta').textContent = eta(TOTAL - pos);
-    $('#b-fill').style.width = (pos / TOTAL * 100) + '%';
+    var pct = Math.round(pos / TOTAL * 100);
+    $('#b-fill').style.width = pct + '%';
+    $('#b-bar').setAttribute('aria-valuenow', String(pct));
     if(pos >= limit){ finish(limit); }
   }
 

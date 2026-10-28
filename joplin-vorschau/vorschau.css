@@ -90,3 +90,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ffd2
   .anh-tabelle td[data-label]::before{content:attr(data-label) ": ";color:#b0b6bd;font-size:13px}
 }
 a{color:#a9c4ff}
+.tabelle-box{overflow-x:auto;margin:12px 0}
+.notiz-tabelle{border-collapse:collapse;min-width:100%}
+.notiz-tabelle th,.notiz-tabelle td{border:1px solid #4a5058;padding:6px 10px;text-align:left;vertical-align:top}
+.notiz-tabelle th{background:#2a2e33}

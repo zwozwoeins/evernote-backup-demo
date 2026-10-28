@@ -1,0 +1,21 @@
+# Changelog
+
+## v5 – 28.10.2026
+- Name **Notiz-Converter**; alle Spielereien entfernt (Hubschrauber, Paletten, Easter Eggs, UFO, Jet, Flugzeugträger, Wellen)
+- Schlichter Fortschrittsbalken mit `role=progressbar`, Text „x von y Notizen – z %“, Fertig-Meldungen mit ✓
+- Dark Mode auch auf der Startseite
+- **Joplin** ist vorausgewähltes Ziel; Apple Notizen wählbar; OneNote „kommt später“
+- Neue Beispieldaten (92 Notizen, 79 Anhänge, 30 MB), Zeichentest, Lasttest (1.000 Notizen, 88 MB)
+- Protokoll: Laufzeiten (Einlesen, Export, Notizen/s) und bereinigte Namen
+- Benannte HTML-Entities (`&nbsp;` …) werden jetzt gelesen
+- Tabellen in der Joplin-Vorschau
+- Debug-Upload mit Zustimmung (Google Apps Script)
+- Gemeinsamer Kern `notiz-core.js` und CLI-Gerüst mit Exit-Codes
+- Fernhilfe: Sicherheitshinweis (ID/Passwort nur bei eigenem Anruf, kein dauerhafter Zugriff)
+- Knopf heißt jetzt „Datei laden (.enex)“
+
+## v4
+- Dark Mode, Hubschrauber als Fortschritt (in v5 entfernt)
+
+## v3
+- Reiter Datenverbindung / Joplin-Vorschau / Export / Hilfe, Import-Protokoll, Anhänge-Tabelle

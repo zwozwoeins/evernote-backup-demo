@@ -1,5 +1,5 @@
 'use strict';
-/* NotizSchrabSchrab – Dashboard.
+/* Notiz-Converter – Dashboard.
    Echt: spricht mit dem Helfer auf dem iMac (/api/...).
    Vorschau: wenn kein Helfer da ist (z. B. GitHub Pages), simuliert DemoBackend dieselben Antworten.
    Regeln: eine Funktion = eine Aufgabe, flach (async/await, fruehe Returns). */
@@ -43,7 +43,7 @@ const DEMO_BUSY = { code: 'BUSY', text: 'Es läuft gerade ein Export.', action: 
 const DEMO_BROKEN_HELP = ['„Erneut versuchen“ drücken.', 'Klappt es wieder nicht: „Überspringen“ drücken – alles andere bleibt gesichert.', 'Protokoll an den Support schicken („Hoppla – Protokoll sichern“).'];
 const demo = {
   connected: false, running: false, phase: '', done: 0, total: 0, events: [], error: null,
-  result: null, target: 'notizen', timer: null, limit: DEMO_TOTAL, failed: [], started: 0, last: {},
+  result: null, target: 'joplin', timer: null, limit: DEMO_TOTAL, failed: [], started: 0, last: {},
   source: null, probe: false,
 };
 
@@ -71,12 +71,20 @@ function demoNotesUpTo(limit) {
 
 const DEMO_FAKE_NOTES = 15242;
 
-function demoIcloudError() {
-  return {
-    code: 'ICLOUD_FULL', text: 'Der iCloud-Speicher ist voll. Der Export ist bei Notizbuch ' + (demo.done + 1) + ' angehalten.',
-    action: 'backup', label: 'Erneut versuchen', details: 'Notes: storage full (Vorschau)',
+const DEMO_TARGET_ERRORS = {
+  notizen: {
+    code: 'ICLOUD_FULL', text: 'Der iCloud-Speicher ist voll.', details: 'Notes: storage full (Vorschau)',
     help: ['In den Systemeinstellungen unter „Apple-ID → iCloud“ Platz freimachen.', 'Dann „Erneut versuchen“ drücken. Es geht an derselben Stelle weiter.'],
-  };
+  },
+  joplin: {
+    code: 'JOPLIN_OFFLINE', text: 'Joplin antwortet nicht.', details: 'GET http://127.0.0.1:41184/ping fehlgeschlagen (Vorschau)',
+    help: ['Joplin öffnen und unter „Werkzeuge → Optionen → Web Clipper“ den Dienst einschalten.', 'Dann „Erneut versuchen“ drücken. Es geht an derselben Stelle weiter.'],
+  },
+};
+
+function demoTargetError() {
+  const e = DEMO_TARGET_ERRORS[demo.target] || DEMO_TARGET_ERRORS.joplin;
+  return Object.assign({}, e, { text: e.text + ' Der Export ist bei Notizbuch ' + (demo.done + 1) + ' angehalten.', action: 'backup', label: 'Erneut versuchen' });
 }
 
 function demoFailStop() {
@@ -84,7 +92,7 @@ function demoFailStop() {
   demo.running = false;
   demo.phase = 'angehalten';
   demo.failAt = 0;
-  demo.error = demoIcloudError();
+  demo.error = demoTargetError();
   demoEvent(demo.error.text);
 }
 
@@ -134,6 +142,8 @@ function demoFinishFull() {
   const notes = demo.source ? demo.source.noteCount : 15230;
   demo.result = { probe: false, notebooks: demo.total, new: notes, changed: demo.source ? 0 : 12, failed: failed };
   demo.last = { saved_at: Date.now() / 1000 };
+  const ms = Date.now() - demo.started;
+  demoEvent('Laufzeit Export: ' + secondsText(ms) + ' (' + rateText(notes, ms) + ', Vorschau – Tempo simuliert).');
   if (!failed.length) return demoEvent('Fertig. Alles ist gesichert.');
   const text = '„' + failed[0] + '“ konnte nicht gesichert werden. Alles andere ist gesichert.';
   demo.error = { code: 'BROKEN_NOTEBOOK', text: text, action: 'backup', label: 'Erneut versuchen', secondary: { action: 'skip', label: 'Überspringen' }, help: DEMO_BROKEN_HELP, details: 'ParseError: no element found: line 1, column 48 (Vorschau)' };
@@ -295,8 +305,10 @@ function nowText(s) {
   return 'bereit';
 }
 
+const TARGET_NAMES = { joplin: 'Joplin', notizen: 'Apple Notizen' };
+
 function targetName(t) {
-  return t === 'joplin' ? 'Joplin' : 'Apple Notizen';
+  return TARGET_NAMES[t] || 'Joplin';
 }
 
 function hasData(s) {
@@ -337,7 +349,7 @@ function renderSource(s) {
   $('#login-hint').textContent = ui.mode === 'demo' ? 'In dieser Vorschau wird die Anmeldung nur simuliert. Echt läuft sie auf der offiziellen Evernote-Seite; hier geben Sie kein Passwort ein.' : 'Die Anmeldung läuft auf der offiziellen Evernote-Seite. Hier geben Sie kein Passwort ein.';
   renderConnectError();
   $('#file-box').hidden = ui.mode !== 'demo' || !!s.running;
-  $('#enex-btn').textContent = ui.imported ? 'Andere Datei laden' : 'Beispieldatei laden';
+  $('#enex-btn').textContent = ui.imported ? 'Andere Datei laden' : 'Datei laden (.enex)';
 }
 
 function renderVorschau() {
@@ -364,39 +376,40 @@ function renderExport(s) {
   $('#target-box').disabled = busy;
 }
 
-/* ---------- Hubschrauber-Fortschritt (Import und Export) ---------- */
-function heliState(s) {
+/* ---------- Fortschrittsbalken (Import und Export) ---------- */
+function barState(s) {
   if (s.phase === 'fertig') return 'done';
   if (!s.running) return 'stopped';
-  return 'fly';
+  return 'run';
 }
 
-function heliPercent(s) {
+function barPercent(s) {
   if (s.phase === 'fertig') return 100;
   if (s.notes_total) return Math.round((s.notes_done / s.notes_total) * 100);
   return s.total ? Math.round((s.done / s.total) * 100) : 0;
 }
 
-function heliLabel(s, pct) {
+function barLabel(s, pct) {
   if (s.notes_total) return s.notes_done.toLocaleString('de-DE') + ' von ' + s.notes_total.toLocaleString('de-DE') + ' Notizen – ' + pct + ' %';
   return 'Notizbuch ' + s.done + ' von ' + s.total + ' – ' + pct + ' %';
 }
 
-function heliPallets(track, pct) {
-  track.querySelectorAll('.pallet').forEach((p, i) => p.classList.toggle('lifted', pct >= (i + 1) * 10));
-}
-
-/* Ein Baustein fuer beide Balken: Position, Paletten, Text, Zustand. */
-function heliRender(ids, pct, label, state) {
-  const track = $(ids.track);
-  track.style.setProperty('--p', String(pct));
-  track.setAttribute('aria-valuenow', String(pct));
-  track.setAttribute('aria-valuetext', label);
-  track.classList.toggle('done', state === 'done');
-  track.classList.toggle('stopped', state === 'stopped');
-  heliPallets(track, pct);
+/* Ein Baustein fuer beide Balken: Breite, Text, Zustand, Fertig-Meldung. */
+function barRender(ids, pct, label, state, doneText) {
+  const bar = $(ids.bar);
+  bar.style.setProperty('--p', String(pct));
+  bar.setAttribute('aria-valuenow', String(pct));
+  bar.setAttribute('aria-valuetext', label);
+  bar.classList.toggle('stopped', state === 'stopped');
   $(ids.text).textContent = label;
   $(ids.done).hidden = state !== 'done';
+  $(ids.done).textContent = doneText || '';
+}
+
+function exportDoneText(s) {
+  const r = s.result || {};
+  const notes = (r.new || 0) + (r.changed || 0) + (r.same || 0);
+  return '✓ Fertig: ' + plural(notes, 'Notiz', 'Notizen') + ' in ' + plural(r.notebooks || 0, 'Ordner', 'Ordnern') + ' gesichert';
 }
 
 function runStateText(s) {
@@ -410,15 +423,15 @@ function renderRun(s) {
   const showRun = s.running || s.phase === 'angehalten' || (s.phase === 'fertig' && !!s.result);
   $('#run').hidden = !showRun;
   if (!showRun) return;
-  const pct = heliPercent(s);
-  heliRender({ track: '#bar', text: '#run-text', done: '#run-done' }, pct, heliLabel(s, pct), heliState(s));
+  const pct = barPercent(s);
+  barRender({ bar: '#bar', text: '#run-text', done: '#run-done' }, pct, barLabel(s, pct), barState(s), exportDoneText(s));
   $('#run-state').textContent = runStateText(s);
   $('#run-eta').textContent = s.running ? etaText(s.eta) : '';
   $('#run-keep').hidden = !s.running;
 }
 
 function whereText(target) {
-  if (target === 'joplin') return 'In Joplin finden Sie die Notizen unter „Notizbücher“.';
+  if (target === 'joplin') return 'In Joplin finden Sie die Notizen links unter „Notizbücher“. Jedes Notizbuch ist dort ein eigenes Notizbuch.';
   return 'In Notizen finden Sie links unter iCloud den Ordner „Evernote“. Jedes Notizbuch ist dort ein eigener Ordner.';
 }
 
@@ -586,7 +599,7 @@ async function doConnectFinish() {
 
 function selectedTarget() {
   const radio = document.querySelector('input[name="target"]:checked');
-  return radio ? radio.value : 'notizen';
+  return radio ? radio.value : 'joplin';
 }
 
 async function doBackup(probe) {
@@ -667,7 +680,7 @@ function chooseEnex() {
   $('#enex-file').click();
 }
 
-const IMPORT_DONE_PAUSE = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 300 : 1400;
+const IMPORT_DONE_PAUSE = 1200; // kurz die Fertig-Meldung zeigen, dann die Notizen
 
 function applyImport(data, reports) {
   ui.imported = data;
@@ -676,7 +689,7 @@ function applyImport(data, reports) {
   $('#enex-error').hidden = true;
   refresh();
   if (reports.some((r) => r.error)) return showView('daten'); // erst das Protokoll zeigen
-  setTimeout(showVorschau, IMPORT_DONE_PAUSE); // kurz „Rohbau fertig“ zeigen, dann die Notizen
+  setTimeout(showVorschau, IMPORT_DONE_PAUSE);
 }
 
 function showEnexError(report) {
@@ -686,6 +699,66 @@ function showEnexError(report) {
   $('#enex-error-fix').textContent = err.fix;
   $('#enex-error').hidden = false;
   $('#enex-retry').focus();
+}
+
+/* ---------- Daten zur Fehlersuche senden ---------- */
+const SAMPLE_FILES = ['Angebote.enex', 'Haus-und-Garten.enex', 'Projekte.enex', 'Rechnungen.enex', 'Reisen.enex', 'Rezepte.enex', 'Versicherung-und-Papiere.enex', 'Zeichentest-Äöü-ß.enex', 'Lasttest-1000-Notizen.enex'];
+const SEND_IDS = { bar: '#send-bar', text: '#send-text', done: '#send-done' };
+
+function debugIsSample() {
+  return (ui.lastFiles || []).every((f) => SAMPLE_FILES.includes(f.name.normalize('NFC')));
+}
+
+function debugFiles() {
+  return (ui.lastFiles || []).concat(debugLogFiles(ui.logText || [], ui.lastReports || []));
+}
+
+function renderDebugButton() {
+  const ready = debugIsSample() || debugConfigured();
+  $('#debug-btn').hidden = !ready;
+  $('#debug-off').hidden = ready;
+}
+
+function openDebugDialog() {
+  const files = debugFiles();
+  $('#debug-size').textContent = 'Umfang: ' + plural(files.length, 'Datei', 'Dateien') + ', zusammen ' + bytesText(debugTotal(files)) + '.' + (debugIsSample() ? ' (Vorschau mit Beispieldaten – es wird nichts übertragen.)' : '');
+  $('#debug-ok').checked = false;
+  $('#debug-send').disabled = true;
+  $('#debug-dlg').showModal();
+}
+
+function closeDebugDialog() {
+  $('#debug-dlg').close();
+  $('#debug-btn').focus();
+}
+
+function onDebugProgress(sent, total) {
+  const pct = total ? Math.round((sent / total) * 100) : 100;
+  barRender(SEND_IDS, pct, bytesText(sent) + ' von ' + bytesText(total) + ' – ' + pct + ' %', 'run');
+}
+
+async function sendDebug() {
+  if (!$('#debug-ok').checked) return;
+  $('#debug-dlg').close();
+  const files = debugFiles();
+  const demoRun = debugIsSample();
+  $('#debug-error').hidden = true;
+  $('#debug-run').hidden = false;
+  $('#debug-btn').disabled = true;
+  onDebugProgress(0, debugTotal(files));
+  try {
+    await (demoRun ? debugSendDemo : debugSendReal)(files, onDebugProgress);
+    const what = '✓ Gesendet: ' + plural(files.length, 'Datei', 'Dateien') + ' (' + bytesText(debugTotal(files)) + '). Danke!';
+    barRender(SEND_IDS, 100, $('#send-text').textContent, 'done', demoRun ? what + ' (Vorschau – nichts übertragen)' : what);
+  } catch (e) {
+    const err = DEBUG_ERRORS[e.code] || DEBUG_ERRORS.SERVER;
+    barRender(SEND_IDS, Number($('#send-bar').getAttribute('aria-valuenow')), 'Senden gestoppt.', 'stopped');
+    $('#debug-error-text').textContent = err.text;
+    $('#debug-error-fix').textContent = err.fix;
+    $('#debug-error').hidden = false;
+    $('#debug-again').focus();
+  }
+  $('#debug-btn').disabled = false;
 }
 
 /* ---------- Import-Protokoll ---------- */
@@ -715,7 +788,8 @@ function reportLines(r) {
   lines.push('Notizen: ' + r.notes + ', Zeitraum: ' + rangeText(r) + '.');
   lines.push('Anhänge: ' + attText(r.att) + ', zusammen ' + bytesText(r.attBytes) + '.');
   lines.push('Schlagwörter: ' + (Object.keys(r.tags).sort().join(', ') || 'keine') + '.');
-  return lines.concat(r.warnings.map((w) => 'Warnung: ' + w + '.'));
+  lines.push('Laufzeit: ' + secondsText(r.ms) + ', ' + rateText(r.notes, r.ms) + '.');
+  return lines.concat(r.renamed.map((n) => 'Name bereinigt: ' + n + '.'), r.warnings.map((w) => 'Warnung: ' + w + '.'));
 }
 
 function sumReports(reports) {
@@ -727,15 +801,24 @@ function sumReports(reports) {
   return { files: reports.length, notes: notes, att: att, warnings: warnings, errors: reports.length - ok.length };
 }
 
-function summaryText(reports) {
-  const t = sumReports(reports);
-  return plural(t.files, 'Datei', 'Dateien') + ' gelesen: ' + plural(t.notes, 'Notiz', 'Notizen') + '; Anhänge: ' + attText(t.att) +
-    '. Warnungen: ' + t.warnings + '. Fehler: ' + t.errors + '.';
+function secondsText(ms) {
+  return (ms / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' s';
 }
 
-function renderImportLog(reports) {
+function rateText(notes, ms) {
+  return Math.round(notes / Math.max(ms, 1) * 1000).toLocaleString('de-DE') + ' Notizen/s';
+}
+
+function summaryText(reports, ms) {
+  const t = sumReports(reports);
+  const time = ms ? ' Einlesen: ' + secondsText(ms) + ' (' + rateText(t.notes, ms) + ').' : '';
+  return plural(t.files, 'Datei', 'Dateien') + ' gelesen: ' + plural(t.notes, 'Notiz', 'Notizen') + '; Anhänge: ' + attText(t.att) +
+    '. Warnungen: ' + t.warnings + '. Fehler: ' + t.errors + '.' + time;
+}
+
+function renderImportLog(reports, ms) {
   const stamp = logStamp();
-  ui.logText = [stamp + '  ' + summaryText(reports)];
+  ui.logText = [stamp + '  ' + summaryText(reports, ms)];
   const list = $('#import-lines');
   list.textContent = '';
   reports.forEach((r) => reportLines(r).forEach((line) => {
@@ -745,9 +828,12 @@ function renderImportLog(reports) {
     list.appendChild(li);
     ui.logText.push(li.textContent);
   }));
-  $('#import-summary').textContent = summaryText(reports);
+  $('#import-summary').textContent = summaryText(reports, ms);
   $('#copy-msg').hidden = true;
   $('#import-log').hidden = false;
+  $('#debug-run').hidden = true;
+  $('#debug-error').hidden = true;
+  renderDebugButton();
 }
 
 function copyFallback(text) {
@@ -765,6 +851,8 @@ async function copyLog() {
   $('#copy-msg').hidden = false;
 }
 
+const IMP_IDS = { bar: '#imp-bar', text: '#imp-text', done: '#imp-done' };
+
 function importLabel(done, total) {
   const pct = total ? Math.round((done / total) * 100) : 0;
   return { pct: pct, text: done + ' von ' + total + ' Notizen – ' + pct + ' %' };
@@ -772,17 +860,20 @@ function importLabel(done, total) {
 
 function onImportProgress(done, total) {
   const l = importLabel(done, total);
-  heliRender({ track: '#imp-bar', text: '#imp-text', done: '#imp-done' }, l.pct, l.text, 'fly');
+  barRender(IMP_IDS, l.pct, l.text, 'run');
 }
 
-function finishImportHeli(r) {
+function importDoneText(data) {
+  return '✓ Fertig: ' + plural(data.notes.length, 'Notiz', 'Notizen') + ' aus ' + plural(data.notebooks.length, 'Notizbuch', 'Notizbüchern') + ' geladen';
+}
+
+function finishImportBar(r) {
   const l = importLabel(r.done || 0, r.total || 0);
-  const state = r.ok ? 'done' : 'stopped';
-  const text = r.ok ? l.text : 'Import gestoppt – die Datei ist fehlerhaft. Hinweise stehen unten.';
-  heliRender({ track: '#imp-bar', text: '#imp-text', done: '#imp-done' }, r.ok ? 100 : l.pct, text, state);
+  if (!r.ok) return barRender(IMP_IDS, l.pct, 'Import gestoppt – die Datei ist fehlerhaft. Hinweise stehen unten.', 'stopped');
+  barRender(IMP_IDS, 100, l.text, 'done', importDoneText(r.data));
 }
 
-function startImportHeli() {
+function startImportBar() {
   $('#import-run').hidden = false;
   $('#enex-error').hidden = true;
   onImportProgress(0, 0);
@@ -805,10 +896,11 @@ async function onEnexChosen(e) {
 
 async function importFiles(files) {
   ui.lastFiles = files;
-  startImportHeli();
+  startImportBar();
   const r = await readEnexSafely(files);
-  finishImportHeli(r);
-  renderImportLog(r.reports);
+  ui.lastReports = r.reports;
+  finishImportBar(r);
+  renderImportLog(r.reports, r.ms);
   if (!r.ok) return showEnexError(r.reports.find((x) => x.error) || r.reports[0]);
   applyImport(r.data, r.reports);
 }
@@ -862,7 +954,7 @@ function showView(name) {
 function syncTargetRadios(target) {
   if (document.activeElement && document.activeElement.name === 'target') return;
   if (ui.targetTouched) return; // die Wahl des Nutzers nicht ueberschreiben
-  const radio = document.querySelector('input[name="target"][value="' + (target || 'notizen') + '"]');
+  const radio = document.querySelector('input[name="target"][value="' + (target || 'joplin') + '"]');
   if (radio) radio.checked = true;
   renderJoplinBox();
 }
@@ -927,6 +1019,11 @@ function bindEvents() {
   $('#enex-file').addEventListener('change', onEnexChosen);
   $('#copy-log').addEventListener('click', copyLog);
   $('#enex-again').addEventListener('click', retryImport);
+  $('#debug-btn').addEventListener('click', openDebugDialog);
+  $('#debug-again').addEventListener('click', openDebugDialog);
+  $('#debug-cancel').addEventListener('click', closeDebugDialog);
+  $('#debug-send').addEventListener('click', sendDebug);
+  $('#debug-ok').addEventListener('change', () => { $('#debug-send').disabled = !$('#debug-ok').checked; });
   document.querySelectorAll('input[name="target"]').forEach((r) => r.addEventListener('change', onTargetChange));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => { d.open = false; }); });
 }

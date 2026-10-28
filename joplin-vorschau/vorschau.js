@@ -63,6 +63,7 @@ function vorschauText(n) {
   if (!erster || erster[0] === "img" || erster[0] === "file") return "";
   if (erster[0] === "p" || erster[0] === "quote") return erster[1];
   if (erster[0] === "check") return erster[1].map(function (c) { return c[1]; }).join(", ");
+  if (erster[0] === "table") return (erster[1][0] || []).join(" · ");
   if (typeof erster[1] === "string") return erster[1];
   return erster[1].join(", ");
 }
@@ -183,6 +184,19 @@ function aktuelleNotiz() {
   return NOTIZEN.filter(function (x) { return x.id === zustand.notiz; })[0];
 }
 
+/* Tabelle wie in Joplin: erste Zeile als Kopf, breite Tabellen scrollen in ihrem Kasten. */
+function blockTabelle(rows) {
+  var box = el("div", "tabelle-box");
+  var t = el("table", "notiz-tabelle");
+  rows.forEach(function (r, i) {
+    var tr = el("tr", "");
+    r.forEach(function (c) { tr.appendChild(el(i === 0 ? "th" : "td", "", c)); });
+    t.appendChild(tr);
+  });
+  box.appendChild(t);
+  return box;
+}
+
 function block(b) {
   if (b[0] === "h") return el("h2", "", b[1]);
   if (b[0] === "p") return el("p", "", b[1]);
@@ -192,6 +206,7 @@ function block(b) {
   if (b[0] === "check") return blockCheckliste(b[1]);
   if (b[0] === "img") return blockBild(b[1], b[2]);
   if (b[0] === "file") return blockDatei(b[1]);
+  if (b[0] === "table") return blockTabelle(b[1]);
   return el("p", "", "");
 }
 
