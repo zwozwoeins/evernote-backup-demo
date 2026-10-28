@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export4.dtd">
+<en-export export-date="20261028T060000Z" application="Evernote" version="10.0">
+<note><title>Versicherungen Übersicht</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><div>Nur Beispielwerte, keine echten Nummern.</div><ul><li>Hausrat: Musterversicherung AG, Vertrag 000-BEISPIEL</li><li>Haftpflicht: Beispiel-Versicherung, Vertrag 000-MUSTER</li><li>Kfz: läuft am 30.11. aus – rechtzeitig vergleichen</li></ul></en-note>]]></content><created>20260107T131000Z</created><updated>20260107T131000Z</updated><tag>wichtig</tag><note-attributes><author>Beispiel</author></note-attributes></note>
+<note><title>Wo liegt was?</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><ul><li>Geburtsurkunden: blauer Ordner, Arbeitszimmer</li><li>Garantiescheine: Schublade im Flur</li><li>Zweitschlüssel Auto: Schlüsselbrett</li></ul></en-note>]]></content><created>20251122T153300Z</created><updated>20251122T153300Z</updated><tag>wichtig</tag><tag>wohnung</tag><note-attributes><author>Beispiel</author></note-attributes></note>
+<note><title>Arzttermine</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><div><en-todo checked="true"/>Zahnarzt Kontrolle (Oktober)</div><div><en-todo checked="false"/>Augenarzt: neue Brille</div><div><en-todo checked="false"/>Grippeimpfung beim Hausarzt</div></en-note>]]></content><created>20261019T055800Z</created><updated>20261019T055800Z</updated><tag>termine</tag><note-attributes><author>Beispiel</author></note-attributes></note>
+</en-export>

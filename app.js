@@ -9,7 +9,7 @@
     full: 'Kein Platz mehr in iCloud. Bitte Platz freimachen, dann „Weiter sichern“.',
     apple: 'Nicht bei Apple angemeldet. Bitte in den Einstellungen anmelden.'
   };
-  var NAMES = ['Familie','Rezepte','Garten','Reisen','Steuer','Auto','Gesundheit','Fotos','Haus','Briefe'];
+  var NAMES = ['Büro','Rezepte','Garten','Reisen','Steuer','Auto','Gesundheit','Fotos','Haus','Briefe'];
   var connected = false, pos = 0, notes = 0, timer = null, probeDone = false;
   var btn = $('#b-btn'), stop = $('#b-stop'), test = $('#b-test');
 
@@ -88,7 +88,7 @@
     show($('#b-fail'), true);
     show($('#b-done'), true);
     $('#s2').classList.add('done');
-    logLine('Fertig! Alles ist gesichert.');
+    logLine('Fertig. Alles ist gesichert.');
     pos = 0; notes = 0; btn.textContent = 'Jetzt sichern';
   }
 

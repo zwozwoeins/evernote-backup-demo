@@ -1,4 +1,4 @@
-// Joplin-Vorschau: nur lesen, nur Beispieldaten.
+// Joplin-Vorschau: nur lesen. Beispieldaten oder (im Dashboard) die dort geladenen .enex-Notizen.
 var zustand = { buch: "alle", tag: null, suche: "", notiz: 7 };
 
 function el(tag, klasse, text) {
@@ -58,6 +58,7 @@ function zeigeTags() {
 
 function vorschauText(n) {
   var erster = n.inhalt[0];
+  if (!erster || erster[0] === "img") return "";
   if (erster[0] === "p" || erster[0] === "quote") return erster[1];
   if (erster[0] === "check") return erster[1].map(function (c) { return c[1]; }).join(", ");
   if (typeof erster[1] === "string") return erster[1];
@@ -107,6 +108,7 @@ function blockCheckliste(punkte) {
 function blockBild(src, alt) {
   var f = el("figure");
   var img = el("img");
+  if (!/^data:image\/(png|jpeg|gif|webp);base64,/.test(src) && src.indexOf(":") >= 0) return f; // nur eingebettete Bilder oder eigene Dateien
   img.src = src;
   img.alt = alt;
   f.appendChild(img);
@@ -197,5 +199,32 @@ function beiSuche(e) {
   zeigeListe();
 }
 
+function ersteMitBild() {
+  var mit = NOTIZEN.filter(function (n) { return n.inhalt.some(function (b) { return b[0] === "img"; }); });
+  return mit.length ? mit[0].id : (NOTIZEN.length ? NOTIZEN[0].id : null);
+}
+
+function gueltigerImport(d) {
+  return d && d.type === "ebdemo-import" && Array.isArray(d.notebooks) && Array.isArray(d.notes);
+}
+
+function zeigeImportBanner() {
+  var banner = document.querySelector(".banner");
+  banner.textContent = "";
+  banner.appendChild(el("strong", "", "Vorschau mit Ihren geladenen Dateien"));
+  banner.appendChild(document.createTextNode(" – So sehen diese Notizen in Joplin aus. Nur zum Ansehen, nichts wird gespeichert."));
+}
+
+function uebernehmeImport(e) {
+  if (e.origin !== location.origin || e.source !== window.parent || !gueltigerImport(e.data)) return;
+  NOTIZBUECHER = e.data.notebooks;
+  NOTIZEN = e.data.notes;
+  zustand = { buch: "alle", tag: null, suche: "", notiz: ersteMitBild() };
+  document.getElementById("search").value = "";
+  zeigeImportBanner();
+  allesZeigen();
+}
+
+window.addEventListener("message", uebernehmeImport);
 document.getElementById("search").addEventListener("input", beiSuche);
 allesZeigen();

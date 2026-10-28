@@ -5,7 +5,8 @@
    Regeln: eine Funktion = eine Aufgabe, flach (async/await, fruehe Returns). */
 
 const $ = (sel) => document.querySelector(sel);
-const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null, inlineError: null, started: false };
+const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null, inlineError: null, started: false, prevView: 'sichern', imported: null };
+const JOPLIN_URL = '../joplin-vorschau/';
 
 /* ---------- Helfer-Verbindung (echt) ---------- */
 function readToken() {
@@ -35,14 +36,15 @@ const LiveBackend = {
 };
 
 /* ---------- Vorschau (simuliert) ---------- */
-const NAMES = ['Familie', 'Rezepte', 'Garten', 'Reisen', 'Steuer', 'Auto', 'Gesundheit', 'Fotos', 'Haus', 'Briefe'];
+const NAMES = ['Büro', 'Rezepte', 'Garten', 'Reisen', 'Steuer', 'Auto', 'Gesundheit', 'Fotos', 'Haus', 'Briefe'];
 const DEMO_TOTAL = 1000;
 const DEMO_BROKEN = 734;
 const DEMO_BUSY = { code: 'BUSY', text: 'Es läuft gerade eine Sicherung.', action: 'show_progress', label: 'Fortschritt ansehen', help: [], details: '' };
-const DEMO_BROKEN_HELP = ['„Nochmal versuchen“ drücken.', 'Klappt es wieder nicht: „Überspringen“ drücken – alles andere bleibt gesichert.', 'Protokoll an Ihren Neffen schicken („Hoppla – Protokoll sichern“).'];
+const DEMO_BROKEN_HELP = ['„Nochmal versuchen“ drücken.', 'Klappt es wieder nicht: „Überspringen“ drücken – alles andere bleibt gesichert.', 'Protokoll an den Support schicken („Hoppla – Protokoll sichern“).'];
 const demo = {
   connected: false, running: false, phase: '', done: 0, total: 0, events: [], error: null,
   result: null, target: 'notizen', timer: null, limit: DEMO_TOTAL, failed: [], started: 0, last: {},
+  source: null, probe: false,
 };
 
 function demoTime() {
@@ -54,37 +56,50 @@ function demoEvent(text) {
 }
 
 function demoNotebookName(n) {
+  if (demo.source) return demo.source.notebooks[n - 1].name;
   return NAMES[n % NAMES.length] + ' ' + n;
+}
+
+function demoNotesIn(n) {
+  if (demo.source) return demo.source.notebooks[n - 1].count;
+  return (n * 7) % 4;
+}
+
+function demoNotesUpTo(limit) {
+  return demo.source.notebooks.slice(0, limit).reduce((sum, b) => sum + b.count, 0);
 }
 
 function demoStepOne() {
   demo.done += 1;
   const n = demo.done;
-  if (n === DEMO_BROKEN) {
+  if (n === DEMO_BROKEN && !demo.source) {
     demo.failed.push(demoNotebookName(n));
     return demoEvent('Notizbuch „' + demoNotebookName(n) + '“ konnte nicht gesichert werden.');
   }
-  const k = (n * 7) % 4;
+  const k = demoNotesIn(n);
   const what = k ? (k === 1 ? '1 Notiz' : k + ' Notizen') + ' gespeichert' : 'Schon gesichert, wird übersprungen.';
-  if (n % 7 === 0 || demo.limit < 10) demoEvent('Notizbuch „' + demoNotebookName(n) + '“ (' + n + ' von ' + demo.total + '): ' + what);
+  if (n % 7 === 0 || demo.limit < 10 || demo.source) demoEvent('Notizbuch „' + demoNotebookName(n) + '“ (' + n + ' von ' + demo.total + '): ' + what);
 }
 
 function demoTick() {
-  const steps = demo.limit < 10 ? 1 : 9;
+  const steps = demo.limit < 10 || demo.source ? 1 : 9;
   for (let i = 0; i < steps && demo.done < demo.limit; i += 1) demoStepOne();
   if (demo.done >= demo.limit) demoFinish();
 }
 
 function demoFinishProbe() {
-  demo.result = { probe: true, notebooks: 2, new: 37, changed: 0, failed: [] };
+  const books = Math.min(2, demo.total);
+  const notes = demo.source ? demoNotesUpTo(books) : 37;
+  demo.result = { probe: true, notebooks: books, new: notes, changed: 0, failed: [] };
   demoEvent('Probe fertig.');
 }
 
 function demoFinishFull() {
   const failed = demo.failed;
-  demo.result = { probe: false, notebooks: demo.total, new: 15230, changed: 12, failed: failed };
+  const notes = demo.source ? demo.source.noteCount : 15230;
+  demo.result = { probe: false, notebooks: demo.total, new: notes, changed: demo.source ? 0 : 12, failed: failed };
   demo.last = { saved_at: Date.now() / 1000 };
-  if (!failed.length) return demoEvent('Fertig! Alles ist gesichert.');
+  if (!failed.length) return demoEvent('Fertig. Alles ist gesichert.');
   const text = '„' + failed[0] + '“ konnte nicht gesichert werden. Alles andere ist gesichert.';
   demo.error = { code: 'BROKEN_NOTEBOOK', text: text, action: 'backup', label: 'Nochmal versuchen', secondary: { action: 'skip', label: 'Überspringen' }, help: DEMO_BROKEN_HELP, details: 'ParseError: no element found: line 1, column 48 (Vorschau)' };
   demoEvent(text);
@@ -94,7 +109,7 @@ function demoFinish() {
   clearInterval(demo.timer);
   demo.running = false;
   demo.phase = 'fertig';
-  if (demo.limit === 2) return demoFinishProbe();
+  if (demo.probe) return demoFinishProbe();
   demoFinishFull();
 }
 
@@ -107,14 +122,15 @@ function demoStart(probe) {
   if (retry) return demoRetryBroken();
   if (!resume) demoReset(probe);
   demoEvent(resume ? 'Es geht weiter bei Notizbuch ' + (demo.done + 1) + '.' : 'Verbindung zu Evernote steht.');
-  demo.timer = setInterval(demoTick, 150);
+  demo.timer = setInterval(demoTick, demo.source ? 500 : 150);
 }
 
 function demoReset(probe) {
   demo.done = 0;
   demo.failed = [];
-  demo.total = DEMO_TOTAL;
-  demo.limit = probe ? 2 : DEMO_TOTAL;
+  demo.total = demo.source ? demo.source.notebooks.length : DEMO_TOTAL;
+  demo.probe = !!probe;
+  demo.limit = probe ? Math.min(2, demo.total) : demo.total;
   demo.started = Date.now();
   demo.events = [];
   if (!demo.last.saved_at) demoEvent('Gleich fragt der Mac, ob der Helfer Notizen nutzen darf. Bitte „OK“ klicken.');
@@ -126,7 +142,19 @@ function demoRetryBroken() {
   demo.running = false;
   demo.phase = 'fertig';
   demo.result = Object.assign({}, demo.result, { failed: [] });
-  demoEvent('Fertig! Alles ist gesichert.');
+  demoEvent('Fertig. Alles ist gesichert.');
+}
+
+function demoUseSource(data) {
+  const notebooks = data.notebooks.map((b) => ({ name: b.name, count: data.notes.filter((n) => n.buch === b.id).length }));
+  demo.source = { notebooks: notebooks, noteCount: data.notes.length };
+  demo.result = null;
+  demo.error = null;
+  demo.failed = [];
+  demo.done = 0;
+  demo.phase = '';
+  demo.events = [];
+  demoEvent('Datei geladen: ' + plural(notebooks.length, 'Notizbuch', 'Notizbücher') + ', ' + plural(data.notes.length, 'Notiz', 'Notizen') + '.');
 }
 
 function demoSkip() {
@@ -258,6 +286,16 @@ function renderDone(s) {
   const notes = (r.new || 0) + (r.changed || 0) + (r.same || 0);
   $('#done-text').textContent = 'Fertig: ' + plural(notes, 'Notiz', 'Notizen') + ' in ' + plural(r.notebooks, 'Ordner', 'Ordnern') + '.';
   renderMissing(r.att_failed || 0);
+  renderResultButtons(s.target);
+}
+
+function joplinAvailable() {
+  return ui.mode === 'demo'; // die Vorschau liegt nur auf GitHub Pages, nicht im Helfer
+}
+
+function renderResultButtons(target) {
+  $('#joplin-peek').hidden = !joplinAvailable() || target === 'joplin';
+  $('#joplin-help-btn').hidden = !joplinAvailable();
 }
 
 function renderMissing(n) {
@@ -320,6 +358,10 @@ function renderLog(s) {
   log.scrollTop = log.scrollHeight;
 }
 
+function renderTestBox(s) {
+  $('#test-box').hidden = ui.mode !== 'demo' || !!s.running;
+}
+
 function renderConnectHelp() {
   $('#connect-help').hidden = !ui.connectHelp;
 }
@@ -333,6 +375,7 @@ function render(s) {
   renderError(s);
   renderLog(s);
   renderConnectHelp();
+  renderTestBox(s);
   syncTargetRadios(s.target);
 }
 
@@ -395,6 +438,79 @@ async function doReveal() {
 
 async function doOpenNotes() {
   await backend.post('/api/action', { action: 'open_notes' });
+}
+
+function showResult() {
+  if (ui.status && ui.status.target === 'joplin' && joplinAvailable()) return showJoplin();
+  showView('notizen');
+}
+
+function currentView() {
+  const open = document.querySelector('.view:not([hidden])');
+  return open ? open.id.slice(2) : 'sichern';
+}
+
+function showJoplin() {
+  const view = currentView();
+  if (view !== 'joplin') ui.prevView = view;
+  const frame = $('#joplin-frame');
+  if (!frame.getAttribute('src')) frame.setAttribute('src', JOPLIN_URL);
+  else sendImportToJoplin();
+  $('#joplin-lead').textContent = ui.imported ? 'Ihre geladenen Notizen aus der Datei. Ihr Ziel bleibt unverändert.' : 'Beispieldaten zum Ansehen. Ihr Ziel bleibt unverändert.';
+  showView('joplin');
+  $('#joplin-back').focus();
+}
+
+function sendImportToJoplin() {
+  const win = $('#joplin-frame').contentWindow;
+  if (!ui.imported || !win) return;
+  win.postMessage({ type: 'ebdemo-import', notebooks: ui.imported.notebooks, notes: ui.imported.notes }, location.origin);
+}
+
+function chooseEnex() {
+  $('#enex-file').click();
+}
+
+function importStateText(data) {
+  const what = plural(data.notebooks.length, 'Notizbuch', 'Notizbücher') + ', ' + plural(data.notes.length, 'Notiz', 'Notizen');
+  return 'Geladen: ' + what + '. Jetzt verbinden und sichern.';
+}
+
+function applyImport(data) {
+  ui.imported = data;
+  demoUseSource(data);
+  ui.shown = 0;
+  $('#enex-error').hidden = true;
+  $('#test-state').textContent = importStateText(data);
+  sendImportToJoplin();
+  refresh();
+}
+
+function showEnexError(name) {
+  $('#enex-error-text').textContent = '„' + name + '“ ist keine lesbare Evernote-Exportdatei (.enex).';
+  $('#enex-error').hidden = false;
+  $('#enex-retry').focus();
+}
+
+async function readEnexSafely(files) {
+  try {
+    return await enexReadFiles(files);
+  } catch (e) {
+    return { ok: false, bad: files[0].name };
+  }
+}
+
+async function onEnexChosen(e) {
+  const files = Array.from(e.target.files || []);
+  e.target.value = '';
+  if (!files.length) return;
+  const r = await readEnexSafely(files);
+  if (!r.ok) return showEnexError(r.bad || files[0].name);
+  applyImport(r.data);
+}
+
+function closeJoplin() {
+  showView(ui.prevView || 'sichern');
 }
 
 async function doSaveTarget() {
@@ -478,6 +594,14 @@ function bindEvents() {
   $('#open-notes').addEventListener('click', doOpenNotes);
   $('#att-missing').addEventListener('click', showLog);
   $('#save-target').addEventListener('click', doSaveTarget);
+  $('#result-btn').addEventListener('click', showResult);
+  $('#joplin-peek').addEventListener('click', showJoplin);
+  $('#joplin-help-btn').addEventListener('click', showJoplin);
+  $('#joplin-back').addEventListener('click', closeJoplin);
+  $('#joplin-frame').addEventListener('load', sendImportToJoplin);
+  $('#enex-btn').addEventListener('click', chooseEnex);
+  $('#enex-retry').addEventListener('click', chooseEnex);
+  $('#enex-file').addEventListener('change', onEnexChosen);
   document.querySelectorAll('input[name="target"]').forEach((r) => r.addEventListener('change', onTargetChange));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('details[open]').forEach((d) => { d.open = false; }); });
 }
@@ -487,6 +611,7 @@ async function init() {
   ui.mode = await detectMode();
   backend = ui.mode === 'live' ? LiveBackend : DemoBackend;
   $('#mode').hidden = ui.mode === 'live';
+  renderResultButtons('notizen');
   await refresh();
   setInterval(refresh, 1000);
 }

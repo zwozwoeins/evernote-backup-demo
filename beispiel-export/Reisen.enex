@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export4.dtd">
+<en-export export-date="20261028T060000Z" application="Evernote" version="10.0">
+<note><title>Packliste Ostsee</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><div><en-todo checked="true"/>Ausweis</div><div><en-todo checked="true"/>Fahrkarten</div><div><en-todo checked="false"/>Sonnencreme</div><div><en-todo checked="false"/>Regenjacke</div><div><en-todo checked="false"/>Ladegerät fürs Telefon</div><div><en-todo checked="false"/>Medikamente für eine Woche</div></en-note>]]></content><created>20260530T184400Z</created><updated>20260530T184400Z</updated><tag>urlaub</tag><note-attributes><author>Beispiel</author></note-attributes></note>
+<note><title>Ferienwohnung Usedom</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note><div>Beispiel-Ferienwohnung „Strandblick“, 2. Stock mit Balkon.</div><div>Anreise ab 15 Uhr, Abreise bis 10 Uhr. Schlüssel liegt im Kasten neben der Tür.</div><blockquote>Fahrräder kann man unten im Keller abstellen.</blockquote></en-note>]]></content><created>20260311T075500Z</created><updated>20260311T075500Z</updated><tag>urlaub</tag><note-attributes><author>Beispiel</author></note-attributes></note>
+</en-export>

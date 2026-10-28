@@ -56,7 +56,7 @@
         <ol class="err-help" id="err-help"></ol>
         <div class="report-row">
           <button class="btn-secondary" id="report-btn">Hoppla – Protokoll sichern</button>
-          <p id="report-msg" hidden>Protokoll auf dem Schreibtisch gesichert. Bitte an Ihren Neffen schicken.</p>
+          <p id="report-msg" hidden>Protokoll auf dem Schreibtisch gesichert. Bitte an den Support schicken.</p>
           <button class="btn-secondary" id="reveal-btn" hidden>Im Finder zeigen</button>
         </div>
         <details><summary>Technische Einzelheiten</summary><pre id="err-details"></pre></details>
@@ -64,18 +64,34 @@
 
       <div id="done" class="card card-ok" hidden>
         <p class="done-text" id="done-text"></p>
+        <button class="btn-secondary" id="result-btn">Ergebnis ansehen</button>
+        <button class="btn-secondary" id="joplin-peek" hidden>So sähe es in Joplin aus</button>
         <button class="btn-secondary" id="att-missing" hidden></button>
         <p>Falls etwas fehlt: einfach noch einmal „Jetzt sichern“ drücken.</p>
       </div>
 
       <div id="probe-ok" class="card card-ok" hidden>
-        <p class="done-text">Probe fertig: 2 Notizbücher sind in Notizen. Sieht gut aus?</p>
+        <p class="done-text">Probe fertig: 2 Notizbücher sind in Notizen. Bitte kurz prüfen.</p>
       </div>
 
       <button class="btn-primary btn-main" id="main-btn" disabled>Mit Evernote verbinden</button>
       <p class="why" id="main-why" hidden></p>
       <button class="btn-secondary" id="probe-btn" hidden>Erst mit 2 Notizbüchern ausprobieren</button>
       <button class="btn-secondary" id="stop-btn" hidden>Anhalten</button>
+
+      <div id="enex-error" class="card card-error" role="alert" hidden>
+        <p class="err-text" id="enex-error-text"></p>
+        <p>Bitte eine .enex-Datei aus Evernote wählen.</p>
+        <button class="btn-primary" id="enex-retry">Andere Datei wählen</button>
+      </div>
+
+      <div id="test-box" class="testbox" hidden>
+        <h3 class="testtitle">Mit Beispieldateien testen</h3>
+        <p id="test-state">Ohne Datei läuft die Vorschau mit erfundenen Zahlen. Die Datei bleibt auf diesem Gerät.</p>
+        <input type="file" id="enex-file" accept=".enex" multiple hidden>
+        <button class="btn-secondary" id="enex-btn">Beispieldatei laden</button>
+        <a class="small-link" href="../beispiel-export/">Beispieldateien herunterladen</a>
+      </div>
 
       <div class="logwrap" hidden>
         <h3 class="logtitle">Was gerade passiert</h3>
@@ -105,9 +121,9 @@
       <details><summary>Regelmäßig sichern</summary>
         <p>Der Helfer sichert jeden Sonntag um 10 Uhr von selbst, wenn der iMac an ist. Danach erscheint eine kurze Mitteilung.</p>
       </details>
-      <details><summary>Ein Protokoll für Ihren Neffen</summary>
+      <details><summary>Hilfe anfordern</summary>
         <button class="btn-secondary" id="report-btn-2">Protokoll sichern</button>
-        <p id="report-msg-2" hidden>Protokoll auf dem Schreibtisch gesichert. Bitte an Ihren Neffen schicken.</p>
+        <p id="report-msg-2" hidden>Protokoll auf dem Schreibtisch gesichert. Bitte an den Support schicken.</p>
       </details>
       <details id="opt"><summary>Andere Ziele (für Tests und Windows)</summary>
         <fieldset class="target">
@@ -115,6 +131,7 @@
           <label class="radio"><input type="radio" name="target" value="notizen" checked> Apple Notizen (empfohlen)</label>
           <label class="radio"><input type="radio" name="target" value="joplin"> Joplin</label>
         </fieldset>
+        <button class="btn-secondary" id="joplin-help-btn" hidden>Joplin-Vorschau ansehen</button>
         <div id="joplin-box" hidden>
           <label class="field">Schlüssel aus Joplin (Einstellungen → Web Clipper)<input id="joplin-token" type="password" autocomplete="off"></label>
           <button class="btn-secondary" id="save-target">Ziel speichern</button>
@@ -124,8 +141,16 @@
         </div>
       </details>
     </section>
+    <!-- JOPLIN-VORSCHAU (nur Vorschau-Modus, Beispieldaten) -->
+    <section class="view view-wide" id="v-joplin" aria-labelledby="h-joplin" hidden>
+      <button class="btn-secondary btn-back" id="joplin-back">← Zurück</button>
+      <h2 id="h-joplin">So sieht es in Joplin aus</h2>
+      <p class="lead" id="joplin-lead">Beispieldaten zum Ansehen. Ihr Ziel bleibt unverändert.</p>
+      <iframe class="joplin-frame" id="joplin-frame" title="Joplin-Vorschau mit Beispieldaten" loading="lazy"></iframe>
+    </section>
   </main>
 </div>
+<script src="enex-import.js"></script>
 <script src="dashboard.js"></script>
 </body>
 </html>
