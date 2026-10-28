@@ -66,3 +66,4 @@ footer li{margin:.35rem 0}
 .jbtn{display:flex;flex-direction:column;justify-content:center;min-height:56px;text-decoration:none;text-align:left}
 .jbtn b{font-size:1.1rem}
 .jbtn span{font-size:1rem;color:var(--ink)}
+[hidden]{display:none!important}
