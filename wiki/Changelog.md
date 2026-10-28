@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.2 – 28.10.2026
+- Joplin-Vorschau: Liste **Geladene Dateien** (Name, Notizbuch, Notizen, Anhänge, Größe, Ladezeit) mit **Entfernen** je Datei
+- Weitere Dateien kommen dazu statt zu ersetzen; doppelte Dateien und Notizen werden übersprungen („X doppelte Notizen übersprungen“), ein neuerer Stand desselben Notizbuchs ersetzt den alten
+- **Alles leeren** mit kurzer Rückfrage, ohne die Seite neu zu laden
+- Verbindungsquittung mit Konto (Name, E-Mail) auch bei Google und Apple; nur noch eine grüne Erfolgsmeldung
+- Logik dafür im Kern `notiz-core.js` (ohne DOM): `noteKey`, `mergeFiles`, `removeFile`, `libraryData`
+- Geprüft in Chrome (headless): 28 Dateien in zwei Stapeln, 510 Notizen, 504 Anhänge, Doppeltes übersprungen, 360 px ohne Querscrollen
+
 ## v5.1 – 28.10.2026 (Live-Test mit echtem Evernote-Konto)
 - Markdown: Leerzeile nach Absätzen, Tabellen und Listen – die Zeile nach einer Tabelle landet nicht mehr in der Tabelle
 - Links bleiben erhalten: `<a href>` wird zu `[Text](Adresse)`

@@ -131,3 +131,14 @@ main:focus,main:focus-visible{outline:none}
 .check input{width:24px;height:24px;flex:none;margin-top:.15rem}
 .dlg-buttons{display:flex;flex-wrap:wrap;gap:.6rem 1rem}
 .dlg-buttons button{flex:1 1 180px}
+
+/* Geladene Dateien in der Vorschau */
+.files-list{list-style:none;margin:.5rem 0;padding:0}
+.files-list li{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem .8rem;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.files-list strong{flex:1 1 100%;color:var(--head);overflow-wrap:anywhere}
+.files-list span{flex:1 1 14rem;overflow-wrap:anywhere}
+.btn-small{min-height:44px;padding:.4rem .9rem;border:0;cursor:pointer;font:inherit;background:var(--surface);color:var(--head);box-shadow:0 0 0 2px var(--line)}
+.btn-small:hover{background:#2b3240}
+.files-merge{font-weight:bold;color:var(--head)}
+.files-confirm{margin-top:.7rem;padding:.7rem;box-shadow:0 0 0 3px var(--line)}
+.files-details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--head);font-weight:bold}

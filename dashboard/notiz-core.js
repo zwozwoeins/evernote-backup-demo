@@ -222,7 +222,121 @@
     return tidyBlankLines(decodeEntities(stripTags(t)));
   }
 
-  const api = { htmlEntitiesToNumeric, parseDate, notebookName, attachmentKind, safeFileName, uniqueName, parseEnex, enmlToMarkdown, md5: md5fn };
+  /* ---- Sammlung fuer die Vorschau: mehrere Dateien nacheinander laden, ohne DOM ----
+     Regeln (einfach, so stehen sie auch in der Oberflaeche):
+     1. Dieselbe Datei noch einmal (Name, Groesse, Datum gleich) -> wird uebersprungen.
+     2. Gleiches Notizbuch aus einer anderen Datei -> der neue Stand ersetzt den alten.
+     3. Eine Notiz, die schon da ist (gleiche Evernote-ID, sonst gleicher Titel + Erstelldatum) -> wird uebersprungen. */
+
+  function noteKey(guid, title, createdRaw) {
+    if (guid) return 'guid:' + guid;
+    return 'titel:' + String(title || '').trim().toLowerCase() + '|' + (createdRaw || '');
+  }
+
+  function emptyLibrary() {
+    return { files: [], nextId: 1, nextFile: 1 };
+  }
+
+  function fileSignature(meta) {
+    return meta.name + '|' + meta.size + '|' + meta.lastModified;
+  }
+
+  function isSameFile(lib, meta) {
+    return lib.files.some((f) => f.sig === fileSignature(meta));
+  }
+
+  function filesWithNotebook(lib, name) {
+    return lib.files.filter((f) => f.notebook === name);
+  }
+
+  function filesWithoutNotebook(lib, name) {
+    return lib.files.filter((f) => f.notebook !== name);
+  }
+
+  function noteKeys(files) {
+    const keys = new Set();
+    files.forEach((f) => f.notes.forEach((n) => keys.add(n.schluessel)));
+    return keys;
+  }
+
+  /* Behaelt nur Notizen, deren Schluessel noch nicht vorkommt (auch nicht doppelt in derselben Datei). */
+  function newNotesOnly(notes, keys) {
+    const kept = [];
+    notes.forEach((n) => {
+      if (keys.has(n.schluessel)) return;
+      keys.add(n.schluessel);
+      kept.push(n);
+    });
+    return kept;
+  }
+
+  function attachmentCount(notes) {
+    return notes.reduce((sum, n) => sum + (n.anhaenge || []).length, 0);
+  }
+
+  function renumberNotes(notes, fileId, firstId) {
+    return notes.map((n, i) => Object.assign({}, n, { id: firstId + i, buch: fileId }));
+  }
+
+  function fileEntry(lib, part, notes, loadedAt) {
+    const id = 'f' + lib.nextFile;
+    return {
+      id: id, name: part.file.name, size: part.file.size, sig: fileSignature(part.file), notebook: part.notebook.name,
+      notes: renumberNotes(notes, id, lib.nextId), attachments: attachmentCount(notes), loadedAt: loadedAt, ms: part.ms || 0,
+    };
+  }
+
+  function skippedFile(part) {
+    return { name: part.file.name, status: 'doppelt', skipped: part.notes.length, replaced: [] };
+  }
+
+  /* Eine gelesene Datei in die Sammlung aufnehmen. Liefert die neue Sammlung (die alte bleibt unveraendert) und was passiert ist. */
+  function addFile(lib, part, loadedAt) {
+    if (isSameFile(lib, part.file)) return { lib: lib, outcome: skippedFile(part) };
+    const replaced = filesWithNotebook(lib, part.notebook.name).map((f) => f.name);
+    const others = filesWithoutNotebook(lib, part.notebook.name);
+    const notes = newNotesOnly(part.notes, noteKeys(others));
+    const entry = fileEntry(lib, part, notes, loadedAt);
+    const next = { files: others.concat([entry]), nextId: lib.nextId + notes.length, nextFile: lib.nextFile + 1 };
+    const outcome = { name: entry.name, status: replaced.length ? 'ersetzt' : 'neu', skipped: part.notes.length - notes.length, replaced: replaced };
+    return { lib: next, outcome: outcome };
+  }
+
+  function sumOutcomes(outcomes) {
+    return {
+      added: outcomes.filter((o) => o.status !== 'doppelt').length,
+      sameFiles: outcomes.filter((o) => o.status === 'doppelt').map((o) => o.name),
+      skippedNotes: outcomes.reduce((n, o) => n + o.skipped, 0),
+      replaced: outcomes.reduce((all, o) => all.concat(o.replaced), []),
+    };
+  }
+
+  /* Mehrere gelesene Dateien nacheinander aufnehmen. loadedAt: Zeitpunkt (ms), kommt von aussen. */
+  function mergeFiles(lib, parts, loadedAt) {
+    const outcomes = [];
+    let current = lib;
+    parts.forEach((part) => {
+      const r = addFile(current, part, loadedAt);
+      current = r.lib;
+      outcomes.push(r.outcome);
+    });
+    return { lib: current, summary: sumOutcomes(outcomes) };
+  }
+
+  function removeFile(lib, fileId) {
+    return Object.assign({}, lib, { files: lib.files.filter((f) => f.id !== fileId) });
+  }
+
+  /* Format der Joplin-Vorschau: { notebooks: [{id, name}], notes: [...] } */
+  function libraryData(lib) {
+    return {
+      notebooks: lib.files.map((f) => ({ id: f.id, name: f.notebook })),
+      notes: lib.files.reduce((all, f) => all.concat(f.notes), []),
+    };
+  }
+
+  const api = { htmlEntitiesToNumeric, parseDate, notebookName, attachmentKind, safeFileName, uniqueName, parseEnex, enmlToMarkdown, md5: md5fn,
+    noteKey, emptyLibrary, mergeFiles, removeFile, libraryData };
   if (typeof module !== 'undefined') module.exports = api;
   else root.NotizCore = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

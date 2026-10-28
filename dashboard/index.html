@@ -42,6 +42,7 @@
 
       <div id="source-ok" class="card card-ok" hidden>
         <p class="done-text" id="source-text"></p>
+        <p id="source-account" hidden></p>
         <button class="btn-primary" id="source-next">Weiter</button>
         <button class="btn-secondary" id="logout-btn" hidden>Abmelden</button>
       </div>
@@ -117,6 +118,20 @@
       <p class="lead" id="vorschau-lead">Beispieldaten zum Ansehen. Laden Sie eine Datei, dann sehen Sie hier Ihre Notizen.</p>
       <div id="vorschau-none" class="card" hidden>
         <p>Die Vorschau gibt es nur in der Testversion im Browser.</p>
+      </div>
+      <div id="files-box" class="card files" hidden>
+        <h3 class="testtitle">Geladene Dateien</h3>
+        <p id="files-none">Noch keine eigene Datei geladen – Sie sehen Beispieldaten.</p>
+        <details class="files-details" id="files-details" hidden><summary id="files-summary"></summary><ul class="files-list" id="files-list"></ul></details>
+        <p class="files-merge" id="files-merge" role="status" hidden></p>
+        <p class="hint">Neue Dateien kommen dazu. Doppelte Notizen werden übersprungen. Laden Sie ein Notizbuch noch einmal, ersetzt der neue Stand den alten.</p>
+        <button class="btn-secondary" id="files-add">Dateien laden (.enex)</button>
+        <button class="btn-secondary" id="files-clear" hidden>Alles leeren</button>
+        <div id="files-confirm" class="files-confirm" role="alertdialog" aria-labelledby="files-confirm-text" hidden>
+          <p id="files-confirm-text">Alle geladenen Dateien aus der Vorschau entfernen? Ihre Dateien auf dem Gerät bleiben unverändert.</p>
+          <button class="btn-primary" id="files-clear-yes">Ja, alles leeren</button>
+          <button class="btn-secondary" id="files-clear-no">Abbrechen</button>
+        </div>
       </div>
       <iframe class="joplin-frame" id="joplin-frame" title="Joplin-Vorschau" loading="lazy"></iframe>
       <button class="btn-primary" id="vorschau-next">Weiter zum Export</button>

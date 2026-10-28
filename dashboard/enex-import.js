@@ -130,7 +130,8 @@ function enexContent(noteEl, ctx) {
 /* ---------- Notiz ---------- */
 function enexNote(noteEl, bookId, id, report) {
   const title = enexChildText(noteEl, 'title') || 'Ohne Titel';
-  const created = enexDateObj(enexChildText(noteEl, 'created'));
+  const createdRaw = enexChildText(noteEl, 'created');
+  const created = enexDateObj(createdRaw);
   const files = enexResources(noteEl);
   enexExportNames(files, report);
   const ctx = { files: files, used: files.map(() => false), warn: (t) => report.warnings.push('„' + title + '“: ' + t) };
@@ -138,6 +139,7 @@ function enexNote(noteEl, bookId, id, report) {
     id: id, buch: bookId, titel: title, datum: enexDateText(created),
     tags: Array.from(noteEl.getElementsByTagName('tag')).map((t) => t.textContent.trim()).filter(Boolean),
     inhalt: enexContent(noteEl, ctx), anhaenge: files,
+    schluessel: NotizCore.noteKey(enexChildText(noteEl, 'guid'), title, createdRaw),
   };
   enexCount(report, note, created);
   return note;
@@ -213,7 +215,12 @@ async function enexReadFile(file, text, index, firstId, report, progress) {
   const bookId = 'b' + index;
   const notes = await enexParseNotes(doc, bookId, firstId, report, progress);
   if (!notes.length) return enexFail(report, 'empty');
-  return { notebook: { id: bookId, name: enexNotebookName(file.name) }, notes: notes };
+  return { notebook: { id: bookId, name: enexNotebookName(file.name) }, notes: notes, file: enexFileMeta(file) };
+}
+
+/* Was die Dateiliste der Vorschau braucht (und woran eine doppelt gewaehlte Datei zu erkennen ist). */
+function enexFileMeta(file) {
+  return { name: file.name, size: file.size, lastModified: file.lastModified || 0 };
 }
 
 async function enexReadOne(file, text, index, firstId, progress) {
@@ -252,14 +259,17 @@ async function enexReadFiles(files, onProgress) {
   const progress = enexProgress(total, onProgress || (() => {}));
   onProgress && onProgress(0, total);
   const data = { notebooks: [], notes: [] };
+  const parts = [];
   const reports = [];
   for (let i = 0; i < files.length; i += 1) {
     const r = await enexReadOne(files[i], texts[i], i + 1, data.notes.length + 1, progress);
     reports.push(r.report);
     if (!r.part) continue;
+    r.part.ms = r.report.ms;
+    parts.push(r.part);
     data.notebooks.push(r.part.notebook);
     data.notes = data.notes.concat(r.part.notes);
   }
   const ms = Math.round(performance.now() - t0 - progress.pausedMs);
-  return { ok: data.notes.length > 0, data: data, reports: reports, total: total, done: progress.done, ms: ms };
+  return { ok: data.notes.length > 0, data: data, parts: parts, reports: reports, total: total, done: progress.done, ms: ms };
 }

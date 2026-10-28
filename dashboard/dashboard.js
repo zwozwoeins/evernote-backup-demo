@@ -5,7 +5,8 @@
    Regeln: eine Funktion = eine Aufgabe, flach (async/await, fruehe Returns). */
 
 const $ = (sel) => document.querySelector(sel);
-const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null, inlineError: null, started: false, imported: null };
+const ui = { mode: 'live', offline: false, shown: 0, connectHelp: false, status: null, inlineError: null, started: false, imported: null,
+  library: NotizCore.emptyLibrary(), mergeText: '', confirmClear: false };
 const JOPLIN_URL = '../joplin-vorschau/';
 
 /* ---------- Helfer-Verbindung (echt) ---------- */
@@ -207,6 +208,23 @@ function demoUseSource(data) {
   demoEvent('Datei geladen: ' + plural(notebooks.length, 'Notizbuch', 'Notizbücher') + ', ' + plural(data.notes.length, 'Notiz', 'Notizen') + '.');
 }
 
+function demoClearSource() {
+  demo.source = null;
+  demo.result = null;
+  demo.error = null;
+  demo.failed = [];
+  demo.done = 0;
+  demo.phase = '';
+  demoEvent('Geladene Dateien entfernt.');
+}
+
+/* In der Vorschau erfunden; echt kommt das Konto aus der Ausgabe von evernote-backup („Successfully authenticated as …“). */
+const DEMO_ACCOUNTS = {
+  app: { name: 'beispielkonto', email: 'beispiel@example.com' },
+  google: { name: 'beispielkonto', email: 'beispiel@gmail.com' },
+  apple: { name: 'beispielkonto', email: 'beispiel@icloud.com' },
+};
+
 const DEMO_LOGIN_ERROR = {
   code: 'LOGIN_FAILED', text: 'Die Anmeldung bei Evernote hat nicht geklappt.',
   fix: 'Bitte prüfen Sie E-Mail und Passwort auf der Evernote-Seite und versuchen Sie es noch einmal. Klappt es nicht, laden Sie stattdessen eine .enex-Datei.',
@@ -215,7 +233,7 @@ const DEMO_LOGIN_ERROR = {
 function demoConnect(body) {
   if (new URLSearchParams(location.search).get('demo') === 'anmeldefehler') return { ok: false, error: DEMO_LOGIN_ERROR };
   demo.provider = (body && body.provider) || 'app';
-  setTimeout(() => { demo.connected = true; }, 900);
+  setTimeout(() => { demo.connected = true; demo.account = DEMO_ACCOUNTS[demo.provider] || DEMO_ACCOUNTS.app; }, 900);
   return { ok: true };
 }
 
@@ -249,14 +267,14 @@ const DemoBackend = {
     return {
       local: false, connected: demo.connected, running: demo.running, phase: demo.phase, done: demo.done,
       total: demo.total, events: demo.events, error: demo.error, result: demo.result, target: demo.target,
-      eta: demoEta(), last: demo.last, provider: demo.provider,
+      eta: demoEta(), last: demo.last, provider: demo.provider, account: demo.account || null,
       notes_done: demoNotesDone(), notes_total: demoNotesTotal(),
     };
   },
   async post(path, body) {
     const routes = {
       '/api/connect': () => demoConnect(body),
-      '/api/disconnect': () => { demo.connected = false; demo.provider = ''; return { ok: true }; },
+      '/api/disconnect': () => { demo.connected = false; demo.provider = ''; demo.account = null; return { ok: true }; },
       '/api/backup': () => demoBackup(body),
       '/api/stop': () => { demoStop(); return { ok: true }; },
       '/api/skip': () => { demoSkip(); return { ok: true }; },
@@ -322,13 +340,25 @@ function joplinAvailable() {
 const PROVIDER_TEXT = { google: ' (über Google)', apple: ' (über Apple)', app: ' (mit E-Mail und Passwort)' };
 
 function loginText(s) {
-  return 'Bei Evernote angemeldet' + (PROVIDER_TEXT[s.provider] || '') + '.';
+  return '✓ Verbindung zu Evernote hergestellt' + (PROVIDER_TEXT[s.provider] || '') + '.';
+}
+
+/* Verbindungsquittung: welches Konto verbunden ist – gleich bei Passwort, Google und Apple. */
+function accountText(s) {
+  const a = s.account;
+  if (!s.connected || !a || !(a.name || a.email)) return '';
+  if (a.name && a.email) return 'Angemeldet als ' + a.name + ' (' + a.email + ').';
+  return 'Angemeldet als ' + (a.name || a.email) + '.';
+}
+
+function filesText() {
+  if (!ui.imported) return '';
+  return 'Geladen: ' + plural(ui.library.files.length, 'Datei', 'Dateien') + ', ' + plural(ui.imported.notes.length, 'Notiz', 'Notizen') + '.';
 }
 
 function sourceText(s) {
-  const file = ui.imported ? 'Datei geladen: ' + plural(ui.imported.notebooks.length, 'Notizbuch', 'Notizbücher') + ', ' + plural(ui.imported.notes.length, 'Notiz', 'Notizen') + '.' : '';
-  if (s.connected) return (loginText(s) + ' ' + file).trim();
-  return file;
+  if (s.connected) return (loginText(s) + ' ' + filesText()).trim();
+  return filesText();
 }
 
 /* ---------- Anzeige ---------- */
@@ -343,13 +373,15 @@ function renderSource(s) {
   const ready = hasData(s);
   $('#source-ok').hidden = !ready;
   $('#source-text').textContent = sourceText(s);
+  $('#source-account').textContent = accountText(s);
+  $('#source-account').hidden = !accountText(s);
   $('#source-next').textContent = joplinAvailable() ? 'Notizen ansehen' : 'Weiter zum Export';
   $('#login-box').hidden = !!s.connected || ui.connectHelp;
   $('#logout-btn').hidden = !s.connected;
   $('#login-hint').textContent = ui.mode === 'demo' ? 'In dieser Vorschau wird die Anmeldung nur simuliert. Echt läuft sie auf der offiziellen Evernote-Seite; hier geben Sie kein Passwort ein.' : 'Die Anmeldung läuft auf der offiziellen Evernote-Seite. Hier geben Sie kein Passwort ein.';
   renderConnectError();
   $('#file-box').hidden = ui.mode !== 'demo' || !!s.running;
-  $('#enex-btn').textContent = ui.imported ? 'Andere Datei laden' : 'Datei laden (.enex)';
+  $('#enex-btn').textContent = ui.imported ? 'Weitere Dateien laden' : 'Dateien laden (.enex)';
 }
 
 function renderVorschau() {
@@ -357,6 +389,115 @@ function renderVorschau() {
   $('#joplin-frame').hidden = !joplinAvailable();
   $('#vorschau-lead').hidden = !joplinAvailable();
   $('#vorschau-lead').textContent = ui.imported ? 'Ihre geladenen Notizen, so wie sie in Joplin aussehen. Das Import-Protokoll steht unter „Datenverbindung“.' : 'Beispieldaten zum Ansehen. Laden Sie eine Datei, dann sehen Sie hier Ihre Notizen.';
+  renderFiles();
+}
+
+/* ---------- Geladene Dateien (Vorschau) ---------- */
+function loadedTimeText(ms) {
+  return new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function fileFactsText(f) {
+  return 'Notizbuch „' + f.notebook + '“ · ' + plural(f.notes.length, 'Notiz', 'Notizen') + ' · ' + plural(f.attachments, 'Anhang', 'Anhänge') +
+    ' · ' + bytesText(f.size) + ' · geladen um ' + loadedTimeText(f.loadedAt) + ' Uhr';
+}
+
+function fileItem(f) {
+  const li = document.createElement('li');
+  const name = document.createElement('strong');
+  name.textContent = f.name;
+  const facts = document.createElement('span');
+  facts.textContent = fileFactsText(f);
+  const btn = document.createElement('button');
+  btn.className = 'btn-small';
+  btn.textContent = 'Entfernen';
+  btn.setAttribute('aria-label', '„' + f.name + '“ aus der Vorschau entfernen');
+  btn.addEventListener('click', () => removeLoadedFile(f.id));
+  li.append(name, facts, btn);
+  return li;
+}
+
+const FILES_OPEN_MAX = 5; // laengere Listen zugeklappt, damit die Vorschau sichtbar bleibt (auch auf dem Handy)
+
+function filesSummaryText(files) {
+  const notes = files.reduce((n, f) => n + f.notes.length, 0);
+  const att = files.reduce((n, f) => n + f.attachments, 0);
+  return plural(files.length, 'Datei', 'Dateien') + ': ' + plural(notes, 'Notiz', 'Notizen') + ', ' + plural(att, 'Anhang', 'Anhänge');
+}
+
+/* Nur wenn sich die Anzahl aendert neu entscheiden, sonst bleibt auf/zu so, wie es zuletzt gewaehlt wurde. */
+function openListIfShort(count) {
+  if (ui.filesCount === count) return;
+  ui.filesCount = count;
+  $('#files-details').open = count <= FILES_OPEN_MAX;
+}
+
+function renderFiles() {
+  const files = ui.library.files;
+  $('#files-box').hidden = !joplinAvailable();
+  $('#files-none').hidden = files.length > 0;
+  $('#files-details').hidden = !files.length;
+  $('#files-summary').textContent = filesSummaryText(files);
+  $('#files-list').replaceChildren(...files.map(fileItem));
+  openListIfShort(files.length);
+  $('#files-merge').hidden = !ui.mergeText;
+  $('#files-merge').textContent = ui.mergeText;
+  $('#files-clear').hidden = !files.length || ui.confirmClear;
+  $('#files-confirm').hidden = !ui.confirmClear;
+  $('#files-add').textContent = files.length ? 'Weitere Dateien laden' : 'Dateien laden (.enex)';
+}
+
+function mergeText(sum) {
+  const parts = [];
+  if (sum.skippedNotes) parts.push(plural(sum.skippedNotes, 'doppelte Notiz', 'doppelte Notizen') + ' übersprungen.');
+  if (sum.sameFiles.length) parts.push('Schon geladen, übersprungen: ' + sum.sameFiles.map((n) => '„' + n + '“').join(', ') + '.');
+  if (sum.replaced.length) parts.push('Neuer Stand ersetzt: ' + sum.replaced.map((n) => '„' + n + '“').join(', ') + '.');
+  return parts.join(' ');
+}
+
+function setLibrary(lib) {
+  ui.library = lib;
+  ui.imported = lib.files.length ? NotizCore.libraryData(lib) : null;
+}
+
+/* Vorschau neu laden: ohne geladene Dateien zeigt sie wieder die Beispieldaten. */
+function resetJoplinFrame() {
+  if (joplinAvailable()) $('#joplin-frame').setAttribute('src', JOPLIN_URL);
+}
+
+function showLoadedData() {
+  if (!ui.imported) return resetJoplinFrame();
+  demoUseSource(ui.imported);
+  sendImportToJoplin();
+}
+
+function removeLoadedFile(id) {
+  setLibrary(NotizCore.removeFile(ui.library, id));
+  ui.mergeText = '';
+  if (!ui.imported) demoClearSource();
+  showLoadedData();
+  refresh();
+}
+
+function askClearAll() {
+  ui.confirmClear = true;
+  renderFiles();
+  $('#files-clear-yes').focus();
+}
+
+function cancelClearAll() {
+  ui.confirmClear = false;
+  renderFiles();
+  $('#files-clear').focus();
+}
+
+function clearAll() {
+  ui.confirmClear = false;
+  ui.mergeText = '';
+  setLibrary(NotizCore.emptyLibrary());
+  demoClearSource();
+  resetJoplinFrame();
+  refresh();
 }
 
 function exportLabel(s) {
@@ -682,14 +823,25 @@ function chooseEnex() {
 
 const IMPORT_DONE_PAUSE = 1200; // kurz die Fertig-Meldung zeigen, dann die Notizen
 
-function applyImport(data, reports) {
-  ui.imported = data;
-  demoUseSource(data);
+/* Neue Dateien kommen zu den schon geladenen dazu (Regeln in NotizCore.mergeFiles). */
+function applyImport(parts, reports) {
+  const merged = NotizCore.mergeFiles(ui.library, parts, Date.now());
+  setLibrary(merged.lib);
+  ui.mergeText = mergeText(merged.summary);
+  ui.confirmClear = false;
+  demoUseSource(ui.imported || { notebooks: [], notes: [] });
   ui.shown = 0;
   $('#enex-error').hidden = true;
+  sendImportToJoplin();
   refresh();
   if (reports.some((r) => r.error)) return showView('daten'); // erst das Protokoll zeigen
-  setTimeout(showVorschau, IMPORT_DONE_PAUSE);
+  setTimeout(showVorschauAfterImport, IMPORT_DONE_PAUSE);
+}
+
+/* Nur eine Erfolgsmeldung: der Fertig-Balken verschwindet, die Quittung steht im grünen Kasten. */
+function showVorschauAfterImport() {
+  $('#import-run').hidden = true;
+  showVorschau();
 }
 
 function showEnexError(report) {
@@ -903,7 +1055,7 @@ async function importFiles(files) {
   finishImportBar(r);
   renderImportLog(r.reports, r.ms);
   if (!r.ok) return showEnexError(r.reports.find((x) => x.error) || r.reports[0]);
-  applyImport(r.data, r.reports);
+  applyImport(r.parts, r.reports);
 }
 
 function retryImport() {
@@ -1016,6 +1168,10 @@ function bindEvents() {
   $('#save-target').addEventListener('click', doSaveTarget);
   $('#joplin-frame').addEventListener('load', sendImportToJoplin);
   $('#enex-btn').addEventListener('click', chooseEnex);
+  $('#files-add').addEventListener('click', chooseEnex);
+  $('#files-clear').addEventListener('click', askClearAll);
+  $('#files-clear-yes').addEventListener('click', clearAll);
+  $('#files-clear-no').addEventListener('click', cancelClearAll);
   $('#enex-retry').addEventListener('click', chooseEnex);
   $('#enex-file').addEventListener('change', onEnexChosen);
   $('#copy-log').addEventListener('click', copyLog);

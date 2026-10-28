@@ -4,13 +4,23 @@ Links (auf dem Handy unten) gibt es vier Reiter. Rechts daneben zeigt die Status
 
 ## 1. Datenverbindung
 - **In der Evernote-App anmelden**, **Mit Google anmelden**, **Mit Apple anmelden** – im Browser nur simuliert; echt nur mit dem Helfer auf dem iMac.
-- **Datei laden (.enex)** – echte Datei(en) wählen, auch mehrere auf einmal. Die Dateien bleiben im Browser.
-- Fortschrittsbalken: „37 von 120 Notizen – 31 %“, am Ende „✓ Fertig: … Notizen aus … Notizbüchern geladen“.
+- **Verbindungsquittung** (ein grüner Kasten, bei Passwort, Google und Apple gleich): „✓ Verbindung zu Evernote hergestellt (über Google). Angemeldet als … (E-Mail).“ Der Helfer liest Name und E-Mail aus der Ausgabe von evernote-backup („Successfully authenticated as …“).
+- **Dateien laden (.enex)** – echte Datei(en) wählen, auch mehrere auf einmal. Die Dateien bleiben im Browser. Weitere Dateien kommen zu den schon geladenen dazu.
+- Fortschrittsbalken: „37 von 120 Notizen – 31 %“, kurz „✓ Fertig …“, danach steht das Ergebnis nur noch im grünen Kasten.
 - **Import-Protokoll** mit Summe, Laufzeit (Sekunden, Notizen/s), bereinigten Namen und Warnungen. Knöpfe: **Protokoll kopieren**, **Daten zur Fehlersuche senden**.
 - Bei einer kaputten Datei: Erklärung mit Lösung, **Erneut versuchen** oder **Andere Datei wählen**.
 
 ## 2. Joplin-Vorschau
 So sehen die geladenen Notizen in Joplin aus: Notizbücher, Schlagwörter, Suche, Notizliste, Inhalt mit Bildern, PDFs, Tabellen und Checklisten. Oben **Notizen** / **Anhänge (n)** mit einer Tabelle aller Anhänge. Unten **Weiter zum Export**.
+
+**Geladene Dateien** (Kasten über der Vorschau): je Datei Name, Notizbuch, Notizen, Anhänge, Größe und Uhrzeit des Ladens, dazu **Entfernen**. Ab 6 Dateien ist die Liste zugeklappt („28 Dateien: 510 Notizen, 504 Anhänge“).
+
+Regeln beim Dazuladen:
+1. Dieselbe Datei noch einmal (gleicher Name, gleiche Größe, gleiches Datum) wird übersprungen.
+2. Eine Notiz, die schon da ist (gleiche Evernote-ID, sonst gleicher Titel und gleiches Erstelldatum), wird übersprungen. Hinweis: „X doppelte Notizen übersprungen.“
+3. Dasselbe Notizbuch aus einer neueren Datei ersetzt den alten Stand („Neuer Stand ersetzt: …“).
+
+**Alles leeren** fragt einmal nach („Ja, alles leeren“ / „Abbrechen“) und zeigt dann wieder die Beispieldaten, ohne die Seite neu zu laden. Ihre Dateien auf dem Gerät bleiben unverändert.
 
 ## 3. Export
 - Ziel: **Joplin (empfohlen)**, Apple Notizen, OneNote (*kommt später*, ausgegraut).
