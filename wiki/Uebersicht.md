@@ -15,6 +15,7 @@ Der Notiz-Converter liest Evernote-Exportdateien (`.enex`) und bereitet die Übe
 - [Debug-Upload](Debug-Upload.md)
 - [Grenzen und Simuliertes](Grenzen.md)
 - [Changelog](Changelog.md)
+- [Ideen für später](Ideen-fuer-spaeter.md)
 
 ## Aufbau
 | Teil | Datei |

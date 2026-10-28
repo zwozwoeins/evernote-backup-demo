@@ -16,6 +16,12 @@ Export nach Apple Notizen bzw. Joplin (Data API, Port 41184, Schlüssel aus Jopl
 ## Einfachster echter Weg nach Joplin heute
 Joplin Desktop installieren → **Datei → Importieren → ENEX** → `.enex` wählen. Für mehrere Geräte in Joplin unter **Synchronisation** z. B. Dropbox, OneDrive, Nextcloud oder einen Ordner wählen.
 
+## Lasttest im Browser (headless Chrome, 1.000 Notizen, 7.026 Anhänge, 88 MB)
+- Einlesen ca. 5–6 s (rund 190 Notizen/s), JS-Speicher der Seite in der Spitze ca. 60 MB beim Lesen
+- Vorschau mit allen Notizen: ca. 2 s, danach rund 300 MB JS-Speicher (Bilder und Anhänge liegen im Speicher)
+- Anhänge-Tabelle mit 7.026 Einträgen: ca. 5–8 s bis sie steht
+- Kommandozeile: 2,7 s für dieselbe Datei (394 Notizen/s)
+
 ## Bekannte Grenzen
 - Sehr große Dateien belegen im Browser viel Speicher (siehe Lasttest-Werte im Changelog).
 - `--format jex` in der CLI ist noch nicht umgesetzt.

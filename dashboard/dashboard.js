@@ -802,6 +802,7 @@ function sumReports(reports) {
 }
 
 function secondsText(ms) {
+  if (ms < 1000) return Math.round(ms).toLocaleString('de-DE') + ' ms';
   return (ms / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' s';
 }
 
