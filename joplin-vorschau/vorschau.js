@@ -181,10 +181,15 @@ function waehleTag(t) {
   allesZeigen();
 }
 
+function zurNotizScrollen() {
+  if (window.innerWidth <= 900) document.getElementById("note").scrollIntoView({ behavior: "smooth" });
+}
+
 function waehleNotiz(id) {
   zustand.notiz = id;
   zeigeListe();
   zeigeNotiz();
+  zurNotizScrollen();
 }
 
 function beiSuche(e) {

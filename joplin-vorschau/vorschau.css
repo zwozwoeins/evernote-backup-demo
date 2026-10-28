@@ -37,7 +37,9 @@ figure img{max-width:100%;height:auto;border-radius:6px;border:1px solid #dde1e6
 .tag{background:#e8edf5;color:#1d4ea8;border-radius:12px;padding:3px 10px;font-size:13px}
 .anhang{background:#f1f2f4;border-radius:12px;padding:3px 10px;font-size:13px}
 @media (max-width:900px){
-  .app{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}
+  .sidebar,.list,.note{min-width:0}
+  .list{border-right:0;border-bottom:1px solid #dde1e6}
   .sidebar{max-height:none}
   #notebooks,.tags-side{display:flex;overflow-x:auto}
   #notebooks li,.tags-side li{flex:0 0 auto}
