@@ -13,11 +13,35 @@
 <body>
 <header>
   <h1 class="logo">Notiz-<wbr>Converter</h1>
-  <p class="sub">Evernote-Notizen ansehen, wie sie in Joplin aussehen.<br>Ohne Anmeldung, alles bleibt auf Ihrem Rechner.</p>
-  <a class="big" href="dashboard/">Zum Notiz-Converter</a>
+  <p class="sub">Alle Evernote-Notizen sichern und ansehen, wie sie in Joplin aussehen.<br>Kostenlos, ohne Konto bei uns.</p>
 </header>
+<main>
+<section class="step" id="s1">
+  <div class="num" aria-hidden="true">1</div>
+  <h2>Exporter herunterladen und starten</h2>
+  <p class="lead">Holt alle Notizbücher aus Evernote und speichert sie als Dateien (.enex) in einen Ordner Ihrer Wahl.</p>
+  <a class="big" href="download/Evernote-Exporter-Windows.zip" download>Für Windows herunterladen (.zip)</a>
+  <a class="second" href="download/Evernote-Exporter-Linux.zip" download>Für Linux herunterladen (.zip)</a>
+  <details><summary>So geht es</summary>
+    <ol>
+      <li>Zip-Datei entpacken. Python 3.10 oder neuer muss installiert sein (kostenlos, python.org).</li>
+      <li>Windows: Doppelklick auf „Evernote-Exporter starten.cmd“. Linux: im Terminal <code>./evernote-exporter.sh</code>.</li>
+      <li>Ordner wählen – Enter nimmt den Vorschlag „Evernote-Export“.</li>
+      <li>Auf der offiziellen Evernote-Seite anmelden (E-Mail und Passwort, Google oder Apple). Dann mit der rechten Maustaste auf „Return to Evernote“ → „Link kopieren“ → im Fenster einfügen.</li>
+      <li>Warten. Macht Evernote eine Pause, geht es von selbst weiter. Am Ende öffnet sich der Ordner.</li>
+    </ol>
+    <p>Ihr Passwort wird nie gespeichert. Beim nächsten Start werden nur neue Notizen geholt.</p>
+  </details>
+</section>
+<section class="step" id="s2">
+  <div class="num" aria-hidden="true">2</div>
+  <h2>Dateien im Notiz-Converter laden</h2>
+  <p class="lead">„Dateien wählen“ drücken und im Ordner alle Dateien markieren (Strg + A). Die Dateien bleiben auf Ihrem Rechner.</p>
+  <a class="big" href="dashboard/">Zum Notiz-Converter</a>
+  <p>In Joplin übernehmen: „Datei → Importieren → ENEX“ und dieselben Dateien wählen.</p>
+</section>
+</main>
 <footer>
-  <p>Ganzes Evernote-Konto auf einmal: mit dem Programm <b>Syncline</b> anmelden und „Alles sichern“ drücken. Die Notizen erscheinen danach automatisch im Notiz-Converter.</p>
   <details><summary>Was wird nicht (ganz) übernommen?</summary>
     <ul>
       <li><b>Bilder und Anhänge</b> kommen mit.</li>
@@ -25,6 +49,7 @@
       <li><b>Nicht übernommen:</b> Text mit Passwortschutz, Erinnerungen, ältere Fassungen einer Notiz.</li>
     </ul>
   </details>
+  <p><a href="v5/">Ältere Version (v5.3)</a></p>
 </footer>
 </body>
 </html>

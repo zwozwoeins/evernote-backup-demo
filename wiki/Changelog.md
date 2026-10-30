@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.1 – 30.10.2026
+- **Evernote-Exporter** für Windows und Linux zum Herunterladen (Startseite, Schritt 1): fragt den Zielordner (Enter = `~/Evernote-Export`, auch als Argument), Anmeldung auf der offiziellen Evernote-Seite, holt alle Notizbücher, schreibt je Notizbuch eine .enex-Datei, öffnet am Ende den Ordner
+- Pausen von Evernote laufen mit Countdown automatisch weiter; jeder Fehler mit konkreten Schritten; Passwort und Token nie im Protokoll
+- Startseite: Schritt 1 Exporter herunterladen, Schritt 2 Dateien im Notiz-Converter laden
+- Geprüft: 28 Dateien / 510 Notizen aus dem Exporter laden im Converter (Mehrfachauswahl) und importieren in Joplin (28 Notizbücher, 510 Notizen)
+
 ## v6.0 – 28.10.2026
 - Oberfläche aufs Minimum: **Dateien wählen → Joplin-Vorschau**. Keine Anmeldung, keine Einstellungen, kein Ziel-Auswahl (immer Joplin)
 - Übernahme vom Programm **Syncline**: Syncline öffnet den Converter mit Einmal-Code im #-Teil der Adresse; der Converter holt die .enex-Dateien direkt von Syncline (nur 127.0.0.1, Code gilt einmal und 5 Minuten). Anmeldedaten erreichen den Converter nie
