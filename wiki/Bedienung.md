@@ -1,10 +1,10 @@
 # Bedienung
 
-## 1. Evernote-Exporter (Windows / Linux)
+## 1. Evernote-Exporter (Windows / Mac / Linux)
 1. Zip von der Startseite laden und entpacken. Voraussetzung: Python 3.10+ (python.org). Der erste Start richtet `evernote-backup` einmalig ein.
-2. Starten: Windows „Evernote-Exporter starten.cmd“ (Doppelklick), Linux `./evernote-exporter.sh`.
+2. Starten: Windows „Evernote-Exporter starten.cmd“ (Doppelklick), Mac „Evernote-Exporter starten.command“ (Doppelklick; erstes Mal rechte Maustaste → Öffnen → Öffnen), Linux `./evernote-exporter.sh`.
 3. **Wohin sollen die Dateien gespeichert werden?** Enter = `~/Evernote-Export`, sonst Pfad eingeben. Für Skripte: Ordner als Argument (`./evernote-exporter.sh ~/Sicherung`). Der Ordner wird angelegt und auf Schreibrechte geprüft.
-4. Anmeldung auf der offiziellen Evernote-Seite (E-Mail + Passwort, Google, Apple, ggf. Code). Danach Rechtsklick auf „Return to Evernote“ → „Link kopieren“ → einfügen. Windows: ist das Evernote-Programm angemeldet, wird diese Anmeldung ohne Tippen übernommen.
+4. Anmeldung auf der offiziellen Evernote-Seite (E-Mail + Passwort, Google, Apple, ggf. Code). Danach Rechtsklick auf „Return to Evernote“ → „Link kopieren“ → einfügen. Windows/Mac: ist das Evernote-Programm angemeldet, wird diese Anmeldung ohne Tippen übernommen.
 5. Fortschritt „123 von 500 Notizen geholt“. Pause von Evernote: „Es geht um HH:MM Uhr automatisch weiter“ mit Countdown.
 6. Fertig: Anzahl Notizen/Dateien, der Ordner öffnet sich. Fehler: Satz + Schritte, Enter = nochmal versuchen, n = beenden.
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## v6.2 – 30.10.2026
+- **Evernote-Exporter für Mac**: Doppelklick auf „Evernote-Exporter starten.command“ (erstes Mal: rechte Maustaste → Öffnen), Prüfung auf Python 3.10+ mit Hinweis auf python.org, übernimmt die Anmeldung aus dem Evernote-Programm, öffnet am Ende den Ordner im Finder
+- Startskript für Linux und Mac gemeinsam (`evernote-exporter.sh`); Download-Knopf „Für Mac“ auf der Startseite
+
 ## v6.1 – 30.10.2026
 - **Evernote-Exporter** für Windows und Linux zum Herunterladen (Startseite, Schritt 1): fragt den Zielordner (Enter = `~/Evernote-Export`, auch als Argument), Anmeldung auf der offiziellen Evernote-Seite, holt alle Notizbücher, schreibt je Notizbuch eine .enex-Datei, öffnet am Ende den Ordner
 - Pausen von Evernote laufen mit Countdown automatisch weiter; jeder Fehler mit konkreten Schritten; Passwort und Token nie im Protokoll
