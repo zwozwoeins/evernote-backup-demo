@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; frame-src blob:; object-src 'none'; style-src 'self'; script-src 'self'; connect-src 'none'; form-action 'none'; frame-ancestors 'self'">
+<title>Joplin-Vorschau – Notiz-Converter</title>
+<link rel="stylesheet" href="vorschau.css">
+</head>
+<body>
+<div class="banner" role="note"><strong>Vorschau mit Beispieldaten</strong> – So sehen gesicherte Evernote-Notizen in Joplin aus. Nur zum Ansehen, nichts wird gespeichert.</div>
+<div class="umschalter" role="group" aria-label="Ansicht">
+  <button id="modus-notizen" aria-pressed="true">Notizen</button>
+  <button id="modus-anhaenge" aria-pressed="false">Anhänge</button>
+</div>
+<div class="app">
+  <nav class="sidebar" aria-label="Notizbücher">
+    <div class="side-head">Notizbücher</div>
+    <ul id="notebooks"></ul>
+    <div class="side-head">Schlagwörter</div>
+    <ul id="tags" class="tags-side"></ul>
+  </nav>
+  <section class="list" aria-label="Notizliste">
+    <div class="list-head"><input id="search" type="search" placeholder="Suchen …" aria-label="Notizen durchsuchen"></div>
+    <ul id="notes"></ul>
+  </section>
+  <main class="note" id="note" aria-live="polite"></main>
+  <section class="anh" id="anh" aria-labelledby="anh-titel" hidden>
+    <h2 class="anh-titel" id="anh-titel">Notizanhänge</h2>
+    <p class="anh-zahl" id="anh-zahl"></p>
+    <div class="anh-kopf">
+      <div class="filter" role="group" aria-label="Art der Anhänge">
+        <button data-filter="alle" aria-pressed="true">Alle</button>
+        <button data-filter="pdf" aria-pressed="false">PDF</button>
+        <button data-filter="bild" aria-pressed="false">Bilder</button>
+        <button data-filter="sonstige" aria-pressed="false">Sonstige</button>
+      </div>
+      <input id="anh-suche" type="search" placeholder="Anhänge suchen …" aria-label="Anhänge durchsuchen">
+    </div>
+    <table class="anh-tabelle">
+      <thead><tr>
+        <th scope="col" data-sort="name" aria-sort="ascending"><button data-sort="name">Name</button></th>
+        <th scope="col" data-sort="mime" aria-sort="none"><button data-sort="mime">Typ</button></th>
+        <th scope="col" data-sort="size" aria-sort="none"><button data-sort="size">Größe</button></th>
+        <th scope="col" data-sort="notiz" aria-sort="none"><button data-sort="notiz">Notiz</button></th>
+        <th scope="col"><span class="sr">Aktionen</span></th>
+      </tr></thead>
+      <tbody id="anh-liste"></tbody>
+    </table>
+    <p class="anh-leer" id="anh-leer" hidden></p>
+  </section>
+</div>
+<script src="daten.js"></script>
+<script src="vorschau.js"></script>
+</body>
+</html>
